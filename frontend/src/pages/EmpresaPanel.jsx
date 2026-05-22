@@ -148,6 +148,7 @@ const [mostrarConfirmarPassword, setMostrarConfirmarPassword] = useState(false);
   const [tipoMensajeProducto, setTipoMensajeProducto] = useState("");
 
   const [productoViendo, setProductoViendo] = useState(null);
+  const [volverDetalleA, setVolverDetalleA] = useState("productos");
   const [productoEditando, setProductoEditando] = useState(null);
   const [productoEditar, setProductoEditar] = useState(estadoInicialEditarProducto);
   const [imagenEditando, setImagenEditando] = useState(null);
@@ -163,8 +164,8 @@ const [mostrarConfirmarPassword, setMostrarConfirmarPassword] = useState(false);
   stock: ""
 });
 
-  const productosPorCategoria = useMemo(() => {
-    return productosEmpresa.reduce((grupos, producto) => {
+  const agruparProductosPorCategoria = (listaProductos) => {
+    return listaProductos.reduce((grupos, producto) => {
       const categoria = producto.categoria || "Sin categoría";
 
       if (!grupos[categoria]) {
@@ -175,7 +176,21 @@ const [mostrarConfirmarPassword, setMostrarConfirmarPassword] = useState(false);
 
       return grupos;
     }, {});
+  };
+
+  const productosVisiblesEmpresa = useMemo(() => {
+    return productosEmpresa.filter(
+      (producto) => producto.estado_producto === "ACTIVO"
+    );
   }, [productosEmpresa]);
+
+  const productosPorCategoria = useMemo(() => {
+    return agruparProductosPorCategoria(productosEmpresa);
+  }, [productosEmpresa]);
+
+  const productosVisiblesPorCategoria = useMemo(() => {
+    return agruparProductosPorCategoria(productosVisiblesEmpresa);
+  }, [productosVisiblesEmpresa]);
 
   const cargarProductosEmpresa = async () => {
     if (!usuario?.id_empresa) return;
@@ -719,8 +734,9 @@ useEffect(() => {
     }
   };
 
-  const abrirVerProducto = (producto) => {
+  const abrirVerProducto = (producto, volverA = "productos") => {
     setProductoViendo(producto);
+    setVolverDetalleA(volverA);
     setSeccionEmpresa("ver");
   };
 
@@ -1031,9 +1047,9 @@ const cambiarEstadoVariante = async (variante) => {
     }
   };
 
-  const renderProductosPorCategoria = (modoLista = false) => (
+  const renderProductosPorCategoria = (modoLista = false, gruposProductos = productosPorCategoria) => (
     <div className="categorias-productos">
-      {Object.entries(productosPorCategoria).map(([categoria, productos]) => (
+      {Object.entries(gruposProductos).map(([categoria, productos]) => (
         <div className="categoria-grupo" key={categoria}>
           <div className="categoria-titulo categoria-bonita">
   <div>
@@ -1101,7 +1117,21 @@ const cambiarEstadoVariante = async (variante) => {
           ) : (
             <div className="productos-grid">
               {productos.map((producto) => (
-                <ProductoCard key={producto.id_producto} producto={producto} />
+                <div
+                  className="producto-card-clickable"
+                  key={producto.id_producto}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => abrirVerProducto(producto, modoLista ? "productos" : "vista")}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      abrirVerProducto(producto, modoLista ? "productos" : "vista");
+                    }
+                  }}
+                  title="Ver producto como cliente"
+                >
+                  <ProductoCard producto={producto} />
+                </div>
               ))}
             </div>
           )}
@@ -1694,7 +1724,7 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
 
             {errorEmpresa && <p className="estado-error">{errorEmpresa}</p>}
 
-            {!cargandoEmpresa && productosEmpresa.length === 0 && (
+            {!cargandoEmpresa && productosVisiblesEmpresa.length === 0 && (
               <div className="vacio-card">
                 <h3>Aún no tienes productos visibles</h3>
                 <p>
@@ -1704,7 +1734,7 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
               </div>
             )}
 
-            {renderProductosPorCategoria(false)}
+            {renderProductosPorCategoria(false, productosVisiblesPorCategoria)}
           </div>
         )}
 
@@ -2349,7 +2379,7 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
         {seccionEmpresa === "ver" && productoViendo && (
           <ProductoDetalle
             producto={productoViendo}
-            onVolver={() => setSeccionEmpresa("productos")}
+            onVolver={() => setSeccionEmpresa(volverDetalleA)}
           />
         )}
 
