@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+backend/venv/
+venv/
+
+# React / Node
+frontend/node_modules/
+node_modules/
+frontend/dist/
+dist/
+
+# Variables privadas
+.env
+backend/.env
+frontend/.env
+
+# Archivos temporales
+*.log
+.DS_Store
+Thumbs.db
+
+# Backups
+*.zip
+backend_actual.zip
+backend copy/
+src copy/
+
+# Base local
+*.sqlite
+*.db

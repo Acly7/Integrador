@@ -1,0 +1,58 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
+import os
+
+from app.routers import (
+    inicio,
+    auth,
+    admin,
+    categorias,
+    empresa_productos,
+    empresa_pedidos,
+    cliente,
+    soporte,
+    empresa_cuenta
+)
+
+app = FastAPI(
+    title="Zyra API",
+    description="Backend",
+    version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+UPLOADS_DIR = BASE_DIR / "uploads"
+PRODUCTOS_DIR = UPLOADS_DIR / "productos"
+
+os.makedirs(PRODUCTOS_DIR, exist_ok=True)
+
+app.mount(
+    "/uploads",
+    StaticFiles(directory=str(UPLOADS_DIR)),
+    name="uploads"
+)
+
+print("CARPETA UPLOADS SERVIDA:", UPLOADS_DIR)
+
+app.include_router(inicio.router)
+app.include_router(auth.router)
+app.include_router(admin.router)
+app.include_router(categorias.router)
+app.include_router(empresa_productos.router)
+app.include_router(empresa_pedidos.router)
+app.include_router(cliente.router)
+app.include_router(soporte.router)
+app.include_router(empresa_cuenta.router)
