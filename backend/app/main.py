@@ -13,7 +13,8 @@ from app.routers import (
     empresa_pedidos,
     cliente,
     soporte,
-    empresa_cuenta
+    empresa_cuenta,
+    ia_busqueda
 )
 
 app = FastAPI(
@@ -56,3 +57,4 @@ app.include_router(empresa_pedidos.router)
 app.include_router(cliente.router)
 app.include_router(soporte.router)
 app.include_router(empresa_cuenta.router)
+app.include_router(ia_busqueda.router)

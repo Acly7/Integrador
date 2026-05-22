@@ -29,3 +29,6 @@ src copy/
 # Base local
 *.sqlite
 *.db
+
+# IA / vectores generados
+backend/chroma_db/

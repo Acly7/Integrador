@@ -218,14 +218,6 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     soloStock: true
   });
 
-  const [imagenBusquedaIa, setImagenBusquedaIa] = useState(null);
-  const [previewBusquedaIa, setPreviewBusquedaIa] = useState(null);
-  const [resultadosBusquedaIa, setResultadosBusquedaIa] = useState([]);
-  const [cargandoBusquedaIa, setCargandoBusquedaIa] = useState(false);
-  const [mensajeBusquedaIa, setMensajeBusquedaIa] = useState("");
-  const [tipoMensajeBusquedaIa, setTipoMensajeBusquedaIa] = useState("");
-
-
   const menu = [
     { id: "inicio", nombre: "Inicio", icono: "home" },
     { id: "catalogo", nombre: "Catálogo", icono: "catalogo" },
@@ -1719,212 +1711,53 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     </div>
   );
 
-
-  const seleccionarImagenBusquedaIa = (e) => {
-    const archivo = e.target.files?.[0];
-
-    if (!archivo) return;
-
-    if (!archivo.type.startsWith("image/")) {
-      setMensajeBusquedaIa("Selecciona una imagen válida en formato JPG, PNG o WEBP.");
-      setTipoMensajeBusquedaIa("error");
-      return;
-    }
-
-    setImagenBusquedaIa(archivo);
-    setPreviewBusquedaIa(URL.createObjectURL(archivo));
-    setResultadosBusquedaIa([]);
-    setMensajeBusquedaIa("Imagen lista. Presiona Buscar similares para analizarla con IA.");
-    setTipoMensajeBusquedaIa("ok");
-  };
-
-  const limpiarBusquedaVisualIa = () => {
-    setImagenBusquedaIa(null);
-    setPreviewBusquedaIa(null);
-    setResultadosBusquedaIa([]);
-    setMensajeBusquedaIa("");
-    setTipoMensajeBusquedaIa("");
-  };
-
-  const ejecutarBusquedaVisualIa = async () => {
-    if (!usuario?.id_usuario) {
-      setMensajeBusquedaIa("No se encontró el usuario cliente. Vuelve a iniciar sesión.");
-      setTipoMensajeBusquedaIa("error");
-      return;
-    }
-
-    if (!imagenBusquedaIa) {
-      setMensajeBusquedaIa("Primero selecciona una imagen para buscar prendas similares.");
-      setTipoMensajeBusquedaIa("error");
-      return;
-    }
-
-    setCargandoBusquedaIa(true);
-    setMensajeBusquedaIa("Analizando imagen y buscando prendas similares...");
-    setTipoMensajeBusquedaIa("ok");
-
-    try {
-      const formData = new FormData();
-      formData.append("archivo", imagenBusquedaIa);
-
-      const respuesta = await fetch(
-        `${API_URL}/cliente/buscar-por-imagen?id_usuario=${usuario.id_usuario}&limite=12`,
-        {
-          method: "POST",
-          body: formData
-        }
-      );
-
-      const datos = await respuesta.json().catch(() => ({}));
-
-      if (!respuesta.ok) {
-        throw new Error(datos.detail || "No se pudo realizar la búsqueda visual.");
-      }
-
-      const resultados = datos.resultados || [];
-      setResultadosBusquedaIa(resultados);
-
-      if (resultados.length === 0) {
-        setMensajeBusquedaIa("La IA no encontró prendas similares por ahora. Prueba con otra imagen más clara.");
-        setTipoMensajeBusquedaIa("error");
-      } else {
-        setMensajeBusquedaIa(`La IA encontró ${resultados.length} prenda(s) similares en Zyra.`);
-        setTipoMensajeBusquedaIa("ok");
-      }
-    } catch (error) {
-      setResultadosBusquedaIa([]);
-      setMensajeBusquedaIa(error.message || "No se pudo conectar con la búsqueda visual.");
-      setTipoMensajeBusquedaIa("error");
-    }
-
-    setCargandoBusquedaIa(false);
-  };
-
   const renderBuscarImagen = () => (
     <div className="cliente-ia-page cliente-page-con-carrito">
-      <section className="cliente-ia-hero cliente-ia-hero-activa">
+      <section className="cliente-ia-hero">
         <div>
           <span>Búsqueda visual con inteligencia artificial</span>
-          <h2>Busca prendas reales usando una imagen.</h2>
+          <h2>Próximamente podrás buscar prendas usando una imagen.</h2>
           <p>
-            Sube una foto de referencia y Zyra comparará colores, formas y estilo
-            contra los productos publicados por las tiendas aprobadas.
+            La idea es que subas una foto de referencia y Zyra busque productos
+            parecidos dentro de los catálogos de empresas bolivianas.
           </p>
         </div>
 
-        <div className="cliente-ia-upload ia-activa">
-          <label className="cliente-ia-drop">
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/jpg,image/webp"
-              onChange={seleccionarImagenBusquedaIa}
-            />
-
-            {previewBusquedaIa ? (
-              <span className="cliente-ia-preview">
-                <img src={previewBusquedaIa} alt="Imagen seleccionada para búsqueda visual" />
-              </span>
-            ) : (
-              <span className="cliente-ia-icono">IA</span>
-            )}
-
-            <strong>{imagenBusquedaIa ? imagenBusquedaIa.name : "Sube una imagen"}</strong>
-            <p>
-              Usa una foto clara de una prenda. Mientras más visible sea la ropa,
-              mejores serán los resultados.
-            </p>
-          </label>
-
-          <div className="cliente-ia-actions">
-            <button
-              type="button"
-              className="principal"
-              onClick={ejecutarBusquedaVisualIa}
-              disabled={cargandoBusquedaIa || !imagenBusquedaIa}
-            >
-              {cargandoBusquedaIa ? "Buscando..." : "Buscar similares"}
-            </button>
-
-            <button type="button" onClick={limpiarBusquedaVisualIa} disabled={cargandoBusquedaIa}>
-              Limpiar
-            </button>
-          </div>
+        <div className="cliente-ia-upload">
+          <div className="cliente-ia-icono">IA</div>
+          <strong>Subir imagen</strong>
+          <p>Este espacio queda reservado para el módulo de inteligencia artificial.</p>
+          <button type="button" disabled>
+            Próximamente
+          </button>
         </div>
       </section>
 
-      {mensajeBusquedaIa && (
-        <div className={`cliente-ia-mensaje ${tipoMensajeBusquedaIa || "ok"}`}>
-          {mensajeBusquedaIa}
-        </div>
-      )}
+      <div className="cliente-ia-cards">
+        <article>
+          <span>1</span>
+          <h3>Subes una referencia</h3>
+          <p>Una foto de una prenda, color, textura o estilo que te guste.</p>
+        </article>
 
-      {cargandoBusquedaIa && (
-        <div className="cliente-vacio cliente-ia-loading">
-          <h3>La IA está analizando tu imagen...</h3>
-          <p>Estamos comparando tu foto con las prendas registradas en Zyra.</p>
-        </div>
-      )}
+        <article>
+          <span>2</span>
+          <h3>Zyra analiza la imagen</h3>
+          <p>El sistema compara visualmente con productos registrados.</p>
+        </article>
 
-      {!cargandoBusquedaIa && resultadosBusquedaIa.length > 0 && (
-        <section className="cliente-home-section cliente-ia-resultados">
-          <div className="cliente-section-title">
-            <div>
-              <span>Resultados inteligentes</span>
-              <h3>Prendas similares encontradas</h3>
-              <p>Ordenadas por coincidencia visual según la imagen que subiste.</p>
-            </div>
-          </div>
-
-          <div className="cliente-productos-grid cliente-ia-resultados-grid">
-            {resultadosBusquedaIa.map((producto) => (
-              <div className="cliente-ia-resultado-card" key={`ia-${producto.id_producto}`}>
-                <div
-                  className={`cliente-ia-score ${
-                    Number(producto.score_similitud || 0) >= 85
-                      ? "alta"
-                      : Number(producto.score_similitud || 0) >= 70
-                      ? "media"
-                      : "baja"
-                  }`}
-                >
-                  <strong>{Number(producto.score_similitud || 0).toFixed(1)}%</strong>
-                  <span>{producto.nivel_similitud || "Similitud visual"}</span>
-                </div>
-
-                {renderProductoCard(producto)}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {!cargandoBusquedaIa && resultadosBusquedaIa.length === 0 && (
-        <div className="cliente-ia-cards">
-          <article>
-            <span>1</span>
-            <h3>Subes una referencia</h3>
-            <p>Una foto de una prenda, color, textura o estilo que te guste.</p>
-          </article>
-
-          <article>
-            <span>2</span>
-            <h3>Zyra analiza la imagen</h3>
-            <p>El sistema compara visualmente con productos registrados.</p>
-          </article>
-
-          <article>
-            <span>3</span>
-            <h3>Encuentras opciones reales</h3>
-            <p>Verás prendas similares disponibles en tiendas locales.</p>
-          </article>
-        </div>
-      )}
+        <article>
+          <span>3</span>
+          <h3>Encuentras opciones reales</h3>
+          <p>Verás prendas similares disponibles en tiendas locales.</p>
+        </article>
+      </div>
 
       <section className="cliente-home-section">
         <div className="cliente-section-title">
           <div>
             <span>Tiendas disponibles</span>
-            <h3>También puedes explorar marcas dentro de Zyra</h3>
+            <h3>Explora marcas mientras llega la IA</h3>
           </div>
         </div>
 

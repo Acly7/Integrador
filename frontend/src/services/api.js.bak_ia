@@ -609,24 +609,6 @@ export const responderTicketSoporteApi = async (idTicket, idUsuario, mensaje) =>
 };
 
 
-
-/* INTELIGENCIA ARTIFICIAL - BÚSQUEDA VISUAL */
-
-export const buscarProductosPorImagenApi = async (idUsuario, archivo, limite = 12) => {
-  const formData = new FormData();
-  formData.append("archivo", archivo);
-
-  const respuesta = await fetch(
-    `${API_URL}/cliente/buscar-por-imagen?id_usuario=${idUsuario}&limite=${limite}`,
-    {
-      method: "POST",
-      body: formData
-    }
-  );
-
-  return procesarRespuesta(respuesta, "No se pudo realizar la búsqueda visual.");
-};
-
 /* NOTIFICACIONES DE USUARIO */
 
 export const obtenerNotificacionesUsuarioApi = async (idUsuario) => {
