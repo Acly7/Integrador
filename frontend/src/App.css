@@ -13852,3 +13852,78 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   IA VISUAL: AJUSTE DE CUADRO Y NOMBRE DE ARCHIVO LARGO
+   Pegar al final de frontend/src/App.css
+   ========================================================= */
+
+.cliente-ia-hero-activa {
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.cliente-ia-upload.ia-activa {
+  width: 100%;
+  max-width: 280px;
+  min-width: 0;
+  align-self: stretch;
+  overflow: hidden;
+}
+
+.cliente-ia-drop {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 235px;
+  max-height: 330px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.cliente-ia-drop strong {
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.12;
+  font-size: 14px;
+}
+
+.cliente-ia-drop p {
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cliente-ia-preview {
+  width: 120px;
+  height: 120px;
+  flex: 0 0 auto;
+}
+
+.cliente-ia-preview img {
+  object-fit: contain;
+  background: #fff;
+}
+
+.cliente-ia-actions {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 950px) {
+  .cliente-ia-hero-activa {
+    grid-template-columns: 1fr;
+  }
+
+  .cliente-ia-upload.ia-activa {
+    max-width: 100%;
+  }
+}
