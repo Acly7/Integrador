@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text, or_
 import os
 import shutil
+import re
 from uuid import uuid4
 from pathlib import Path
 
@@ -18,6 +19,71 @@ UPLOADS_PRODUCTOS_DIR = BASE_DIR / "uploads" / "productos"
 UPLOADS_PRODUCTOS_DIR.mkdir(parents=True, exist_ok=True)
 
 print("CARPETA DONDE SE GUARDAN IMÁGENES:", UPLOADS_PRODUCTOS_DIR)
+
+
+GENEROS_PERMITIDOS = {"UNISEX", "MUJER", "HOMBRE", "NIÑA", "NIÑO"}
+VALORES_TEMPORALES_INVALIDOS = {"", "__OTRO__", "OTRO", "OTRA", "SELECCIONAR"}
+
+def limpiar_campo_producto(valor):
+    return str(valor or "").strip()
+
+def validar_texto_obligatorio(valor, campo, maximo=150):
+    texto = limpiar_campo_producto(valor)
+    if not texto or texto.upper() in VALORES_TEMPORALES_INVALIDOS:
+        raise HTTPException(status_code=400, detail=f"{campo} es obligatorio")
+    if len(texto) > maximo:
+        raise HTTPException(status_code=400, detail=f"{campo} no puede superar {maximo} caracteres")
+    return texto
+
+def validar_texto_opcional(valor, maximo=500):
+    texto = limpiar_campo_producto(valor)
+    if not texto:
+        return None
+    if len(texto) > maximo:
+        raise HTTPException(status_code=400, detail=f"El texto no puede superar {maximo} caracteres")
+    return texto
+
+def validar_genero_producto(valor):
+    texto = limpiar_campo_producto(valor or "Unisex")
+    if not texto:
+        return "Unisex"
+    normalizado = texto.upper()
+    if normalizado not in GENEROS_PERMITIDOS:
+        raise HTTPException(status_code=400, detail="Género no válido. Usa Mujer, Hombre, Unisex, Niño o Niña")
+    mapa = {
+        "UNISEX": "Unisex",
+        "MUJER": "Mujer",
+        "HOMBRE": "Hombre",
+        "NIÑA": "Niña",
+        "NIÑO": "Niño"
+    }
+    return mapa[normalizado]
+
+def validar_precio_producto(valor):
+    try:
+        numero = float(valor)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="El precio debe ser un número válido")
+    if numero <= 0:
+        raise HTTPException(status_code=400, detail="El precio debe ser mayor a 0")
+    return numero
+
+def validar_stock_producto(valor):
+    try:
+        numero = int(valor)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="El stock debe ser un número entero válido")
+    if numero < 0:
+        raise HTTPException(status_code=400, detail="El stock no puede ser negativo")
+    return numero
+
+def validar_color_producto(valor):
+    texto = validar_texto_obligatorio(valor, "El color", 50)
+    return texto
+
+def validar_talla_producto(valor):
+    texto = validar_texto_obligatorio(valor, "La talla", 20)
+    return texto.upper() if len(texto) <= 4 else texto
 
 def verificar_empresa_aprobada(db: Session, id_empresa: int):
     empresa = db.query(Empresa).filter(
@@ -66,33 +132,56 @@ def registrar_producto_empresa(datos: ProductoCrear, db: Session = Depends(get_d
             detail="Categoría no encontrada"
         )
 
-    if datos.precio < 0:
-        raise HTTPException(
-            status_code=400,
-            detail="El precio no puede ser negativo"
-        )
+    nombre_limpio = validar_texto_obligatorio(datos.nombre_producto, "El nombre del producto", 150)
+    descripcion_limpia = validar_texto_opcional(datos.descripcion, 500)
+    marca_limpia = validar_texto_opcional(datos.marca, 100)
+    genero_limpio = validar_genero_producto(datos.genero)
+    precio_limpio = validar_precio_producto(datos.precio)
+
+    if not datos.variantes:
+        raise HTTPException(status_code=400, detail="Debes registrar al menos una variante con color, talla y stock")
+
+    variantes_limpias = []
+    combinaciones = set()
+
+    for variante in datos.variantes:
+        color_limpio = validar_color_producto(variante.color)
+        talla_limpia = validar_talla_producto(variante.talla)
+        stock_limpio = validar_stock_producto(variante.stock)
+        clave = (color_limpio.lower(), talla_limpia.lower())
+
+        if clave in combinaciones:
+            raise HTTPException(status_code=400, detail="No repitas la misma combinación de color y talla")
+
+        combinaciones.add(clave)
+        variantes_limpias.append({
+            "color": color_limpio,
+            "talla": talla_limpia,
+            "stock": stock_limpio,
+            "disponible": bool(variante.disponible) and stock_limpio > 0
+        })
 
     nuevo_producto = Producto(
         id_empresa=datos.id_empresa,
         id_categoria=datos.id_categoria,
-        nombre_producto=datos.nombre_producto,
-        descripcion=datos.descripcion,
-        marca=datos.marca,
-        genero=datos.genero,
-        precio=datos.precio,
+        nombre_producto=nombre_limpio,
+        descripcion=descripcion_limpia,
+        marca=marca_limpia,
+        genero=genero_limpio,
+        precio=precio_limpio,
         estado_producto="ACTIVO"
     )
 
     db.add(nuevo_producto)
     db.flush()
 
-    for variante in datos.variantes:
+    for variante in variantes_limpias:
         nueva_variante = ProductoVariante(
             id_producto=nuevo_producto.id_producto,
-            color=variante.color,
-            talla=variante.talla,
-            stock=variante.stock,
-            disponible=variante.disponible
+            color=variante["color"],
+            talla=variante["talla"],
+            stock=variante["stock"],
+            disponible=variante["disponible"]
         )
         db.add(nueva_variante)
 
@@ -114,7 +203,7 @@ def registrar_producto_empresa(datos: ProductoCrear, db: Session = Depends(get_d
         "nombre_producto": nuevo_producto.nombre_producto,
         "precio": float(nuevo_producto.precio),
         "estado_producto": nuevo_producto.estado_producto,
-        "total_variantes": len(datos.variantes)
+        "total_variantes": len(variantes_limpias)
     }
 
 
@@ -226,24 +315,19 @@ def actualizar_producto_empresa(
         producto.id_categoria = datos.id_categoria
 
     if datos.nombre_producto is not None:
-        producto.nombre_producto = datos.nombre_producto
+        producto.nombre_producto = validar_texto_obligatorio(datos.nombre_producto, "El nombre del producto", 150)
 
     if datos.descripcion is not None:
-        producto.descripcion = datos.descripcion
+        producto.descripcion = validar_texto_opcional(datos.descripcion, 500)
 
     if datos.marca is not None:
-        producto.marca = datos.marca
+        producto.marca = validar_texto_opcional(datos.marca, 100)
 
     if datos.genero is not None:
-        producto.genero = datos.genero
+        producto.genero = validar_genero_producto(datos.genero)
 
     if datos.precio is not None:
-        if datos.precio < 0:
-            raise HTTPException(
-                status_code=400,
-                detail="El precio no puede ser negativo"
-            )
-        producto.precio = datos.precio
+        producto.precio = validar_precio_producto(datos.precio)
 
     if datos.imagen_principal is not None:
         imagen = db.query(ProductoImagen).filter(
@@ -404,18 +488,25 @@ def agregar_variante_producto(
             detail="No puedes agregar variantes a un producto que pertenece a otra empresa"
         )
 
-    if datos.stock < 0:
-        raise HTTPException(
-            status_code=400,
-            detail="El stock no puede ser negativo"
-        )
+    color_limpio = validar_color_producto(datos.color)
+    talla_limpia = validar_talla_producto(datos.talla)
+    stock_limpio = validar_stock_producto(datos.stock)
+
+    variante_existente = db.query(ProductoVariante).filter(
+        ProductoVariante.id_producto == id_producto,
+        ProductoVariante.color.ilike(color_limpio),
+        ProductoVariante.talla.ilike(talla_limpia)
+    ).first()
+
+    if variante_existente:
+        raise HTTPException(status_code=400, detail="Ya existe una variante con ese color y talla")
 
     nueva_variante = ProductoVariante(
         id_producto=id_producto,
-        color=datos.color,
-        talla=datos.talla,
-        stock=datos.stock,
-        disponible=datos.disponible
+        color=color_limpio,
+        talla=talla_limpia,
+        stock=stock_limpio,
+        disponible=bool(datos.disponible) and stock_limpio > 0
     )
 
     db.add(nueva_variante)
@@ -460,21 +551,16 @@ def actualizar_variante_producto(
         )
 
     if datos.color is not None:
-        variante.color = datos.color
+        variante.color = validar_color_producto(datos.color)
 
     if datos.talla is not None:
-        variante.talla = datos.talla
+        variante.talla = validar_talla_producto(datos.talla)
 
     if datos.stock is not None:
-        if datos.stock < 0:
-            raise HTTPException(
-                status_code=400,
-                detail="El stock no puede ser negativo"
-            )
-        variante.stock = datos.stock
+        variante.stock = validar_stock_producto(datos.stock)
 
     if datos.disponible is not None:
-        variante.disponible = datos.disponible
+        variante.disponible = bool(datos.disponible) and variante.stock > 0
 
     db.commit()
     db.refresh(variante)
@@ -604,26 +690,9 @@ def agregar_variante_producto_empresa(
             detail="No puedes agregar variantes a un producto de otra empresa"
         )
 
-    color_limpio = datos.color.strip()
-    talla_limpia = datos.talla.strip()
-
-    if not color_limpio:
-        raise HTTPException(
-            status_code=400,
-            detail="El color es obligatorio"
-        )
-
-    if not talla_limpia:
-        raise HTTPException(
-            status_code=400,
-            detail="La talla es obligatoria"
-        )
-
-    if datos.stock < 0:
-        raise HTTPException(
-            status_code=400,
-            detail="El stock no puede ser negativo"
-        )
+    color_limpio = validar_color_producto(datos.color)
+    talla_limpia = validar_talla_producto(datos.talla)
+    stock_limpio = validar_stock_producto(datos.stock)
 
     variante_existente = db.query(ProductoVariante).filter(
         ProductoVariante.id_producto == id_producto,
@@ -641,8 +710,8 @@ def agregar_variante_producto_empresa(
         id_producto=id_producto,
         color=color_limpio,
         talla=talla_limpia,
-        stock=datos.stock,
-        disponible=datos.disponible and datos.stock > 0
+        stock=stock_limpio,
+        disponible=datos.disponible and stock_limpio > 0
     )
 
     db.add(nueva_variante)
@@ -689,31 +758,27 @@ def editar_variante_producto_empresa(
             detail="No puedes editar una variante de otra empresa"
         )
 
-    color_limpio = datos.color.strip()
-    talla_limpia = datos.talla.strip()
+    color_limpio = validar_color_producto(datos.color)
+    talla_limpia = validar_talla_producto(datos.talla)
+    stock_limpio = validar_stock_producto(datos.stock)
 
-    if not color_limpio:
+    variante_existente = db.query(ProductoVariante).filter(
+        ProductoVariante.id_producto == producto.id_producto,
+        ProductoVariante.id_variante != id_variante,
+        ProductoVariante.color.ilike(color_limpio),
+        ProductoVariante.talla.ilike(talla_limpia)
+    ).first()
+
+    if variante_existente:
         raise HTTPException(
             status_code=400,
-            detail="El color es obligatorio"
-        )
-
-    if not talla_limpia:
-        raise HTTPException(
-            status_code=400,
-            detail="La talla es obligatoria"
-        )
-
-    if datos.stock < 0:
-        raise HTTPException(
-            status_code=400,
-            detail="El stock no puede ser negativo"
+            detail="Ya existe otra variante con ese color y talla"
         )
 
     variante.color = color_limpio
     variante.talla = talla_limpia
-    variante.stock = datos.stock
-    variante.disponible = datos.disponible and datos.stock > 0
+    variante.stock = stock_limpio
+    variante.disponible = datos.disponible and stock_limpio > 0
 
     db.commit()
     db.refresh(variante)

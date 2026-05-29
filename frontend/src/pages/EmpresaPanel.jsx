@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ProductoCard from "../components/productos/ProductoCard";
 import ProductoDetalle from "../components/productos/ProductoDetalle";
 import ProductoForm from "../components/productos/ProductoForm";
 import { EyeIcon } from "../components/auth/Icons";
 import {
   obtenerColorHex,
-  borrarProductoDefinitivoApi,
   cambiarEstadoProductoApi,
   crearCategoria,
   crearProductoEmpresa,
@@ -76,6 +75,68 @@ const estadoInicialEditarProducto = {
   precio: ""
 };
 
+
+const COLORES_PREDETERMINADOS_EMPRESA = [
+  "Negro", "Blanco", "Rojo", "Azul", "Verde", "Amarillo", "Rosado", "Morado",
+  "Café", "Beige", "Gris", "Celeste", "Vino", "Marrón", "Naranja"
+];
+
+const TALLAS_ADULTO_EMPRESA = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+const TALLAS_NINOS_EMPRESA = ["2", "4", "6", "8", "10", "12", "14", "16"];
+const VALOR_OTRO_EMPRESA = "__OTRO__";
+
+const obtenerTallasEmpresa = (genero = "") => {
+  const texto = String(genero || "").toLowerCase();
+  if (texto.includes("niñ")) return TALLAS_NINOS_EMPRESA;
+  return TALLAS_ADULTO_EMPRESA;
+};
+
+const obtenerValorSelectEmpresa = (valor, opciones) => {
+  const texto = String(valor || "").trim();
+  if (!texto) return "";
+  if (texto === VALOR_OTRO_EMPRESA) return VALOR_OTRO_EMPRESA;
+  const encontrada = opciones.find((opcion) => opcion.toLowerCase() === texto.toLowerCase());
+  return encontrada || VALOR_OTRO_EMPRESA;
+};
+
+const mostrarInputOtroEmpresa = (valor, opciones) => {
+  const texto = String(valor || "").trim();
+  if (!texto) return false;
+  if (texto === VALOR_OTRO_EMPRESA) return true;
+  return !opciones.some((opcion) => opcion.toLowerCase() === texto.toLowerCase());
+};
+
+const limpiarValorSeleccionableEmpresa = (valor) => {
+  const texto = String(valor || "").trim();
+  return texto === VALOR_OTRO_EMPRESA ? "" : texto;
+};
+
+const TEMAS_TIENDA = [
+  { id: "elegante", nombre: "Elegante", descripcion: "Encabezados sobrios y detalles finos." },
+  { id: "minimalista", nombre: "Minimalista", descripcion: "Diseño limpio, claro y con pocos adornos." },
+  { id: "boutique", nombre: "Boutique", descripcion: "Estilo delicado para marcas de moda exclusiva." },
+  { id: "urbano", nombre: "Urbano", descripcion: "Contrastes fuertes y apariencia moderna." },
+  { id: "juvenil", nombre: "Juvenil", descripcion: "Visual alegre, dinámico y cercano." }
+];
+
+const COLOR_TIENDA_DEFAULT = {
+  color_principal: "#8f174d",
+  color_secundario: "#e879b4",
+  color_acento: "#c02672",
+  color_fondo: "#fff1f7",
+  tema_tienda: "elegante"
+};
+
+const obtenerEstiloTienda = (empresa = {}) => ({
+  "--tienda-principal": empresa.color_principal || COLOR_TIENDA_DEFAULT.color_principal,
+  "--tienda-secundario": empresa.color_secundario || COLOR_TIENDA_DEFAULT.color_secundario,
+  "--tienda-acento": empresa.color_acento || COLOR_TIENDA_DEFAULT.color_acento,
+  "--tienda-fondo": empresa.color_fondo || COLOR_TIENDA_DEFAULT.color_fondo
+});
+
+const obtenerTemaNombre = (tema) =>
+  TEMAS_TIENDA.find((item) => item.id === tema)?.nombre || "Elegante";
+
 export default function EmpresaPanel({ usuario, onVolver, onCerrarSesion }) {
   const [seccionEmpresa, setSeccionEmpresa] = useState("vista");
   const [menuEmpresaContraido, setMenuEmpresaContraido] = useState(false);
@@ -87,6 +148,29 @@ export default function EmpresaPanel({ usuario, onVolver, onCerrarSesion }) {
   const [categorias, setCategorias] = useState([]);
   const [cargandoEmpresa, setCargandoEmpresa] = useState(false);
   const [errorEmpresa, setErrorEmpresa] = useState("");
+  const [modalConfirmacion, setModalConfirmacion] = useState(null);
+  const resolverConfirmacionRef = useRef(null);
+  const [toastEmpresa, setToastEmpresa] = useState(null);
+
+  const mostrarAvisoEmpresa = (texto, tipo = "ok") => {
+    setToastEmpresa({ texto, tipo });
+    window.setTimeout(() => setToastEmpresa(null), 3200);
+  };
+
+  const pedirConfirmacion = (opciones) => {
+    return new Promise((resolve) => {
+      resolverConfirmacionRef.current = resolve;
+      setModalConfirmacion(opciones);
+    });
+  };
+
+  const cerrarConfirmacion = (respuesta) => {
+    if (resolverConfirmacionRef.current) {
+      resolverConfirmacionRef.current(respuesta);
+    }
+    resolverConfirmacionRef.current = null;
+    setModalConfirmacion(null);
+  };
 
   const [editandoCuenta, setEditandoCuenta] = useState(false);
 const [mensajeCuenta, setMensajeCuenta] = useState("");
@@ -105,7 +189,13 @@ const [cuentaForm, setCuentaForm] = useState({
   ciudad: usuario.ciudad || "La Paz",
   whatsapp: usuario.whatsapp || "",
   instagram: usuario.instagram || "",
-  facebook: usuario.facebook || ""
+  facebook: usuario.facebook || "",
+  color_principal: usuario.color_principal || COLOR_TIENDA_DEFAULT.color_principal,
+  color_secundario: usuario.color_secundario || COLOR_TIENDA_DEFAULT.color_secundario,
+  color_acento: usuario.color_acento || COLOR_TIENDA_DEFAULT.color_acento,
+  color_fondo: usuario.color_fondo || COLOR_TIENDA_DEFAULT.color_fondo,
+  tema_tienda: usuario.tema_tienda || COLOR_TIENDA_DEFAULT.tema_tienda,
+  google_maps_url: usuario.google_maps_url || ""
 });
 
 const [mostrarCambioPassword, setMostrarCambioPassword] = useState(false);
@@ -218,19 +308,26 @@ const [mostrarConfirmarPassword, setMostrarConfirmarPassword] = useState(false);
   };
 
   const sincronizarCuentaConUsuario = () => {
+  const datosCuenta = cuentaEmpresaActual || usuario;
   setCuentaForm({
-    nombre: usuario.nombre || "",
-    apellido: usuario.apellido || "",
-    email: usuario.email || "",
-    telefono: usuario.telefono || "",
-    nombre_empresa: usuario.nombre_empresa || "",
-    descripcion: usuario.descripcion || "",
-    nit: usuario.nit || "",
-    direccion: usuario.direccion || "",
-    ciudad: usuario.ciudad || "La Paz",
-    whatsapp: usuario.whatsapp || "",
-    instagram: usuario.instagram || "",
-    facebook: usuario.facebook || ""
+    nombre: datosCuenta.nombre || "",
+    apellido: datosCuenta.apellido || "",
+    email: datosCuenta.email || "",
+    telefono: datosCuenta.telefono || "",
+    nombre_empresa: datosCuenta.nombre_empresa || "",
+    descripcion: datosCuenta.descripcion || "",
+    nit: datosCuenta.nit || "",
+    direccion: datosCuenta.direccion || "",
+    ciudad: datosCuenta.ciudad || "La Paz",
+    whatsapp: datosCuenta.whatsapp || "",
+    instagram: datosCuenta.instagram || "",
+    facebook: datosCuenta.facebook || "",
+    color_principal: datosCuenta.color_principal || COLOR_TIENDA_DEFAULT.color_principal,
+    color_secundario: datosCuenta.color_secundario || COLOR_TIENDA_DEFAULT.color_secundario,
+    color_acento: datosCuenta.color_acento || COLOR_TIENDA_DEFAULT.color_acento,
+    color_fondo: datosCuenta.color_fondo || COLOR_TIENDA_DEFAULT.color_fondo,
+    tema_tienda: datosCuenta.tema_tienda || COLOR_TIENDA_DEFAULT.tema_tienda,
+    google_maps_url: datosCuenta.google_maps_url || ""
   });
 
   setLogoCuenta(null);
@@ -238,10 +335,23 @@ const [mostrarConfirmarPassword, setMostrarConfirmarPassword] = useState(false);
   setTipoMensajeCuenta("");
 };
 
+const esEmailValidoEmpresa = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || ""));
+const esCorreoPermitidoEmpresa = (email) => ["gmail.com", "hotmail.com", "outlook.com", "live.com", "yahoo.com", "icloud.com"].includes(String(email || "").trim().toLowerCase().split("@").pop());
+const telefonoValidoOpcional = (telefono) => !telefono || /^\d{7,8}$/.test(telefono);
+const whatsappValidoObligatorio = (whatsapp) => /^\d{8}$/.test(whatsapp || "");
+
 const cambiarCuentaForm = (e) => {
   const { name, value } = e.target;
 
-  if (["telefono", "whatsapp"].includes(name)) {
+  if (name === "telefono") {
+    setCuentaForm({
+      ...cuentaForm,
+      [name]: value.replace(/\D/g, "").slice(0, 8)
+    });
+    return;
+  }
+
+  if (name === "whatsapp") {
     setCuentaForm({
       ...cuentaForm,
       [name]: value.replace(/\D/g, "").slice(0, 8)
@@ -279,14 +389,20 @@ const guardarCuentaEmpresa = async (e) => {
     return;
   }
 
-  if (cuentaForm.telefono && cuentaForm.telefono.length !== 8) {
-    setMensajeCuenta("El teléfono debe tener 8 números.");
+  if (!esEmailValidoEmpresa(cuentaForm.email) || !esCorreoPermitidoEmpresa(cuentaForm.email)) {
+    setMensajeCuenta("Usa un correo válido de Gmail, Hotmail, Outlook, Live, Yahoo o iCloud.");
     setTipoMensajeCuenta("error");
     return;
   }
 
-  if (cuentaForm.whatsapp && cuentaForm.whatsapp.length !== 8) {
-    setMensajeCuenta("El WhatsApp debe tener 8 números.");
+  if (!telefonoValidoOpcional(cuentaForm.telefono)) {
+    setMensajeCuenta("El teléfono debe tener entre 7 y 8 números o puedes dejarlo vacío.");
+    setTipoMensajeCuenta("error");
+    return;
+  }
+
+  if (!whatsappValidoObligatorio(cuentaForm.whatsapp)) {
+    setMensajeCuenta("El WhatsApp es obligatorio y debe tener exactamente 8 números.");
     setTipoMensajeCuenta("error");
     return;
   }
@@ -305,7 +421,13 @@ const guardarCuentaEmpresa = async (e) => {
       ciudad: cuentaForm.ciudad.trim() || "La Paz",
       whatsapp: cuentaForm.whatsapp || null,
       instagram: cuentaForm.instagram.trim() || null,
-      facebook: cuentaForm.facebook.trim() || null
+      facebook: cuentaForm.facebook.trim() || null,
+      color_principal: cuentaForm.color_principal || COLOR_TIENDA_DEFAULT.color_principal,
+      color_secundario: cuentaForm.color_secundario || COLOR_TIENDA_DEFAULT.color_secundario,
+      color_acento: cuentaForm.color_acento || COLOR_TIENDA_DEFAULT.color_acento,
+      color_fondo: cuentaForm.color_fondo || COLOR_TIENDA_DEFAULT.color_fondo,
+      tema_tienda: cuentaForm.tema_tienda || COLOR_TIENDA_DEFAULT.tema_tienda,
+      google_maps_url: cuentaForm.google_maps_url.trim() || null
     });
 
     let usuarioActualizado = {
@@ -327,6 +449,7 @@ const guardarCuentaEmpresa = async (e) => {
     }
 
     localStorage.setItem("usuario_zyra", JSON.stringify(usuarioActualizado));
+    setCuentaEmpresaActual(usuarioActualizado);
 
     setMensajeCuenta("Datos de la cuenta actualizados correctamente.");
     setTipoMensajeCuenta("ok");
@@ -354,23 +477,29 @@ const guardarNuevaPassword = async () => {
   setTipoMensajeCuenta("");
 
   if (!passwordCuenta.password_actual) {
-    alert("Debes ingresar tu contraseña actual.");
+    setMensajeCuenta("Debes ingresar tu contraseña actual.");
+    setTipoMensajeCuenta("error");
     return;
   }
 
   if (!passwordCuenta.password_nueva || passwordCuenta.password_nueva.length < 6) {
-    alert("La nueva contraseña debe tener al menos 6 caracteres.");
+    setMensajeCuenta("La nueva contraseña debe tener al menos 6 caracteres.");
+    setTipoMensajeCuenta("error");
     return;
   }
 
   if (passwordCuenta.password_nueva !== passwordCuenta.confirmar_password) {
-    alert("Las contraseñas nuevas no coinciden.");
+    setMensajeCuenta("Las contraseñas nuevas no coinciden.");
+    setTipoMensajeCuenta("error");
     return;
   }
 
-  const confirmar = window.confirm(
-    "¿Seguro que quieres cambiar tu contraseña?"
-  );
+  const confirmar = await pedirConfirmacion({
+    titulo: "Cambiar contraseña",
+    mensaje: "¿Seguro que quieres cambiar tu contraseña?",
+    textoConfirmar: "Cambiar contraseña",
+    tipo: "seguro"
+  });
 
   if (!confirmar) return;
 
@@ -382,7 +511,7 @@ const guardarNuevaPassword = async () => {
       confirmar_password: passwordCuenta.confirmar_password
     });
 
-    alert("Contraseña actualizada correctamente. Vuelve a iniciar sesión con tu nueva contraseña.");
+    mostrarAvisoEmpresa("Contraseña actualizada correctamente. Vuelve a iniciar sesión con tu nueva contraseña.", "ok");
 
     setPasswordCuenta({
       password_actual: "",
@@ -394,7 +523,7 @@ const guardarNuevaPassword = async () => {
     setMostrarNuevaPassword(false);
     setMostrarConfirmarPassword(false);
   } catch (error) {
-    alert(error.message || "No se pudo cambiar la contraseña.");
+    mostrarAvisoEmpresa(error.message || "No se pudo cambiar la contraseña.", "error");
   }
 };
 
@@ -501,13 +630,16 @@ const actualizarQrPagoEmpresa = async (e) => {
 
 const aprobarPagoPedido = async (pedido) => {
   if (!pedido.pago?.id_pago) {
-    alert("Este pedido no tiene pago registrado.");
+    mostrarAvisoEmpresa("Este pedido no tiene pago registrado.", "error");
     return;
   }
 
-  const confirmar = window.confirm(
-    `¿Aprobar el pago del pedido #${pedido.id_pedido}?\n\nAl aprobarlo, el pedido quedará como pagado.`
-  );
+  const confirmar = await pedirConfirmacion({
+    titulo: `Aprobar pago #${pedido.id_pedido}`,
+    mensaje: "Al aprobarlo, el pedido quedará como pagado y el cliente podrá revisar el estado en sus pedidos.",
+    textoConfirmar: "Aprobar pago",
+    tipo: "ok"
+  });
 
   if (!confirmar) return;
 
@@ -518,23 +650,26 @@ const aprobarPagoPedido = async (pedido) => {
       "PAGADO"
     );
 
-    alert("Pago aprobado correctamente.");
+    mostrarAvisoEmpresa("Pago aprobado correctamente.", "ok");
     await cargarPedidosEmpresa();
     await cargarPagosEmpresa();
   } catch (error) {
-    alert(error.message || "No se pudo aprobar el pago.");
+    mostrarAvisoEmpresa(error.message || "No se pudo aprobar el pago.", "error");
   }
 };
 
 const rechazarPagoPedido = async (pedido) => {
   if (!pedido.pago?.id_pago) {
-    alert("Este pedido no tiene pago registrado.");
+    mostrarAvisoEmpresa("Este pedido no tiene pago registrado.", "error");
     return;
   }
 
-  const confirmar = window.confirm(
-    `¿Rechazar el pago del pedido #${pedido.id_pedido}?\n\nEl pedido no podrá avanzar hasta que se registre un pago válido.`
-  );
+  const confirmar = await pedirConfirmacion({
+    titulo: `Rechazar pago #${pedido.id_pedido}`,
+    mensaje: "El pedido no podrá avanzar hasta que se registre y revise un comprobante válido.",
+    textoConfirmar: "Rechazar pago",
+    tipo: "peligro"
+  });
 
   if (!confirmar) return;
 
@@ -545,25 +680,28 @@ const rechazarPagoPedido = async (pedido) => {
       "RECHAZADO"
     );
 
-    alert("Pago rechazado correctamente.");
+    mostrarAvisoEmpresa("Pago rechazado correctamente.", "ok");
     await cargarPedidosEmpresa();
     await cargarPagosEmpresa();
   } catch (error) {
-    alert(error.message || "No se pudo rechazar el pago.");
+    mostrarAvisoEmpresa(error.message || "No se pudo rechazar el pago.", "error");
   }
 };
 
 const cambiarEstadoPedidoEmpresa = async (pedido, nuevoEstado) => {
   const textoEstado =
     nuevoEstado === "ENTREGADO"
-      ? "marcar como ENTREGADO"
+      ? "marcar como entregado"
       : nuevoEstado === "CANCELADO"
       ? "cancelar"
       : "actualizar";
 
-  const confirmar = window.confirm(
-    `¿Seguro que quieres ${textoEstado} el pedido #${pedido.id_pedido}?`
-  );
+  const confirmar = await pedirConfirmacion({
+    titulo: `Actualizar pedido #${pedido.id_pedido}`,
+    mensaje: `¿Seguro que quieres ${textoEstado} este pedido?`,
+    textoConfirmar: "Confirmar",
+    tipo: nuevoEstado === "CANCELADO" ? "peligro" : "ok"
+  });
 
   if (!confirmar) return;
 
@@ -574,10 +712,10 @@ const cambiarEstadoPedidoEmpresa = async (pedido, nuevoEstado) => {
       nuevoEstado
     );
 
-    alert("Estado del pedido actualizado correctamente.");
+    mostrarAvisoEmpresa("Estado del pedido actualizado correctamente.", "ok");
     await cargarPedidosEmpresa();
   } catch (error) {
-    alert(error.message || "No se pudo actualizar el pedido.");
+    mostrarAvisoEmpresa(error.message || "No se pudo actualizar el pedido.", "error");
   }
 };
 
@@ -658,8 +796,8 @@ useEffect(() => {
     if (!nuevoProducto.id_categoria) return "Debes seleccionar una categoría.";
     if (nuevoProducto.id_categoria === "otro" && !nuevaCategoria.trim()) return "Debes escribir el nombre de la nueva categoría.";
     if (!nuevoProducto.precio || Number(nuevoProducto.precio) <= 0) return "El precio debe ser mayor a 0.";
-    if (!nuevoProducto.color.trim()) return "Debes ingresar el color principal.";
-    if (!nuevoProducto.talla.trim()) return "Debes ingresar la talla.";
+    if (!limpiarValorSeleccionableEmpresa(nuevoProducto.color)) return "Debes seleccionar o escribir el color principal.";
+    if (!limpiarValorSeleccionableEmpresa(nuevoProducto.talla)) return "Debes seleccionar o escribir la talla.";
     if (nuevoProducto.stock === "" || Number(nuevoProducto.stock) < 0) return "Debes ingresar un stock válido.";
     return "";
   };
@@ -702,8 +840,8 @@ useEffect(() => {
         imagen_principal: null,
         variantes: [
           {
-            color: nuevoProducto.color.trim(),
-            talla: nuevoProducto.talla.trim(),
+            color: limpiarValorSeleccionableEmpresa(nuevoProducto.color),
+            talla: limpiarValorSeleccionableEmpresa(nuevoProducto.talla),
             stock: Number(nuevoProducto.stock),
             disponible: Number(nuevoProducto.stock) > 0
           }
@@ -863,14 +1001,14 @@ const guardarVarianteExistente = async (variante) => {
   setMensajeVariante("");
   setTipoMensajeVariante("");
 
-  if (!String(variante.color || "").trim()) {
-    setMensajeVariante("El color de la variante es obligatorio.");
+  if (!limpiarValorSeleccionableEmpresa(variante.color)) {
+    setMensajeVariante("Debes seleccionar o escribir el color de la variante.");
     setTipoMensajeVariante("error");
     return;
   }
 
-  if (!String(variante.talla || "").trim()) {
-    setMensajeVariante("La talla de la variante es obligatoria.");
+  if (!limpiarValorSeleccionableEmpresa(variante.talla)) {
+    setMensajeVariante("Debes seleccionar o escribir la talla de la variante.");
     setTipoMensajeVariante("error");
     return;
   }
@@ -884,8 +1022,8 @@ const guardarVarianteExistente = async (variante) => {
   try {
     await editarVarianteProductoApi(variante.id_variante, {
       id_empresa: usuario.id_empresa,
-      color: String(variante.color || "").trim(),
-      talla: String(variante.talla || "").trim(),
+      color: limpiarValorSeleccionableEmpresa(variante.color),
+      talla: limpiarValorSeleccionableEmpresa(variante.talla),
       stock: Number(variante.stock),
       disponible: variante.disponible
     });
@@ -904,14 +1042,14 @@ const agregarNuevaVariante = async () => {
   setMensajeVariante("");
   setTipoMensajeVariante("");
 
-  if (!nuevaVariante.color.trim()) {
-    setMensajeVariante("Debes ingresar el color de la nueva variante.");
+  if (!limpiarValorSeleccionableEmpresa(nuevaVariante.color)) {
+    setMensajeVariante("Debes seleccionar o escribir el color de la nueva variante.");
     setTipoMensajeVariante("error");
     return;
   }
 
-  if (!nuevaVariante.talla.trim()) {
-    setMensajeVariante("Debes ingresar la talla de la nueva variante.");
+  if (!limpiarValorSeleccionableEmpresa(nuevaVariante.talla)) {
+    setMensajeVariante("Debes seleccionar o escribir la talla de la nueva variante.");
     setTipoMensajeVariante("error");
     return;
   }
@@ -925,8 +1063,8 @@ const agregarNuevaVariante = async () => {
   try {
     await agregarVarianteProductoApi(productoEditando.id_producto, {
       id_empresa: usuario.id_empresa,
-      color: nuevaVariante.color.trim(),
-      talla: nuevaVariante.talla.trim(),
+      color: limpiarValorSeleccionableEmpresa(nuevaVariante.color),
+      talla: limpiarValorSeleccionableEmpresa(nuevaVariante.talla),
       stock: Number(nuevaVariante.stock),
       disponible: Number(nuevaVariante.stock) > 0
     });
@@ -998,11 +1136,14 @@ const cambiarEstadoVariante = async (variante) => {
   const cambiarEstadoProducto = async (producto) => {
     const nuevoEstado = producto.estado_producto === "ACTIVO" ? "INACTIVO" : "ACTIVO";
 
-    const confirmar = window.confirm(
-      nuevoEstado === "INACTIVO"
-        ? `¿Quieres desactivar "${producto.nombre_producto}"?\n\nEl producto ya no se mostrará en la tienda, pero seguirá guardado.`
-        : `¿Quieres activar "${producto.nombre_producto}"?\n\nEl producto volverá a mostrarse en la tienda.`
-    );
+    const confirmar = await pedirConfirmacion({
+      titulo: nuevoEstado === "INACTIVO" ? "Desactivar producto" : "Activar producto",
+      mensaje: nuevoEstado === "INACTIVO"
+        ? `El producto "${producto.nombre_producto}" ya no se mostrará al cliente, pero seguirá guardado.`
+        : `El producto "${producto.nombre_producto}" volverá a mostrarse si tiene stock disponible.`,
+      textoConfirmar: nuevoEstado === "INACTIVO" ? "Desactivar" : "Activar",
+      tipo: nuevoEstado === "INACTIVO" ? "advertencia" : "ok"
+    });
 
     if (!confirmar) return;
 
@@ -1013,37 +1154,16 @@ const cambiarEstadoVariante = async (variante) => {
         nuevoEstado
       );
 
-      alert(
+      mostrarAvisoEmpresa(
         nuevoEstado === "INACTIVO"
           ? "Producto desactivado correctamente."
-          : "Producto activado correctamente."
+          : "Producto activado correctamente.",
+        "ok"
       );
 
       await cargarProductosEmpresa();
     } catch (error) {
-      alert(error.message || "No se pudo cambiar el estado del producto.");
-    }
-  };
-
-  const borrarProductoDefinitivo = async (producto) => {
-    const confirmar = window.confirm(
-      `¿Estás seguro de borrar definitivamente "${producto.nombre_producto}"?\n\nEsta acción no se puede deshacer.`
-    );
-
-    if (!confirmar) return;
-
-    const confirmarFinal = window.confirm(
-      "Última confirmación: el producto será eliminado completamente de la plataforma."
-    );
-
-    if (!confirmarFinal) return;
-
-    try {
-      await borrarProductoDefinitivoApi(producto.id_producto, usuario.id_empresa);
-      alert("Producto borrado definitivamente.");
-      await cargarProductosEmpresa();
-    } catch (error) {
-      alert(error.message || "No se pudo borrar definitivamente el producto.");
+      mostrarAvisoEmpresa(error.message || "No se pudo cambiar el estado del producto.", "error");
     }
   };
 
@@ -1101,14 +1221,6 @@ const cambiarEstadoVariante = async (variante) => {
                       onClick={() => cambiarEstadoProducto(producto)}
                     >
                       {producto.estado_producto === "ACTIVO" ? "Desactivar" : "Activar"}
-                    </button>
-
-                    <button
-                      className="btn-borrar-producto"
-                      type="button"
-                      onClick={() => borrarProductoDefinitivo(producto)}
-                    >
-                      Borrar
                     </button>
                   </div>
                 </div>
@@ -1636,6 +1748,28 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
 
   return ( //return oficial
     <main className={`empresa-panel ${menuEmpresaContraido ? "menu-contraido" : ""}`}>
+      {toastEmpresa && (
+        <div className={`zyra-toast-profesional ${toastEmpresa.tipo}`}>
+          <strong>{toastEmpresa.tipo === "error" ? "Revisa esta acción" : "Acción realizada"}</strong>
+          <p>{toastEmpresa.texto}</p>
+        </div>
+      )}
+
+      {modalConfirmacion && (
+        <div className="zyra-confirmacion-fondo">
+          <section className={`zyra-confirmacion-card ${modalConfirmacion.tipo || ""}`}>
+            <span>Confirmación</span>
+            <h3>{modalConfirmacion.titulo}</h3>
+            <p>{modalConfirmacion.mensaje}</p>
+            <div className="zyra-confirmacion-acciones">
+              <button type="button" className="cancelar" onClick={() => cerrarConfirmacion(false)}>Cancelar</button>
+              <button type="button" className="confirmar" onClick={() => cerrarConfirmacion(true)}>
+                {modalConfirmacion.textoConfirmar || "Confirmar"}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
       <aside className="empresa-sidebar">
         <button
           type="button"
@@ -1646,18 +1780,27 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
         >
           <IconoPanel tipo="menu" />
         </button>
-        <div className="empresa-brand">
-          <div className="empresa-brand-icon">Z</div>
+        <div className="empresa-brand empresa-brand-personalizada" style={obtenerEstiloTienda(cuentaEmpresaActual || usuario)}>
+          <div className="empresa-brand-icon empresa-brand-logo">
+            {(cuentaEmpresaActual?.logo_url || usuario.logo_url) ? (
+              <img
+                src={obtenerUrlImagen(cuentaEmpresaActual?.logo_url || usuario.logo_url)}
+                alt={cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa || "Tienda"}
+              />
+            ) : (
+              <span>{(cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa || "Z").charAt(0).toUpperCase()}</span>
+            )}
+          </div>
           <div>
-            <h2>Zyra</h2>
+            <h2>{cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa || "Mi tienda"}</h2>
             <p>Panel empresarial</p>
           </div>
         </div>
 
         <div className="empresa-mini-card">
           <span>Tienda activa</span>
-          <strong>{usuario.nombre_empresa}</strong>
-          <p>{usuario.estado_empresa}</p>
+          <strong>{cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa}</strong>
+          <p>{cuentaEmpresaActual?.estado_empresa || usuario.estado_empresa}</p>
         </div>
 
         <nav className="empresa-nav">
@@ -2244,34 +2387,72 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
             ></i>
           </div>
 
-          <div className="campo-panel">
+          <div className="campo-panel campo-opciones">
             <label>Color</label>
-            <input
-              value={variante.color || ""}
+            <select
+              value={obtenerValorSelectEmpresa(variante.color, COLORES_PREDETERMINADOS_EMPRESA)}
               onChange={(e) =>
                 cambiarVarianteEditando(
                   variante.id_variante,
                   "color",
-                  e.target.value
+                  e.target.value === VALOR_OTRO_EMPRESA ? VALOR_OTRO_EMPRESA : e.target.value
                 )
               }
-              placeholder="Ej: Negro"
-            />
+            >
+              <option value="">Seleccionar color</option>
+              {COLORES_PREDETERMINADOS_EMPRESA.map((color) => (
+                <option key={color} value={color}>{color}</option>
+              ))}
+              <option value={VALOR_OTRO_EMPRESA}>Otro / escribir manualmente</option>
+            </select>
+            {mostrarInputOtroEmpresa(variante.color, COLORES_PREDETERMINADOS_EMPRESA) && (
+              <input
+                className="campo-otro-input"
+                value={variante.color === VALOR_OTRO_EMPRESA ? "" : variante.color || ""}
+                onChange={(e) =>
+                  cambiarVarianteEditando(
+                    variante.id_variante,
+                    "color",
+                    e.target.value
+                  )
+                }
+                placeholder="Escribe el color personalizado"
+              />
+            )}
           </div>
 
-          <div className="campo-panel">
+          <div className="campo-panel campo-opciones">
             <label>Talla</label>
-            <input
-              value={variante.talla || ""}
+            <select
+              value={obtenerValorSelectEmpresa(variante.talla, obtenerTallasEmpresa(productoEditar.genero))}
               onChange={(e) =>
                 cambiarVarianteEditando(
                   variante.id_variante,
                   "talla",
-                  e.target.value
+                  e.target.value === VALOR_OTRO_EMPRESA ? VALOR_OTRO_EMPRESA : e.target.value
                 )
               }
-              placeholder="Ej: M"
-            />
+            >
+              <option value="">Seleccionar talla</option>
+              {obtenerTallasEmpresa(productoEditar.genero).map((talla) => (
+                <option key={talla} value={talla}>{talla}</option>
+              ))}
+              <option value={VALOR_OTRO_EMPRESA}>Otra / escribir manualmente</option>
+            </select>
+            {mostrarInputOtroEmpresa(variante.talla, obtenerTallasEmpresa(productoEditar.genero)) && (
+              <input
+                className="campo-otro-input"
+                value={variante.talla === VALOR_OTRO_EMPRESA ? "" : variante.talla || ""}
+                onChange={(e) =>
+                  cambiarVarianteEditando(
+                    variante.id_variante,
+                    "talla",
+                    e.target.value
+                  )
+                }
+                placeholder="Escribe la talla personalizada"
+              />
+            )}
           </div>
 
           <div className="campo-panel">
@@ -2319,32 +2500,68 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
       <h3>Agregar nueva variante</h3>
 
       <div className="form-grid">
-        <div className="campo-panel">
+        <div className="campo-panel campo-opciones">
           <label>Color</label>
-          <input
-            value={nuevaVariante.color}
+          <select
+            value={obtenerValorSelectEmpresa(nuevaVariante.color, COLORES_PREDETERMINADOS_EMPRESA)}
             onChange={(e) =>
               setNuevaVariante({
                 ...nuevaVariante,
-                color: e.target.value
+                color: e.target.value === VALOR_OTRO_EMPRESA ? VALOR_OTRO_EMPRESA : e.target.value
               })
             }
-            placeholder="Ej: Azul"
-          />
+          >
+            <option value="">Seleccionar color</option>
+            {COLORES_PREDETERMINADOS_EMPRESA.map((color) => (
+              <option key={color} value={color}>{color}</option>
+            ))}
+            <option value={VALOR_OTRO_EMPRESA}>Otro / escribir manualmente</option>
+          </select>
+          {mostrarInputOtroEmpresa(nuevaVariante.color, COLORES_PREDETERMINADOS_EMPRESA) && (
+            <input
+              className="campo-otro-input"
+              value={nuevaVariante.color === VALOR_OTRO_EMPRESA ? "" : nuevaVariante.color}
+              onChange={(e) =>
+                setNuevaVariante({
+                  ...nuevaVariante,
+                  color: e.target.value
+                })
+              }
+              placeholder="Escribe el color personalizado"
+            />
+          )}
         </div>
 
-        <div className="campo-panel">
+        <div className="campo-panel campo-opciones">
           <label>Talla</label>
-          <input
-            value={nuevaVariante.talla}
+          <select
+            value={obtenerValorSelectEmpresa(nuevaVariante.talla, obtenerTallasEmpresa(productoEditar.genero))}
             onChange={(e) =>
               setNuevaVariante({
                 ...nuevaVariante,
-                talla: e.target.value
+                talla: e.target.value === VALOR_OTRO_EMPRESA ? VALOR_OTRO_EMPRESA : e.target.value
               })
             }
-            placeholder="Ej: L"
-          />
+          >
+            <option value="">Seleccionar talla</option>
+            {obtenerTallasEmpresa(productoEditar.genero).map((talla) => (
+              <option key={talla} value={talla}>{talla}</option>
+            ))}
+            <option value={VALOR_OTRO_EMPRESA}>Otra / escribir manualmente</option>
+          </select>
+          {mostrarInputOtroEmpresa(nuevaVariante.talla, obtenerTallasEmpresa(productoEditar.genero)) && (
+            <input
+              className="campo-otro-input"
+              value={nuevaVariante.talla === VALOR_OTRO_EMPRESA ? "" : nuevaVariante.talla}
+              onChange={(e) =>
+                setNuevaVariante({
+                  ...nuevaVariante,
+                  talla: e.target.value
+                })
+              }
+              placeholder="Escribe la talla personalizada"
+            />
+          )}
         </div>
 
         <div className="campo-panel">
@@ -2477,7 +2694,7 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
         <div className="resumen-panel-header">
           <div>
             <span>Estado de la tienda</span>
-            <h3>{usuario.nombre_empresa}</h3>
+            <h3>{cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa}</h3>
           </div>
         </div>
 
@@ -2542,25 +2759,25 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
       <div className="cuenta-grid">
         <article className="cuenta-perfil-card">
           <div className="cuenta-logo-preview">
-            {usuario.logo_url ? (
+            {(cuentaEmpresaActual?.logo_url || usuario.logo_url) ? (
               <img
-                src={obtenerUrlImagen(usuario.logo_url)}
-                alt={usuario.nombre_empresa}
+                src={obtenerUrlImagen(cuentaEmpresaActual?.logo_url || usuario.logo_url)}
+                alt={cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa}
               />
             ) : (
-              <span>{usuario.nombre_empresa?.charAt(0) || "Z"}</span>
+              <span>{(cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa)?.charAt(0) || "Z"}</span>
             )}
           </div>
 
           <span>Marca</span>
-          <h3>{usuario.nombre_empresa}</h3>
+          <h3>{cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa}</h3>
 
           <p>
-            {usuario.descripcion ||
+            {cuentaEmpresaActual?.descripcion || usuario.descripcion ||
               "Aún no agregaste una descripción pública para tu tienda."}
           </p>
 
-          <strong>{usuario.estado_empresa}</strong>
+          <strong>{cuentaEmpresaActual?.estado_empresa || usuario.estado_empresa}</strong>
         </article>
 
         <article className="cuenta-info-card">
@@ -2604,9 +2821,27 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
         <article className="cuenta-info-card">
           <span>Redes sociales</span>
           <strong>
-            {usuario.instagram || usuario.facebook || "No registradas"}
+            {cuentaEmpresaActual?.instagram || usuario.instagram || cuentaEmpresaActual?.facebook || usuario.facebook || "No registradas"}
           </strong>
           <p>Instagram o Facebook de la marca.</p>
+        </article>
+
+        <article className="cuenta-info-card cuenta-tema-card" style={obtenerEstiloTienda(cuentaEmpresaActual || usuario)}>
+          <span>Identidad visual</span>
+          <strong>{obtenerTemaNombre(cuentaEmpresaActual?.tema_tienda || usuario.tema_tienda || "elegante")}</strong>
+          <div className="cuenta-paleta-mini">
+            <i style={{ background: cuentaEmpresaActual?.color_principal || usuario.color_principal || COLOR_TIENDA_DEFAULT.color_principal }} />
+            <i style={{ background: cuentaEmpresaActual?.color_secundario || usuario.color_secundario || COLOR_TIENDA_DEFAULT.color_secundario }} />
+            <i style={{ background: cuentaEmpresaActual?.color_acento || usuario.color_acento || COLOR_TIENDA_DEFAULT.color_acento }} />
+            <i style={{ background: cuentaEmpresaActual?.color_fondo || usuario.color_fondo || COLOR_TIENDA_DEFAULT.color_fondo }} />
+          </div>
+          <p>Colores que verá el cliente al abrir tu tienda.</p>
+        </article>
+
+        <article className="cuenta-info-card">
+          <span>Ubicación</span>
+          <strong>{cuentaEmpresaActual?.google_maps_url || usuario.google_maps_url ? "Mapa registrado" : "No registrada"}</strong>
+          <p>{cuentaEmpresaActual?.google_maps_url || usuario.google_maps_url ? "La tienda tiene un enlace de ubicación." : "Puedes agregar un enlace de Google Maps al editar."}</p>
         </article>
       </div>
     ) : (
@@ -2619,13 +2854,13 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
                   src={URL.createObjectURL(logoCuenta)}
                   alt="Vista previa"
                 />
-              ) : usuario.logo_url ? (
+              ) : (cuentaEmpresaActual?.logo_url || usuario.logo_url) ? (
                 <img
-                  src={obtenerUrlImagen(usuario.logo_url)}
-                  alt={usuario.nombre_empresa}
+                  src={obtenerUrlImagen(cuentaEmpresaActual?.logo_url || usuario.logo_url)}
+                  alt={cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa}
                 />
               ) : (
-                <span>{usuario.nombre_empresa?.charAt(0) || "Z"}</span>
+                <span>{(cuentaEmpresaActual?.nombre_empresa || usuario.nombre_empresa)?.charAt(0) || "Z"}</span>
               )}
             </div>
 
@@ -2688,7 +2923,7 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
               </div>
 
               <div className="campo-panel">
-                <label>WhatsApp</label>
+                <label>WhatsApp *</label>
                 <input
                   name="whatsapp"
                   value={cuentaForm.whatsapp}
@@ -2727,6 +2962,16 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
             </div>
 
             <div className="campo-panel">
+              <label>Ubicación de Google Maps</label>
+              <input
+                name="google_maps_url"
+                value={cuentaForm.google_maps_url}
+                onChange={cambiarCuentaForm}
+                placeholder="Pega aquí el enlace de ubicación de tu tienda"
+              />
+            </div>
+
+            <div className="campo-panel">
               <label>Descripción pública de la tienda</label>
               <textarea
                 name="descripcion"
@@ -2755,6 +3000,67 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
                   onChange={cambiarCuentaForm}
                   placeholder="facebook.com/mi_tienda"
                 />
+              </div>
+            </div>
+
+            <div className="cuenta-personalizacion-box" style={obtenerEstiloTienda(cuentaForm)}>
+              <div className="cuenta-personalizacion-header">
+                <div>
+                  <span>Personalización de tienda</span>
+                  <h3>Colores y tema visual</h3>
+                  <p>Estos colores se usarán cuando el cliente vea tu tienda.</p>
+                </div>
+                <strong>{obtenerTemaNombre(cuentaForm.tema_tienda)}</strong>
+              </div>
+
+              <div className="form-grid">
+                <div className="campo-panel color-picker-field">
+                  <label>Color principal</label>
+                  <input type="color" name="color_principal" value={cuentaForm.color_principal} onChange={cambiarCuentaForm} />
+                </div>
+
+                <div className="campo-panel color-picker-field">
+                  <label>Color secundario</label>
+                  <input type="color" name="color_secundario" value={cuentaForm.color_secundario} onChange={cambiarCuentaForm} />
+                </div>
+
+                <div className="campo-panel color-picker-field">
+                  <label>Color de acento</label>
+                  <input type="color" name="color_acento" value={cuentaForm.color_acento} onChange={cambiarCuentaForm} />
+                </div>
+
+                <div className="campo-panel color-picker-field">
+                  <label>Color de fondo</label>
+                  <input type="color" name="color_fondo" value={cuentaForm.color_fondo} onChange={cambiarCuentaForm} />
+                </div>
+              </div>
+
+              <div className="campo-panel">
+                <label>Tema visual</label>
+                <select name="tema_tienda" value={cuentaForm.tema_tienda} onChange={cambiarCuentaForm}>
+                  {TEMAS_TIENDA.map((tema) => (
+                    <option key={tema.id} value={tema.id}>{tema.nombre} - {tema.descripcion}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={`tienda-preview-personalizada tema-${cuentaForm.tema_tienda || "elegante"}`}>
+                <div className="tienda-preview-deco" />
+                <div className="tienda-preview-logo">
+                  {logoCuenta ? (
+                    <img src={URL.createObjectURL(logoCuenta)} alt="Vista previa" />
+                  ) : (cuentaEmpresaActual?.logo_url || usuario.logo_url) ? (
+                    <img src={obtenerUrlImagen(cuentaEmpresaActual?.logo_url || usuario.logo_url)} alt={cuentaForm.nombre_empresa || "Tienda"} />
+                  ) : (
+                    <span>{cuentaForm.nombre_empresa?.charAt(0) || "Z"}</span>
+                  )}
+                </div>
+                <div>
+                  <span>Vista previa pública</span>
+                  <h3>{cuentaForm.nombre_empresa || "Nombre de tu tienda"}</h3>
+                  <p>{cuentaForm.descripcion || "Descripción breve de la tienda para tus clientes."}</p>
+                  <button type="button">Ver productos</button>
+                </div>
               </div>
             </div>
 

@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 import os
 import shutil
 from uuid import uuid4
+from datetime import datetime
 
 from app.database import get_db
 from app.models import (
@@ -19,9 +21,19 @@ from app.models import (
     Pago,
     SoporteTicket,
     SoporteMensaje,
+    Notificacion,
+    Carrito,
+    CarritoDetalle,
+    ProductoVista,
+    TiendaVisita,
+    BusquedaRegistro,
+    ProductoCotizacion,
+    VentaRegistro,
+    BackupRegistro,
 )
 from app.schemas import CambioEstadoEmpresa, CambiarEstadoTicket, CambioEstadoUsuarioAdmin, AdminCuentaActualizar, AdminPasswordCambiar, AdminCrear
 from app.seguridad import crear_hash_password, verificar_password
+from app.estadisticas import sincronizar_ventas_pagadas
 
 router = APIRouter()
 
@@ -533,6 +545,8 @@ def crear_administrador_admin(
         email=datos.email,
         telefono=datos.telefono,
         password_hash=crear_hash_password(datos.password),
+        acepto_terminos=True,
+        fecha_aceptacion_terminos=datetime.now(),
         estado="ACTIVO"
     )
 
@@ -731,4 +745,410 @@ def cambiar_password_admin(
     return {
         "mensaje": "Contraseña administrativa actualizada correctamente",
         "id_usuario": admin.id_usuario
+    }
+
+
+# ================= ADMIN: REPORTES, ESTADÍSTICAS Y BACKUPS =================
+
+BACKUPS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "backups"))
+os.makedirs(BACKUPS_DIR, exist_ok=True)
+
+
+def _fecha_iso(valor):
+    if not valor:
+        return None
+    if hasattr(valor, "isoformat"):
+        return valor.isoformat()
+    return str(valor)
+
+
+def _float(valor):
+    return float(valor) if valor is not None else 0
+
+
+def _int(valor):
+    return int(valor or 0)
+
+
+def _serializar_top_productos(filas):
+    return [
+        {
+            "id_producto": fila["id_producto"],
+            "nombre_producto": fila["nombre_producto"],
+            "categoria": fila.get("categoria"),
+            "empresa": fila.get("nombre_empresa"),
+            "imagen_principal": fila.get("imagen_principal"),
+            "vistas": _int(fila.get("vistas")),
+            "cotizaciones": _int(fila.get("cotizaciones")),
+            "ventas": _int(fila.get("ventas")),
+            "ingresos": _float(fila.get("ingresos")),
+        }
+        for fila in filas
+    ]
+
+
+@router.get("/admin/reportes")
+def obtener_reportes_administrativos(
+    id_admin: int,
+    limite: int = 15,
+    db: Session = Depends(get_db)
+):
+    verificar_admin(db, id_admin)
+    sincronizar_ventas_pagadas(db)
+
+    limite_seguro = max(1, min(int(limite or 15), 30))
+
+    resumen = {
+        "productos_registrados": db.query(Producto).count(),
+        "productos_activos": db.query(Producto).filter(Producto.estado_producto == "ACTIVO").count(),
+        "tiendas_registradas": db.query(Empresa).count(),
+        "tiendas_aprobadas": db.query(Empresa).filter(Empresa.estado_empresa == "APROBADA").count(),
+        "clientes": db.query(Usuario).join(Rol, Usuario.id_rol == Rol.id_rol).filter(Rol.nombre_rol.in_(["CLIENTE", "Cliente"])).count(),
+        "pedidos": db.query(Pedido).count(),
+        "pagos_pagados": db.query(Pago).filter(Pago.estado_pago == "PAGADO").count(),
+        "vistas_productos": db.query(ProductoVista).count(),
+        "visitas_tiendas": db.query(TiendaVisita).count(),
+        "busquedas": db.query(BusquedaRegistro).count(),
+        "cotizaciones": db.query(ProductoCotizacion).count(),
+        "ventas_registradas": db.query(VentaRegistro).count(),
+    }
+
+    ventas_totales = db.execute(text("""
+        SELECT
+            COALESCE(SUM(cantidad), 0) AS prendas_vendidas,
+            COALESCE(SUM(subtotal), 0) AS ingresos_totales
+        FROM ventas_registro
+    """)).mappings().first()
+
+    resumen["prendas_vendidas"] = _int(ventas_totales["prendas_vendidas"] if ventas_totales else 0)
+    resumen["ingresos_totales"] = _float(ventas_totales["ingresos_totales"] if ventas_totales else 0)
+
+    sql_productos_base = """
+        SELECT
+            p.id_producto,
+            p.nombre_producto,
+            c.nombre_categoria AS categoria,
+            e.nombre_empresa,
+            pi.url_imagen AS imagen_principal,
+            COALESCE(vistas.total, 0) AS vistas,
+            COALESCE(cotizaciones.total, 0) AS cotizaciones,
+            COALESCE(ventas.cantidad, 0) AS ventas,
+            COALESCE(ventas.ingresos, 0) AS ingresos
+        FROM productos p
+        JOIN empresas e ON e.id_empresa = p.id_empresa
+        LEFT JOIN categorias c ON c.id_categoria = p.id_categoria
+        LEFT JOIN producto_imagenes pi ON pi.id_producto = p.id_producto AND pi.es_principal = TRUE
+        LEFT JOIN (
+            SELECT id_producto, COUNT(*) AS total
+            FROM producto_vistas
+            GROUP BY id_producto
+        ) vistas ON vistas.id_producto = p.id_producto
+        LEFT JOIN (
+            SELECT id_producto, SUM(cantidad) AS total
+            FROM producto_cotizaciones
+            GROUP BY id_producto
+        ) cotizaciones ON cotizaciones.id_producto = p.id_producto
+        LEFT JOIN (
+            SELECT id_producto, SUM(cantidad) AS cantidad, SUM(subtotal) AS ingresos
+            FROM ventas_registro
+            GROUP BY id_producto
+        ) ventas ON ventas.id_producto = p.id_producto
+    """
+
+    top_productos_vistas = db.execute(text(sql_productos_base + " ORDER BY vistas DESC, ventas DESC, cotizaciones DESC, p.id_producto DESC LIMIT :limite"), {"limite": limite_seguro}).mappings().all()
+    top_productos_ventas = db.execute(text(sql_productos_base + " ORDER BY ventas DESC, ingresos DESC, vistas DESC, p.id_producto DESC LIMIT :limite"), {"limite": limite_seguro}).mappings().all()
+    top_productos_cotizados = db.execute(text(sql_productos_base + " ORDER BY cotizaciones DESC, ventas DESC, vistas DESC, p.id_producto DESC LIMIT :limite"), {"limite": limite_seguro}).mappings().all()
+
+    tiendas_visitas = db.execute(text("""
+        SELECT
+            e.id_empresa,
+            e.nombre_empresa,
+            e.logo_url,
+            e.estado_empresa,
+            COALESCE(v.total, 0) AS visitas,
+            COALESCE(ventas.cantidad, 0) AS prendas_vendidas,
+            COALESCE(ventas.ingresos, 0) AS ingresos
+        FROM empresas e
+        LEFT JOIN (
+            SELECT id_empresa, COUNT(*) AS total
+            FROM tienda_visitas
+            GROUP BY id_empresa
+        ) v ON v.id_empresa = e.id_empresa
+        LEFT JOIN (
+            SELECT id_empresa, SUM(cantidad) AS cantidad, SUM(subtotal) AS ingresos
+            FROM ventas_registro
+            GROUP BY id_empresa
+        ) ventas ON ventas.id_empresa = e.id_empresa
+        ORDER BY visitas DESC, ingresos DESC, e.id_empresa DESC
+        LIMIT :limite
+    """), {"limite": limite_seguro}).mappings().all()
+
+    tiendas_ventas = db.execute(text("""
+        SELECT
+            e.id_empresa,
+            e.nombre_empresa,
+            e.logo_url,
+            e.estado_empresa,
+            COALESCE(v.total, 0) AS visitas,
+            COALESCE(ventas.cantidad, 0) AS prendas_vendidas,
+            COALESCE(ventas.ingresos, 0) AS ingresos
+        FROM empresas e
+        LEFT JOIN (
+            SELECT id_empresa, COUNT(*) AS total
+            FROM tienda_visitas
+            GROUP BY id_empresa
+        ) v ON v.id_empresa = e.id_empresa
+        LEFT JOIN (
+            SELECT id_empresa, SUM(cantidad) AS cantidad, SUM(subtotal) AS ingresos
+            FROM ventas_registro
+            GROUP BY id_empresa
+        ) ventas ON ventas.id_empresa = e.id_empresa
+        ORDER BY ingresos DESC, prendas_vendidas DESC, visitas DESC, e.id_empresa DESC
+        LIMIT :limite
+    """), {"limite": limite_seguro}).mappings().all()
+
+    busquedas_populares = db.execute(text("""
+        SELECT
+            COALESCE(NULLIF(TRIM(termino), ''), 'Búsqueda con filtros') AS termino,
+            COUNT(*) AS total,
+            COALESCE(ROUND(AVG(total_resultados)::numeric, 2), 0) AS promedio_resultados
+        FROM busquedas_registro
+        GROUP BY COALESCE(NULLIF(TRIM(termino), ''), 'Búsqueda con filtros')
+        ORDER BY total DESC, termino ASC
+        LIMIT :limite
+    """), {"limite": limite_seguro}).mappings().all()
+
+    filtros_populares = db.execute(text("""
+        SELECT 'Categoría' AS tipo, filtro_categoria AS valor, COUNT(*) AS total
+        FROM busquedas_registro
+        WHERE filtro_categoria IS NOT NULL
+        GROUP BY filtro_categoria
+        UNION ALL
+        SELECT 'Color' AS tipo, filtro_color AS valor, COUNT(*) AS total
+        FROM busquedas_registro
+        WHERE filtro_color IS NOT NULL
+        GROUP BY filtro_color
+        UNION ALL
+        SELECT 'Talla' AS tipo, filtro_talla AS valor, COUNT(*) AS total
+        FROM busquedas_registro
+        WHERE filtro_talla IS NOT NULL
+        GROUP BY filtro_talla
+        UNION ALL
+        SELECT 'Tienda' AS tipo, filtro_empresa AS valor, COUNT(*) AS total
+        FROM busquedas_registro
+        WHERE filtro_empresa IS NOT NULL
+        GROUP BY filtro_empresa
+        ORDER BY total DESC
+        LIMIT :limite
+    """), {"limite": limite_seguro}).mappings().all()
+
+    ventas_por_estado_pago = db.execute(text("""
+        SELECT estado_pago, COUNT(*) AS total, COALESCE(SUM(monto), 0) AS monto
+        FROM pagos
+        GROUP BY estado_pago
+        ORDER BY total DESC
+    """)).mappings().all()
+
+    ventas_por_dia = db.execute(text("""
+        SELECT TO_CHAR(fecha_venta::date, 'YYYY-MM-DD') AS fecha, SUM(cantidad) AS cantidad, SUM(subtotal) AS ingresos
+        FROM ventas_registro
+        GROUP BY fecha_venta::date
+        ORDER BY fecha_venta::date DESC
+        LIMIT 14
+    """)).mappings().all()
+
+    return {
+        "mensaje": "Reportes administrativos de Zyra",
+        "resumen": resumen,
+        "productos": {
+            "mas_vistos": _serializar_top_productos(top_productos_vistas),
+            "mas_vendidos": _serializar_top_productos(top_productos_ventas),
+            "mas_cotizados": _serializar_top_productos(top_productos_cotizados),
+        },
+        "tiendas": {
+            "mas_visitadas": [
+                {
+                    "id_empresa": fila["id_empresa"],
+                    "nombre_empresa": fila["nombre_empresa"],
+                    "logo_url": fila["logo_url"],
+                    "estado_empresa": fila["estado_empresa"],
+                    "visitas": _int(fila["visitas"]),
+                    "prendas_vendidas": _int(fila["prendas_vendidas"]),
+                    "ingresos": _float(fila["ingresos"]),
+                }
+                for fila in tiendas_visitas
+            ],
+            "mayores_ventas": [
+                {
+                    "id_empresa": fila["id_empresa"],
+                    "nombre_empresa": fila["nombre_empresa"],
+                    "logo_url": fila["logo_url"],
+                    "estado_empresa": fila["estado_empresa"],
+                    "visitas": _int(fila["visitas"]),
+                    "prendas_vendidas": _int(fila["prendas_vendidas"]),
+                    "ingresos": _float(fila["ingresos"]),
+                }
+                for fila in tiendas_ventas
+            ],
+        },
+        "busquedas": {
+            "populares": [
+                {
+                    "termino": fila["termino"],
+                    "total": _int(fila["total"]),
+                    "promedio_resultados": _float(fila["promedio_resultados"]),
+                }
+                for fila in busquedas_populares
+            ],
+            "filtros_populares": [
+                {"tipo": fila["tipo"], "valor": fila["valor"], "total": _int(fila["total"])}
+                for fila in filtros_populares
+            ],
+        },
+        "ventas": {
+            "por_estado_pago": [
+                {"estado_pago": fila["estado_pago"], "total": _int(fila["total"]), "monto": _float(fila["monto"])}
+                for fila in ventas_por_estado_pago
+            ],
+            "por_dia": [
+                {"fecha": fila["fecha"], "cantidad": _int(fila["cantidad"]), "ingresos": _float(fila["ingresos"])}
+                for fila in ventas_por_dia
+            ][::-1],
+        },
+    }
+
+
+def _serializar_modelo(objeto, columnas):
+    fila = {}
+    for columna in columnas:
+        valor = getattr(objeto, columna, None)
+        if hasattr(valor, "isoformat"):
+            valor = valor.isoformat()
+        elif hasattr(valor, "__float__") and valor.__class__.__name__ == "Decimal":
+            valor = float(valor)
+        fila[columna] = valor
+    return fila
+
+
+@router.get("/admin/backups")
+def listar_backups_admin(id_admin: int, db: Session = Depends(get_db)):
+    verificar_admin(db, id_admin)
+
+    backups = db.query(BackupRegistro).order_by(BackupRegistro.fecha_backup.desc()).all()
+
+    return {
+        "mensaje": "Copias de seguridad registradas",
+        "total": len(backups),
+        "backups": [
+            {
+                "id_backup": backup.id_backup,
+                "nombre_archivo": backup.nombre_archivo,
+                "tipo_backup": backup.tipo_backup,
+                "tamanio_bytes": backup.tamanio_bytes,
+                "fecha_backup": _fecha_iso(backup.fecha_backup),
+            }
+            for backup in backups
+        ],
+    }
+
+
+@router.post("/admin/backups/crear")
+def crear_backup_admin(id_admin: int, db: Session = Depends(get_db)):
+    verificar_admin(db, id_admin)
+
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    nombre_archivo = f"zyra_backup_{timestamp}.json"
+    ruta_archivo = os.path.join(BACKUPS_DIR, nombre_archivo)
+
+    tablas = {
+        "roles": ["id_rol", "nombre_rol"],
+        "usuarios": ["id_usuario", "id_rol", "nombre", "apellido", "email", "telefono", "foto_url", "acepto_terminos", "fecha_aceptacion_terminos", "estado"],
+        "empresas": ["id_empresa", "id_usuario", "nombre_empresa", "descripcion", "nit", "direccion", "ciudad", "whatsapp", "instagram", "facebook", "logo_url", "qr_pago_url", "color_principal", "color_secundario", "color_acento", "color_fondo", "tema_tienda", "google_maps_url", "estado_empresa"],
+        "categorias": ["id_categoria", "nombre_categoria", "descripcion", "estado"],
+        "productos": ["id_producto", "id_empresa", "id_categoria", "nombre_producto", "descripcion", "marca", "genero", "precio", "estado_producto"],
+        "producto_variantes": ["id_variante", "id_producto", "color", "talla", "stock", "disponible"],
+        "producto_imagenes": ["id_imagen", "id_producto", "url_imagen", "es_principal"],
+        "carritos": ["id_carrito", "id_usuario", "estado_carrito"],
+        "carrito_detalle": ["id_carrito_detalle", "id_carrito", "id_variante", "cantidad", "precio_unitario"],
+        "pedidos": ["id_pedido", "id_usuario", "total", "estado_pedido"],
+        "pedido_detalle": ["id_pedido_detalle", "id_pedido", "id_variante", "cantidad", "precio_unitario", "subtotal"],
+        "pagos": ["id_pago", "id_pedido", "metodo_pago", "monto", "estado_pago", "comprobante_url"],
+        "soporte_tickets": ["id_ticket", "id_usuario", "asunto", "descripcion", "estado_ticket"],
+        "soporte_mensajes": ["id_mensaje", "id_ticket", "id_usuario", "mensaje"],
+        "notificaciones": ["id_notificacion", "id_usuario", "titulo", "mensaje", "leido"],
+        "producto_vistas": ["id_vista", "id_producto", "id_usuario", "origen", "fecha_vista"],
+        "tienda_visitas": ["id_visita", "id_empresa", "id_usuario", "origen", "fecha_visita"],
+        "busquedas_registro": ["id_busqueda", "id_usuario", "termino", "filtro_categoria", "filtro_color", "filtro_talla", "filtro_marca", "filtro_empresa", "precio_min", "precio_max", "total_resultados", "fecha_busqueda"],
+        "producto_cotizaciones": ["id_cotizacion", "id_producto", "id_variante", "id_usuario", "cantidad", "fecha_cotizacion"],
+        "ventas_registro": ["id_venta", "id_pedido", "id_pedido_detalle", "id_usuario", "id_empresa", "id_producto", "id_variante", "cantidad", "precio_unitario", "subtotal", "estado_venta", "fecha_venta"],
+    }
+
+    modelos = {
+        "roles": Rol,
+        "usuarios": Usuario,
+        "empresas": Empresa,
+        "categorias": Categoria,
+        "productos": Producto,
+        "producto_variantes": ProductoVariante,
+        "producto_imagenes": ProductoImagen,
+        "carritos": Carrito,
+        "carrito_detalle": CarritoDetalle,
+        "pedidos": Pedido,
+        "pedido_detalle": PedidoDetalle,
+        "pagos": Pago,
+        "soporte_tickets": SoporteTicket,
+        "soporte_mensajes": SoporteMensaje,
+        "notificaciones": Notificacion,
+        "producto_vistas": ProductoVista,
+        "tienda_visitas": TiendaVisita,
+        "busquedas_registro": BusquedaRegistro,
+        "producto_cotizaciones": ProductoCotizacion,
+        "ventas_registro": VentaRegistro,
+    }
+
+    contenido = {
+        "metadata": {
+            "proyecto": "Zyra",
+            "tipo": "backup_json_administrativo",
+            "fecha_backup": datetime.utcnow().isoformat(),
+            "creado_por_admin": id_admin,
+        },
+        "tablas": {},
+    }
+
+    for nombre_tabla, columnas in tablas.items():
+        modelo = modelos[nombre_tabla]
+        contenido["tablas"][nombre_tabla] = [
+            _serializar_modelo(objeto, columnas)
+            for objeto in db.query(modelo).all()
+        ]
+
+    import json
+    with open(ruta_archivo, "w", encoding="utf-8") as archivo:
+        json.dump(contenido, archivo, ensure_ascii=False, indent=2)
+
+    tamanio = os.path.getsize(ruta_archivo)
+
+    backup = BackupRegistro(
+        nombre_archivo=nombre_archivo,
+        ruta_archivo=ruta_archivo,
+        tipo_backup="JSON",
+        tamanio_bytes=tamanio,
+        id_admin=id_admin,
+        fecha_backup=datetime.utcnow(),
+    )
+
+    db.add(backup)
+    db.commit()
+    db.refresh(backup)
+
+    return {
+        "mensaje": "Copia de seguridad creada correctamente",
+        "backup": {
+            "id_backup": backup.id_backup,
+            "nombre_archivo": backup.nombre_archivo,
+            "tipo_backup": backup.tipo_backup,
+            "tamanio_bytes": backup.tamanio_bytes,
+            "fecha_backup": _fecha_iso(backup.fecha_backup),
+        },
     }

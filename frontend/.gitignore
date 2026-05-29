@@ -7,15 +7,49 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Node / React / Vite
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+dist-ssr/
 *.local
+
+# Python / FastAPI
+backend/venv/
+venv/
+__pycache__/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Variables de entorno / datos privados
+.env
+backend/.env
+frontend/.env
+*.env
+
+# Backups generados
+backend/backups/
+backups/
+*.backup
+*.dump
+
+# Base local de IA / ChromaDB
+backend/chroma_db/
+chroma_db/
+
+# Archivos temporales
+*.tmp
+*.temp
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*

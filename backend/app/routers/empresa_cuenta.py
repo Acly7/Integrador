@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from pathlib import Path
 from uuid import uuid4
 import shutil
+import re
 
 from app.database import get_db
 from app.models import Usuario, Empresa
@@ -17,6 +18,59 @@ UPLOADS_EMPRESAS_DIR.mkdir(parents=True, exist_ok=True)
 
 UPLOADS_QR_DIR = BASE_DIR / "uploads" / "empresas" / "qr"
 UPLOADS_QR_DIR.mkdir(parents=True, exist_ok=True)
+
+
+DOMINIOS_CORREO_PERMITIDOS = {"gmail.com"}
+TEMAS_TIENDA_PERMITIDOS = {"elegante", "minimalista", "boutique", "urbano", "juvenil"}
+
+def limpiar_texto(valor):
+    return str(valor or "").strip()
+
+def validar_email_permitido(email: str):
+    correo = limpiar_texto(email).lower()
+    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", correo):
+        raise HTTPException(status_code=400, detail="El correo electrónico no tiene un formato válido")
+    dominio = correo.split("@")[-1]
+    if dominio not in DOMINIOS_CORREO_PERMITIDOS:
+        raise HTTPException(status_code=400, detail="Usa un correo Gmail válido, por ejemplo usuario@gmail.com")
+    return correo
+
+def validar_telefono_opcional(telefono):
+    if telefono is None or limpiar_texto(telefono) == "":
+        return None
+    numero = re.sub(r"\D", "", str(telefono))
+    if len(numero) < 7 or len(numero) > 8:
+        raise HTTPException(status_code=400, detail="El teléfono debe tener entre 7 y 8 números o dejarse vacío")
+    return numero
+
+def validar_whatsapp_obligatorio(whatsapp):
+    numero = re.sub(r"\D", "", str(whatsapp or ""))
+    if len(numero) != 8:
+        raise HTTPException(status_code=400, detail="El WhatsApp es obligatorio y debe tener exactamente 8 números")
+    return numero
+
+
+def validar_color_hex(valor, defecto):
+    texto = limpiar_texto(valor) or defecto
+    if not re.match(r"^#[0-9A-Fa-f]{6}$", texto):
+        raise HTTPException(status_code=400, detail="Los colores de la tienda deben estar en formato hexadecimal, por ejemplo #8f174d")
+    return texto.lower()
+
+
+def validar_tema_tienda(valor):
+    tema = limpiar_texto(valor).lower() or "elegante"
+    if tema not in TEMAS_TIENDA_PERMITIDOS:
+        raise HTTPException(status_code=400, detail="Tema de tienda no válido")
+    return tema
+
+
+def validar_google_maps_url(valor):
+    url = limpiar_texto(valor)
+    if not url:
+        return None
+    if not (url.startswith("https://") or url.startswith("http://")):
+        raise HTTPException(status_code=400, detail="La ubicación debe ser un enlace válido de Google Maps o un enlace web")
+    return url
 
 
 def verificar_empresa_usuario(db: Session, id_empresa: int, id_usuario: int):
@@ -64,6 +118,12 @@ def armar_respuesta_cuenta(usuario: Usuario, empresa: Empresa):
         "facebook": empresa.facebook,
         "logo_url": empresa.logo_url,
         "qr_pago_url": getattr(empresa, "qr_pago_url", None),
+        "color_principal": getattr(empresa, "color_principal", None) or "#8f174d",
+        "color_secundario": getattr(empresa, "color_secundario", None) or "#e879b4",
+        "color_acento": getattr(empresa, "color_acento", None) or "#c02672",
+        "color_fondo": getattr(empresa, "color_fondo", None) or "#fff1f7",
+        "tema_tienda": getattr(empresa, "tema_tienda", None) or "elegante",
+        "google_maps_url": getattr(empresa, "google_maps_url", None),
         "estado_empresa": empresa.estado_empresa
     }
 
@@ -90,8 +150,24 @@ def actualizar_cuenta_empresa(
         datos.id_usuario
     )
 
+    email_limpio = validar_email_permitido(datos.email)
+    telefono_limpio = validar_telefono_opcional(datos.telefono)
+    whatsapp_limpio = validar_whatsapp_obligatorio(datos.whatsapp)
+    color_principal = validar_color_hex(getattr(datos, "color_principal", None), "#8f174d")
+    color_secundario = validar_color_hex(getattr(datos, "color_secundario", None), "#e879b4")
+    color_acento = validar_color_hex(getattr(datos, "color_acento", None), "#c02672")
+    color_fondo = validar_color_hex(getattr(datos, "color_fondo", None), "#fff1f7")
+    tema_tienda = validar_tema_tienda(getattr(datos, "tema_tienda", None))
+    google_maps_url = validar_google_maps_url(getattr(datos, "google_maps_url", None))
+
+    if not limpiar_texto(datos.nombre):
+        raise HTTPException(status_code=400, detail="El nombre del responsable es obligatorio")
+
+    if not limpiar_texto(datos.nombre_empresa):
+        raise HTTPException(status_code=400, detail="El nombre de la empresa es obligatorio")
+
     email_existente = db.query(Usuario).filter(
-        Usuario.email == datos.email,
+        Usuario.email == email_limpio,
         Usuario.id_usuario != datos.id_usuario
     ).first()
 
@@ -101,19 +177,25 @@ def actualizar_cuenta_empresa(
             detail="Ese correo ya está registrado por otro usuario"
         )
 
-    usuario.nombre = datos.nombre.strip()
-    usuario.apellido = datos.apellido.strip() if datos.apellido else None
-    usuario.email = datos.email.strip()
-    usuario.telefono = datos.telefono if datos.telefono else None
+    usuario.nombre = limpiar_texto(datos.nombre)
+    usuario.apellido = limpiar_texto(datos.apellido) or None
+    usuario.email = email_limpio
+    usuario.telefono = telefono_limpio
 
-    empresa.nombre_empresa = datos.nombre_empresa.strip()
-    empresa.descripcion = datos.descripcion.strip() if datos.descripcion else None
-    empresa.nit = datos.nit if datos.nit else None
-    empresa.direccion = datos.direccion.strip() if datos.direccion else None
-    empresa.ciudad = datos.ciudad.strip() if datos.ciudad else "La Paz"
-    empresa.whatsapp = datos.whatsapp if datos.whatsapp else None
-    empresa.instagram = datos.instagram.strip() if datos.instagram else None
-    empresa.facebook = datos.facebook.strip() if datos.facebook else None
+    empresa.nombre_empresa = limpiar_texto(datos.nombre_empresa)
+    empresa.descripcion = limpiar_texto(datos.descripcion) or None
+    empresa.nit = limpiar_texto(datos.nit) or None
+    empresa.direccion = limpiar_texto(datos.direccion) or None
+    empresa.ciudad = limpiar_texto(datos.ciudad) or "La Paz"
+    empresa.whatsapp = whatsapp_limpio
+    empresa.instagram = limpiar_texto(datos.instagram) or None
+    empresa.facebook = limpiar_texto(datos.facebook) or None
+    empresa.color_principal = color_principal
+    empresa.color_secundario = color_secundario
+    empresa.color_acento = color_acento
+    empresa.color_fondo = color_fondo
+    empresa.tema_tienda = tema_tienda
+    empresa.google_maps_url = google_maps_url
 
     db.commit()
     db.refresh(usuario)
@@ -138,6 +220,12 @@ def actualizar_cuenta_empresa(
         "facebook": empresa.facebook,
         "logo_url": empresa.logo_url,
         "qr_pago_url": getattr(empresa, "qr_pago_url", None),
+            "color_principal": getattr(empresa, "color_principal", None) or "#8f174d",
+            "color_secundario": getattr(empresa, "color_secundario", None) or "#e879b4",
+            "color_acento": getattr(empresa, "color_acento", None) or "#c02672",
+            "color_fondo": getattr(empresa, "color_fondo", None) or "#fff1f7",
+            "tema_tienda": getattr(empresa, "tema_tienda", None) or "elegante",
+            "google_maps_url": getattr(empresa, "google_maps_url", None),
         "estado_empresa": empresa.estado_empresa
     }
 

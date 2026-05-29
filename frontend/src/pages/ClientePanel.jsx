@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PortalLayout from "../components/layout/PortalLayout";
+import { useZyraDialog, ZyraDialogHost } from "../components/ui/ZyraDialog";
 
 const API_URL = "http://127.0.0.1:8000";
 
@@ -43,6 +44,37 @@ const obtenerColorHex = (color) => {
 
   return colores[color.toLowerCase().trim()] || "#cbd5e1";
 };
+
+const TEMAS_TIENDA = {
+  elegante: "Elegante",
+  minimalista: "Minimalista",
+  boutique: "Boutique",
+  urbano: "Urbano",
+  juvenil: "Juvenil"
+};
+
+const obtenerEstiloTienda = (empresa = {}) => ({
+  "--tienda-principal": empresa?.color_principal || "#8f174d",
+  "--tienda-secundario": empresa?.color_secundario || "#e879b4",
+  "--tienda-acento": empresa?.color_acento || "#c02672",
+  "--tienda-fondo": empresa?.color_fondo || "#fff1f7"
+});
+
+const obtenerTemaTienda = (empresa = {}) =>
+  TEMAS_TIENDA[empresa?.tema_tienda || "elegante"] || "Elegante";
+
+const obtenerNombrePerfilCliente = (usuario = {}) => {
+  const nombreCompleto = `${usuario?.nombre || ""} ${usuario?.apellido || ""}`.trim();
+  return nombreCompleto || usuario?.email || "Mi cuenta";
+};
+
+const obtenerInicialesPerfil = (nombre = "") => {
+  const partes = String(nombre || "").trim().split(/\s+/).filter(Boolean);
+  if (partes.length >= 2) return `${partes[0][0] || ""}${partes[1][0] || ""}`.toUpperCase();
+  return String(nombre || "C").charAt(0).toUpperCase();
+};
+
+const esCorreoGmail = (email = "") => /^[^\s@]+@gmail\.com$/.test(String(email || "").trim().toLowerCase());
 
 const obtenerNotificacionesBackend = async (idUsuario) => {
   const respuesta = await fetch(`${API_URL}/usuario/${idUsuario}/notificaciones`);
@@ -143,9 +175,14 @@ function UserCircleIcon() {
 export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
   const [seccionCliente, setSeccionCliente] = useState("inicio");
   const [usuarioCliente, setUsuarioCliente] = useState(usuario || {});
+  const { dialogoZyra, alertaZyra, confirmarZyra, cerrarDialogoZyra } = useZyraDialog();
 
 
   const [productos, setProductos] = useState([]);
+  const [productosDestacadosCliente, setProductosDestacadosCliente] = useState([]);
+  const [criterioDestacados, setCriterioDestacados] = useState("ventas");
+  const [cargandoDestacados, setCargandoDestacados] = useState(false);
+  const [errorDestacados, setErrorDestacados] = useState("");
   const [cargandoProductos, setCargandoProductos] = useState(false);
   const [errorProductos, setErrorProductos] = useState("");
 
@@ -217,14 +254,6 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     precioMax: "",
     soloStock: true
   });
-
-  const [imagenBusquedaIa, setImagenBusquedaIa] = useState(null);
-  const [previewBusquedaIa, setPreviewBusquedaIa] = useState(null);
-  const [resultadosBusquedaIa, setResultadosBusquedaIa] = useState([]);
-  const [cargandoBusquedaIa, setCargandoBusquedaIa] = useState(false);
-  const [mensajeBusquedaIa, setMensajeBusquedaIa] = useState("");
-  const [tipoMensajeBusquedaIa, setTipoMensajeBusquedaIa] = useState("");
-
 
   const menu = [
     { id: "inicio", nombre: "Inicio", icono: "home" },
@@ -355,8 +384,14 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
       return;
     }
 
-    if (cuentaClienteForm.telefono && cuentaClienteForm.telefono.length !== 8) {
-      setMensajeCuentaCliente("El teléfono debe tener 8 números.");
+    if (!esCorreoGmail(cuentaClienteForm.email)) {
+      setMensajeCuentaCliente("Debes usar un correo Gmail válido, por ejemplo usuario@gmail.com.");
+      setTipoMensajeCuentaCliente("error");
+      return;
+    }
+
+    if (cuentaClienteForm.telefono && !/^\d{7,8}$/.test(cuentaClienteForm.telefono)) {
+      setMensajeCuentaCliente("El teléfono debe tener entre 7 y 8 números o puedes dejarlo vacío.");
       setTipoMensajeCuentaCliente("error");
       return;
     }
@@ -454,7 +489,12 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
       return;
     }
 
-    const confirmar = window.confirm("¿Seguro que quieres cambiar tu contraseña?");
+    const confirmar = await confirmarZyra({
+      titulo: "Cambiar contraseña",
+      mensaje: "¿Seguro que quieres cambiar tu contraseña?",
+      tipo: "warning",
+      textoConfirmar: "Sí, cambiar"
+    });
 
     if (!confirmar) return;
 
@@ -501,6 +541,7 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     if (filtros.talla) params.append("talla", filtros.talla);
     if (filtros.precioMin) params.append("precio_min", filtros.precioMin);
     if (filtros.precioMax) params.append("precio_max", filtros.precioMax);
+    if (usuario?.id_usuario) params.append("id_usuario", usuario.id_usuario);
 
     try {
       const respuesta = await fetch(`${API_URL}/cliente/productos?${params.toString()}`);
@@ -532,6 +573,32 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     setCargandoProductos(false);
   };
 
+  const cargarProductosDestacados = async () => {
+    setCargandoDestacados(true);
+    setErrorDestacados("");
+
+    try {
+      const params = new URLSearchParams({
+        criterio: criterioDestacados,
+        limite: "15"
+      });
+
+      const respuesta = await fetch(`${API_URL}/cliente/productos-destacados?${params.toString()}`);
+      const datos = await respuesta.json().catch(() => ({}));
+
+      if (!respuesta.ok) {
+        throw new Error(datos.detail || "No se pudieron cargar los destacados.");
+      }
+
+      setProductosDestacadosCliente(datos.productos || []);
+    } catch (error) {
+      setErrorDestacados(error.message || "No se pudieron cargar los destacados.");
+      setProductosDestacadosCliente([]);
+    } finally {
+      setCargandoDestacados(false);
+    }
+  };
+
   const abrirDetalleProducto = async (producto) => {
     setCargandoDetalle(true);
     setDetalleProducto(null);
@@ -539,7 +606,10 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     setCantidadDetalle(1);
 
     try {
-      const respuesta = await fetch(`${API_URL}/cliente/productos/${producto.id_producto}`);
+      const detalleUrl = usuario?.id_usuario
+        ? `${API_URL}/cliente/productos/${producto.id_producto}?id_usuario=${usuario.id_usuario}`
+        : `${API_URL}/cliente/productos/${producto.id_producto}`;
+      const respuesta = await fetch(detalleUrl);
       const datos = await respuesta.json().catch(() => ({}));
 
       if (!respuesta.ok) {
@@ -555,7 +625,11 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
 
       setVarianteSeleccionada(primeraVarianteDisponible || null);
     } catch (error) {
-      alert(error.message || "No se pudo cargar el producto.");
+      await alertaZyra({
+        titulo: "No se pudo cargar el producto",
+        mensaje: error.message || "No se pudo cargar el producto.",
+        tipo: "error"
+      });
     }
 
     setCargandoDetalle(false);
@@ -589,17 +663,29 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
 
   const agregarProductoAlCarrito = async () => {
     if (!varianteSeleccionada) {
-      alert("Selecciona un color y talla antes de agregar al carrito.");
+      await alertaZyra({
+        titulo: "Falta elegir variante",
+        mensaje: "Selecciona un color y talla antes de agregar al carrito.",
+        tipo: "warning"
+      });
       return;
     }
 
     if (cantidadDetalle <= 0) {
-      alert("La cantidad debe ser mayor a 0.");
+      await alertaZyra({
+        titulo: "Cantidad inválida",
+        mensaje: "La cantidad debe ser mayor a 0.",
+        tipo: "warning"
+      });
       return;
     }
 
     if (cantidadDetalle > Number(varianteSeleccionada.stock || 0)) {
-      alert(`Solo hay ${varianteSeleccionada.stock} unidad(es) disponibles.`);
+      await alertaZyra({
+        titulo: "Stock insuficiente",
+        mensaje: `Solo hay ${varianteSeleccionada.stock} unidad(es) disponibles.`,
+        tipo: "warning"
+      });
       return;
     }
 
@@ -635,7 +721,11 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
         setToastCliente(null);
       }, 2800);
     } catch (error) {
-      alert(error.message || "No se pudo agregar al carrito.");
+      await alertaZyra({
+        titulo: "No se pudo agregar",
+        mensaje: error.message || "No se pudo agregar al carrito.",
+        tipo: "error"
+      });
     }
   };
 
@@ -648,7 +738,11 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     }
 
     if (cantidad > Number(item.stock_disponible || 0)) {
-      alert(`Solo hay ${item.stock_disponible} unidad(es) disponibles.`);
+      await alertaZyra({
+        titulo: "Stock insuficiente",
+        mensaje: `Solo hay ${item.stock_disponible} unidad(es) disponibles.`,
+        tipo: "warning"
+      });
       return;
     }
 
@@ -675,14 +769,21 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
 
       await cargarCarritoCliente();
     } catch (error) {
-      alert(error.message || "No se pudo actualizar la cantidad.");
+      await alertaZyra({
+        titulo: "No se pudo actualizar",
+        mensaje: error.message || "No se pudo actualizar la cantidad.",
+        tipo: "error"
+      });
     }
   };
 
   const quitarProductoCarrito = async (item) => {
-    const confirmar = window.confirm(
-      `¿Quitar "${item.nombre_producto}" del carrito?`
-    );
+    const confirmar = await confirmarZyra({
+      titulo: "Quitar del carrito",
+      mensaje: `¿Quitar "${item.nombre_producto}" del carrito?`,
+      tipo: "danger",
+      textoConfirmar: "Sí, quitar"
+    });
 
     if (!confirmar) return;
 
@@ -702,7 +803,11 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
 
       await cargarCarritoCliente();
     } catch (error) {
-      alert(error.message || "No se pudo quitar el producto del carrito.");
+      await alertaZyra({
+        titulo: "No se pudo quitar",
+        mensaje: error.message || "No se pudo quitar el producto del carrito.",
+        tipo: "error"
+      });
     }
   };
 
@@ -743,7 +848,11 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
 
   const crearPedidoDesdeCarrito = async () => {
     if ((carritoCliente.items || []).length === 0) {
-      alert("Tu carrito está vacío.");
+      await alertaZyra({
+        titulo: "Carrito vacío",
+        mensaje: "Tu carrito está vacío.",
+        tipo: "warning"
+      });
       return;
     }
 
@@ -754,15 +863,20 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     );
 
     if (tiendasCarrito.size > 1) {
-      alert(
-        "Por ahora realiza pedidos de una sola tienda a la vez, para que el pago vaya al QR correcto de esa empresa."
-      );
+      await alertaZyra({
+        titulo: "Pedido por tienda",
+        mensaje: "Por ahora realiza pedidos de una sola tienda a la vez, para que el pago vaya al QR correcto de esa empresa.",
+        tipo: "info"
+      });
       return;
     }
 
-    const confirmar = window.confirm(
-      `¿Crear pedido por ${Number(carritoCliente.total || 0).toFixed(2)} Bs?`
-    );
+    const confirmar = await confirmarZyra({
+      titulo: "Crear pedido",
+      mensaje: `¿Crear pedido por ${Number(carritoCliente.total || 0).toFixed(2)} Bs?`,
+      tipo: "warning",
+      textoConfirmar: "Crear pedido"
+    });
 
     if (!confirmar) return;
 
@@ -791,7 +905,11 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
       setMensajePago("Pedido creado correctamente. Ahora realiza el pago con el QR de la tienda y sube tu comprobante.");
       setSeccionCliente("pago");
     } catch (error) {
-      alert(error.message || "No se pudo crear el pedido.");
+      await alertaZyra({
+        titulo: "No se pudo crear el pedido",
+        mensaje: error.message || "No se pudo crear el pedido.",
+        tipo: "error"
+      });
     }
   };
 
@@ -803,7 +921,11 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
       setMensajePago("");
       setSeccionCliente("pago");
     } catch (error) {
-      alert(error.message || "No se pudo abrir el pago del pedido.");
+      await alertaZyra({
+        titulo: "No se pudo abrir el pago",
+        mensaje: error.message || "No se pudo abrir el pago del pedido.",
+        tipo: "error"
+      });
     }
   };
 
@@ -811,18 +933,29 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     e.preventDefault();
 
     if (!pedidoPago?.id_pedido) {
-      alert("No hay un pedido seleccionado.");
+      await alertaZyra({
+        titulo: "Pedido no seleccionado",
+        mensaje: "No hay un pedido seleccionado.",
+        tipo: "warning"
+      });
       return;
     }
 
     if (!comprobantePago) {
-      alert("Selecciona una imagen del comprobante de pago.");
+      await alertaZyra({
+        titulo: "Falta comprobante",
+        mensaje: "Selecciona una imagen del comprobante de pago.",
+        tipo: "warning"
+      });
       return;
     }
 
-    const confirmar = window.confirm(
-      "¿Subir este comprobante para que la empresa revise tu pago?"
-    );
+    const confirmar = await confirmarZyra({
+      titulo: "Enviar comprobante",
+      mensaje: "¿Subir este comprobante para que la empresa revise tu pago?",
+      tipo: "warning",
+      textoConfirmar: "Enviar comprobante"
+    });
 
     if (!confirmar) return;
 
@@ -846,13 +979,21 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
         throw new Error(datos.detail || "No se pudo registrar el comprobante.");
       }
 
-      alert("Comprobante enviado correctamente. Tu pago queda en revisión.");
+      await alertaZyra({
+        titulo: "Comprobante enviado",
+        mensaje: "Comprobante enviado correctamente. Tu pago queda en revisión.",
+        tipo: "ok"
+      });
       setComprobantePago(null);
       setPedidoPago(null);
       await cargarPedidosCliente();
       setSeccionCliente("pedidos");
     } catch (error) {
-      alert(error.message || "No se pudo registrar el pago.");
+      await alertaZyra({
+        titulo: "No se pudo registrar el pago",
+        mensaje: error.message || "No se pudo registrar el pago.",
+        tipo: "error"
+      });
     }
 
     setCargandoPago(false);
@@ -877,6 +1018,11 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     cargarPedidosCliente();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    cargarProductosDestacados();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [criterioDestacados]);
 
   useEffect(() => {
     if (seccionCliente === "pedidos") {
@@ -1055,11 +1201,15 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     return [...tallas].sort();
   }, [productos]);
 
-  const productosDestacados = useMemo(() => {
+  const productosDestacadosInicio = useMemo(() => {
+    if (productosDestacadosCliente.length > 0) {
+      return productosDestacadosCliente;
+    }
+
     return productos
       .filter((producto) => producto.imagen_principal)
-      .slice(0, 6);
-  }, [productos]);
+      .slice(0, 15);
+  }, [productos, productosDestacadosCliente]);
 
   const tiendasInicio = useMemo(() => {
     const mapa = new Map();
@@ -1349,6 +1499,13 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
   const abrirDetalleEmpresa = (empresa) => {
     if (!empresa) return;
     setEmpresaSeleccionada(empresa);
+
+    if (empresa.id_empresa) {
+      const params = usuario?.id_usuario ? `?id_usuario=${usuario.id_usuario}` : "";
+      fetch(`${API_URL}/cliente/empresas/${empresa.id_empresa}/visita${params}`, {
+        method: "POST"
+      }).catch(() => {});
+    }
   };
 
   const renderLogoEmpresa = (empresa, grande = false) => {
@@ -1356,14 +1513,14 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
 
     if (empresa?.logo_url) {
       return (
-        <span className={clase}>
+        <span className={clase} style={obtenerEstiloTienda(empresa)}>
           <img src={obtenerUrlImagen(empresa.logo_url)} alt={empresa.nombre_empresa || "Empresa"} />
         </span>
       );
     }
 
     return (
-      <span className={clase}>
+      <span className={clase} style={obtenerEstiloTienda(empresa)}>
         {empresa?.nombre_empresa?.charAt(0) || "Z"}
       </span>
     );
@@ -1424,6 +1581,13 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
         </div>
 
         <h3>{producto.nombre_producto}</h3>
+        {destacado && producto.metricas && (
+          <div className="cliente-destacado-metricas">
+            <span>{producto.metricas.ventas || 0} venta(s)</span>
+            <span>{producto.metricas.vistas || 0} vista(s)</span>
+            <span>{producto.metricas.cotizaciones || 0} cotizada(s)</span>
+          </div>
+        )}
         <button
           type="button"
           className="cliente-producto-empresa-btn"
@@ -1507,8 +1671,9 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
       <section className="cliente-home-section">
         <div className="cliente-section-title">
           <div>
-            <span>Selección para ti</span>
-            <h3>Prendas destacadas</h3>
+            <span>Selección inteligente</span>
+            <h3>15 prendas destacadas</h3>
+            <p>Elige si quieres ver lo más vendido, lo más visto o lo más cotizado.</p>
           </div>
 
           <button type="button" onClick={() => setSeccionCliente("catalogo")}>
@@ -1516,14 +1681,48 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
           </button>
         </div>
 
-        {productosDestacados.length === 0 ? (
+        <div className="cliente-destacados-filtros">
+          <button
+            type="button"
+            className={criterioDestacados === "ventas" ? "activo" : ""}
+            onClick={() => setCriterioDestacados("ventas")}
+          >
+            Más vendidas
+          </button>
+          <button
+            type="button"
+            className={criterioDestacados === "vistas" ? "activo" : ""}
+            onClick={() => setCriterioDestacados("vistas")}
+          >
+            Más vistas
+          </button>
+          <button
+            type="button"
+            className={criterioDestacados === "cotizados" ? "activo" : ""}
+            onClick={() => setCriterioDestacados("cotizados")}
+          >
+            Más cotizadas
+          </button>
+        </div>
+
+        {cargandoDestacados ? (
+          <div className="cliente-vacio">
+            <h3>Cargando destacados...</h3>
+            <p>Estamos calculando las prendas con más actividad.</p>
+          </div>
+        ) : errorDestacados ? (
+          <div className="cliente-vacio">
+            <h3>No se pudieron cargar los destacados</h3>
+            <p>{errorDestacados}</p>
+          </div>
+        ) : productosDestacadosInicio.length === 0 ? (
           <div className="cliente-vacio">
             <h3>Aún no hay productos destacados</h3>
-            <p>Cuando las tiendas suban imágenes, aparecerán aquí.</p>
+            <p>Cuando haya vistas, ventas o prendas agregadas al carrito, aparecerán aquí.</p>
           </div>
         ) : (
           <div className="cliente-destacados-grid">
-            {productosDestacados.map((producto) => renderProductoCard(producto, true))}
+            {productosDestacadosInicio.map((producto) => renderProductoCard(producto, true))}
           </div>
         )}
       </section>
@@ -1719,212 +1918,53 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     </div>
   );
 
-
-  const seleccionarImagenBusquedaIa = (e) => {
-    const archivo = e.target.files?.[0];
-
-    if (!archivo) return;
-
-    if (!archivo.type.startsWith("image/")) {
-      setMensajeBusquedaIa("Selecciona una imagen válida en formato JPG, PNG o WEBP.");
-      setTipoMensajeBusquedaIa("error");
-      return;
-    }
-
-    setImagenBusquedaIa(archivo);
-    setPreviewBusquedaIa(URL.createObjectURL(archivo));
-    setResultadosBusquedaIa([]);
-    setMensajeBusquedaIa("Imagen lista. Presiona Buscar similares para analizarla con IA.");
-    setTipoMensajeBusquedaIa("ok");
-  };
-
-  const limpiarBusquedaVisualIa = () => {
-    setImagenBusquedaIa(null);
-    setPreviewBusquedaIa(null);
-    setResultadosBusquedaIa([]);
-    setMensajeBusquedaIa("");
-    setTipoMensajeBusquedaIa("");
-  };
-
-  const ejecutarBusquedaVisualIa = async () => {
-    if (!usuario?.id_usuario) {
-      setMensajeBusquedaIa("No se encontró el usuario cliente. Vuelve a iniciar sesión.");
-      setTipoMensajeBusquedaIa("error");
-      return;
-    }
-
-    if (!imagenBusquedaIa) {
-      setMensajeBusquedaIa("Primero selecciona una imagen para buscar prendas similares.");
-      setTipoMensajeBusquedaIa("error");
-      return;
-    }
-
-    setCargandoBusquedaIa(true);
-    setMensajeBusquedaIa("Analizando imagen y buscando prendas similares...");
-    setTipoMensajeBusquedaIa("ok");
-
-    try {
-      const formData = new FormData();
-      formData.append("archivo", imagenBusquedaIa);
-
-      const respuesta = await fetch(
-        `${API_URL}/cliente/buscar-por-imagen?id_usuario=${usuario.id_usuario}&limite=12`,
-        {
-          method: "POST",
-          body: formData
-        }
-      );
-
-      const datos = await respuesta.json().catch(() => ({}));
-
-      if (!respuesta.ok) {
-        throw new Error(datos.detail || "No se pudo realizar la búsqueda visual.");
-      }
-
-      const resultados = datos.resultados || [];
-      setResultadosBusquedaIa(resultados);
-
-      if (resultados.length === 0) {
-        setMensajeBusquedaIa("La IA no encontró prendas similares por ahora. Prueba con otra imagen más clara.");
-        setTipoMensajeBusquedaIa("error");
-      } else {
-        setMensajeBusquedaIa(`La IA encontró ${resultados.length} prenda(s) similares en Zyra.`);
-        setTipoMensajeBusquedaIa("ok");
-      }
-    } catch (error) {
-      setResultadosBusquedaIa([]);
-      setMensajeBusquedaIa(error.message || "No se pudo conectar con la búsqueda visual.");
-      setTipoMensajeBusquedaIa("error");
-    }
-
-    setCargandoBusquedaIa(false);
-  };
-
   const renderBuscarImagen = () => (
     <div className="cliente-ia-page cliente-page-con-carrito">
-      <section className="cliente-ia-hero cliente-ia-hero-activa">
+      <section className="cliente-ia-hero">
         <div>
           <span>Búsqueda visual con inteligencia artificial</span>
-          <h2>Busca prendas reales usando una imagen.</h2>
+          <h2>Próximamente podrás buscar prendas usando una imagen.</h2>
           <p>
-            Sube una foto de referencia y Zyra comparará colores, formas y estilo
-            contra los productos publicados por las tiendas aprobadas.
+            La idea es que subas una foto de referencia y Zyra busque productos
+            parecidos dentro de los catálogos de empresas bolivianas.
           </p>
         </div>
 
-        <div className="cliente-ia-upload ia-activa">
-          <label className="cliente-ia-drop">
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/jpg,image/webp"
-              onChange={seleccionarImagenBusquedaIa}
-            />
-
-            {previewBusquedaIa ? (
-              <span className="cliente-ia-preview">
-                <img src={previewBusquedaIa} alt="Imagen seleccionada para búsqueda visual" />
-              </span>
-            ) : (
-              <span className="cliente-ia-icono">IA</span>
-            )}
-
-            <strong>{imagenBusquedaIa ? imagenBusquedaIa.name : "Sube una imagen"}</strong>
-            <p>
-              Usa una foto clara de una prenda. Mientras más visible sea la ropa,
-              mejores serán los resultados.
-            </p>
-          </label>
-
-          <div className="cliente-ia-actions">
-            <button
-              type="button"
-              className="principal"
-              onClick={ejecutarBusquedaVisualIa}
-              disabled={cargandoBusquedaIa || !imagenBusquedaIa}
-            >
-              {cargandoBusquedaIa ? "Buscando..." : "Buscar similares"}
-            </button>
-
-            <button type="button" onClick={limpiarBusquedaVisualIa} disabled={cargandoBusquedaIa}>
-              Limpiar
-            </button>
-          </div>
+        <div className="cliente-ia-upload">
+          <div className="cliente-ia-icono">IA</div>
+          <strong>Subir imagen</strong>
+          <p>Este espacio queda reservado para el módulo de inteligencia artificial.</p>
+          <button type="button" disabled>
+            Próximamente
+          </button>
         </div>
       </section>
 
-      {mensajeBusquedaIa && (
-        <div className={`cliente-ia-mensaje ${tipoMensajeBusquedaIa || "ok"}`}>
-          {mensajeBusquedaIa}
-        </div>
-      )}
+      <div className="cliente-ia-cards">
+        <article>
+          <span>1</span>
+          <h3>Subes una referencia</h3>
+          <p>Una foto de una prenda, color, textura o estilo que te guste.</p>
+        </article>
 
-      {cargandoBusquedaIa && (
-        <div className="cliente-vacio cliente-ia-loading">
-          <h3>La IA está analizando tu imagen...</h3>
-          <p>Estamos comparando tu foto con las prendas registradas en Zyra.</p>
-        </div>
-      )}
+        <article>
+          <span>2</span>
+          <h3>Zyra analiza la imagen</h3>
+          <p>El sistema compara visualmente con productos registrados.</p>
+        </article>
 
-      {!cargandoBusquedaIa && resultadosBusquedaIa.length > 0 && (
-        <section className="cliente-home-section cliente-ia-resultados">
-          <div className="cliente-section-title">
-            <div>
-              <span>Resultados inteligentes</span>
-              <h3>Prendas similares encontradas</h3>
-              <p>Ordenadas por coincidencia visual según la imagen que subiste.</p>
-            </div>
-          </div>
-
-          <div className="cliente-productos-grid cliente-ia-resultados-grid">
-            {resultadosBusquedaIa.map((producto) => (
-              <div className="cliente-ia-resultado-card" key={`ia-${producto.id_producto}`}>
-                <div
-                  className={`cliente-ia-score ${
-                    Number(producto.score_similitud || 0) >= 85
-                      ? "alta"
-                      : Number(producto.score_similitud || 0) >= 70
-                      ? "media"
-                      : "baja"
-                  }`}
-                >
-                  <strong>{Number(producto.score_similitud || 0).toFixed(1)}%</strong>
-                  <span>{producto.nivel_similitud || "Similitud visual"}</span>
-                </div>
-
-                {renderProductoCard(producto)}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {!cargandoBusquedaIa && resultadosBusquedaIa.length === 0 && (
-        <div className="cliente-ia-cards">
-          <article>
-            <span>1</span>
-            <h3>Subes una referencia</h3>
-            <p>Una foto de una prenda, color, textura o estilo que te guste.</p>
-          </article>
-
-          <article>
-            <span>2</span>
-            <h3>Zyra analiza la imagen</h3>
-            <p>El sistema compara visualmente con productos registrados.</p>
-          </article>
-
-          <article>
-            <span>3</span>
-            <h3>Encuentras opciones reales</h3>
-            <p>Verás prendas similares disponibles en tiendas locales.</p>
-          </article>
-        </div>
-      )}
+        <article>
+          <span>3</span>
+          <h3>Encuentras opciones reales</h3>
+          <p>Verás prendas similares disponibles en tiendas locales.</p>
+        </article>
+      </div>
 
       <section className="cliente-home-section">
         <div className="cliente-section-title">
           <div>
             <span>Tiendas disponibles</span>
-            <h3>También puedes explorar marcas dentro de Zyra</h3>
+            <h3>Explora marcas mientras llega la IA</h3>
           </div>
         </div>
 
@@ -2633,7 +2673,7 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
                     onChange={cambiarCuentaClienteForm}
                     maxLength="8"
                     inputMode="numeric"
-                    placeholder="8 números"
+                    placeholder="7 a 8 números"
                   />
                 </div>
               </div>
@@ -2753,9 +2793,15 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     detalleProducto?.imagenes?.[0]?.url_imagen ||
     null;
 
+  const nombrePerfilCliente = obtenerNombrePerfilCliente(usuarioCliente || usuario);
+  const fotoPerfilCliente = obtenerUrlImagen(usuarioCliente?.foto_url || usuario?.foto_url || null);
+
   return (
     <PortalLayout
-      logo="Zyra"
+      logo={nombrePerfilCliente}
+      logoUrl={fotoPerfilCliente}
+      logoInicial={obtenerInicialesPerfil(nombrePerfilCliente)}
+      logoSubtitulo="Perfil cliente"
       titulo={
         seccionCliente === "catalogo"
           ? "Catálogo de moda local"
@@ -2961,7 +3007,11 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
 
       {empresaSeleccionada && (
         <div className="cliente-modal-fondo" onClick={() => setEmpresaSeleccionada(null)}>
-          <div className="cliente-empresa-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className={`cliente-empresa-modal tienda-publica tema-${empresaSeleccionada.tema_tienda || "elegante"}`}
+            style={obtenerEstiloTienda(empresaSeleccionada)}
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               className="cliente-modal-cerrar"
@@ -2973,9 +3023,15 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
             <div className="cliente-empresa-modal-header">
               {renderLogoEmpresa(empresaSeleccionada, true)}
               <div>
-                <span>Tienda dentro de Zyra</span>
+                <span>Tienda dentro de Zyra · Tema {obtenerTemaTienda(empresaSeleccionada)}</span>
                 <h2>{empresaSeleccionada.nombre_empresa}</h2>
                 <p>{empresaSeleccionada.descripcion || "Esta tienda aún no agregó una descripción pública."}</p>
+                <div className="tienda-publica-paleta">
+                  <i style={{ background: empresaSeleccionada.color_principal || "#8f174d" }} />
+                  <i style={{ background: empresaSeleccionada.color_secundario || "#e879b4" }} />
+                  <i style={{ background: empresaSeleccionada.color_acento || "#c02672" }} />
+                  <i style={{ background: empresaSeleccionada.color_fondo || "#fff1f7" }} />
+                </div>
               </div>
             </div>
 
@@ -2984,6 +3040,12 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
                 <span>Dirección</span>
                 <strong>{empresaSeleccionada.direccion || "No registrada"}</strong>
                 <p>{empresaSeleccionada.ciudad || "Bolivia"}</p>
+              </div>
+
+              <div>
+                <span>Ubicación</span>
+                <strong>{empresaSeleccionada.google_maps_url ? "Mapa disponible" : "No registrada"}</strong>
+                <p>{empresaSeleccionada.google_maps_url ? "Puedes abrir la ubicación de la tienda." : "La tienda aún no agregó mapa."}</p>
               </div>
 
               <div>
@@ -3000,6 +3062,17 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
             </div>
 
             <div className="cliente-empresa-modal-actions">
+              {empresaSeleccionada.google_maps_url && (
+                <a
+                  href={empresaSeleccionada.google_maps_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="cliente-btn-mapa"
+                >
+                  Ver ubicación
+                </a>
+              )}
+
               {empresaSeleccionada.whatsapp && (
                 <a
                   href={`https://wa.me/591${empresaSeleccionada.whatsapp}`}
@@ -3045,6 +3118,8 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
           <img src={obtenerUrlImagen(imagenGrande)} alt="Vista ampliada" />
         </div>
       )}
+
+      <ZyraDialogHost dialogo={dialogoZyra} onClose={cerrarDialogoZyra} />
     </PortalLayout>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PortalLayout from "../components/layout/PortalLayout";
+import { useZyraDialog, ZyraDialogHost } from "../components/ui/ZyraDialog";
 import {
   actualizarCuentaAdminApi,
   cambiarEstadoEmpresaAdminApi,
@@ -7,6 +8,7 @@ import {
   cambiarEstadoUsuarioAdminApi,
   cambiarPasswordAdminApi,
   crearAdministradorAdminApi,
+  crearBackupAdminApi,
   eliminarUsuarioAdminApi,
   obtenerCuentaAdminApi,
   obtenerEmpresasAdminApi,
@@ -14,7 +16,9 @@ import {
   obtenerPedidosAdminApi,
   obtenerProductosAdminApi,
   obtenerResumenAdminApi,
+  obtenerReportesAdminApi,
   obtenerSoporteAdminApi,
+  obtenerBackupsAdminApi,
   obtenerMensajesTicketApi,
   responderTicketSoporteApi,
   obtenerUsuariosAdminApi,
@@ -70,6 +74,22 @@ function formatearMonto(valor) {
   return `${numero.toFixed(2)} Bs`;
 }
 
+function formatearEntero(valor) {
+  return Number(valor || 0).toLocaleString("es-BO");
+}
+
+function formatearBytes(bytes = 0) {
+  const numero = Number(bytes || 0);
+  if (numero < 1024) return `${numero} B`;
+  if (numero < 1024 * 1024) return `${(numero / 1024).toFixed(1)} KB`;
+  return `${(numero / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function formatearFechaReporte(fecha) {
+  if (!fecha) return "Sin fecha";
+  return new Date(fecha).toLocaleString("es-BO");
+}
+
 function nombreCompleto(usuario) {
   if (!usuario) return "Sin usuario";
   return `${usuario.nombre || ""} ${usuario.apellido || ""}`.trim() || usuario.email || "Sin nombre";
@@ -81,6 +101,14 @@ function normalizarRol(rol) {
 
 function normalizarEstadoUsuario(estado) {
   return String(estado || "ACTIVO").toUpperCase();
+}
+
+function esCorreoGmailAdmin(email = "") {
+  return /^[^\s@]+@gmail\.com$/.test(String(email || "").trim().toLowerCase());
+}
+
+function telefonoValidoOpcionalAdmin(telefono = "") {
+  return !telefono || /^\d{7,8}$/.test(String(telefono || ""));
 }
 
 function agruparProductosPorEmpresa(productos) {
@@ -172,6 +200,9 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
   const [pedidos, setPedidos] = useState([]);
   const [pagos, setPagos] = useState([]);
   const [tickets, setTickets] = useState([]);
+  const [reportes, setReportes] = useState(null);
+  const [backups, setBackups] = useState([]);
+  const [creandoBackup, setCreandoBackup] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
   const [filtroEmpresa, setFiltroEmpresa] = useState("TODAS");
@@ -188,6 +219,8 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
   const [respuestaTicket, setRespuestaTicket] = useState("");
   const [cargandoMensajesTicket, setCargandoMensajesTicket] = useState(false);
   const [enviandoRespuestaTicket, setEnviandoRespuestaTicket] = useState(false);
+  const [graficoReporte, setGraficoReporte] = useState("vendidos");
+  const { dialogoZyra, alertaZyra, confirmarZyra, cerrarDialogoZyra } = useZyraDialog();
 
 
   const [cuentaAdmin, setCuentaAdmin] = useState({
@@ -226,6 +259,8 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
     { id: "productos", nombre: "Productos", icono: "catalogo" },
     { id: "pedidos", nombre: "Pedidos", icono: "pedidos" },
     { id: "pagos", nombre: "Pagos", icono: "pagos" },
+    { id: "reportes", nombre: "Reportes", icono: "resumen" },
+    { id: "backups", nombre: "Backups", icono: "catalogo" },
     { id: "soporte", nombre: "Soporte", icono: "imagen" },
     { id: "mi_cuenta", nombre: "Mi cuenta", icono: "usuario" }
   ];
@@ -265,6 +300,38 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
     setTickets(datos);
   };
 
+  const cargarReportes = async () => {
+    const datos = await obtenerReportesAdminApi(usuario.id_usuario, 15);
+    setReportes(datos);
+  };
+
+  const cargarBackups = async () => {
+    const datos = await obtenerBackupsAdminApi(usuario.id_usuario);
+    setBackups(datos);
+  };
+
+  const crearBackup = async () => {
+    const confirmar = await confirmarZyra({
+      titulo: "Crear copia de seguridad",
+      mensaje: "Se guardará un backup JSON con usuarios, tiendas, productos, pedidos, pagos, soporte y métricas.",
+      tipo: "warning",
+      textoConfirmar: "Crear backup"
+    });
+    if (!confirmar) return;
+
+    setCreandoBackup(true);
+    setError("");
+
+    try {
+      await crearBackupAdminApi(usuario.id_usuario);
+      await cargarBackups();
+    } catch (err) {
+      setError(err.message || "No se pudo crear la copia de seguridad.");
+    } finally {
+      setCreandoBackup(false);
+    }
+  };
+
   const cargarCuentaAdmin = async () => {
     const datos = await obtenerCuentaAdminApi(usuario.id_usuario);
     setCuentaAdmin({
@@ -287,6 +354,7 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
           cargarEmpresas(),
           cargarPedidos(),
           cargarPagos(),
+          cargarReportes().catch(() => setReportes(null)),
           cargarSoporte().catch(() => setTickets([]))
         ]);
       }
@@ -296,6 +364,8 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       if (seccion === "productos") await cargarProductos();
       if (seccion === "pedidos") await cargarPedidos();
       if (seccion === "pagos") await cargarPagos();
+      if (seccion === "reportes") await cargarReportes();
+      if (seccion === "backups") await cargarBackups();
       if (seccion === "soporte") await cargarSoporte();
       if (seccion === "mi_cuenta") await cargarCuentaAdmin();
     } catch (err) {
@@ -439,7 +509,12 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
   };
 
   const cambiarEstadoEmpresa = async (empresa, estado) => {
-    const confirmar = window.confirm(`¿Seguro que quieres cambiar ${empresa.nombre_empresa} a ${estado}?`);
+    const confirmar = await confirmarZyra({
+      titulo: "Cambiar estado de tienda",
+      mensaje: `¿Seguro que quieres cambiar ${empresa.nombre_empresa} a ${estado}?`,
+      tipo: estado === "DESHABILITADA" ? "danger" : "warning",
+      textoConfirmar: "Sí, cambiar"
+    });
     if (!confirmar) return;
 
     try {
@@ -447,12 +522,21 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       await cargarEmpresas();
       await cargarResumen().catch(() => {});
     } catch (err) {
-      alert(err.message || "No se pudo cambiar el estado de la empresa.");
+      await alertaZyra({
+        titulo: "No se pudo cambiar la tienda",
+        mensaje: err.message || "No se pudo cambiar el estado de la empresa.",
+        tipo: "error"
+      });
     }
   };
 
   const cambiarEstadoUsuario = async (usuarioSeleccionado, estado) => {
-    const confirmar = window.confirm(`¿Seguro que quieres cambiar a ${nombreCompleto(usuarioSeleccionado)} a ${estado}?`);
+    const confirmar = await confirmarZyra({
+      titulo: "Cambiar estado de usuario",
+      mensaje: `¿Seguro que quieres cambiar a ${nombreCompleto(usuarioSeleccionado)} a ${estado}?`,
+      tipo: estado === "INACTIVO" ? "danger" : "warning",
+      textoConfirmar: "Sí, cambiar"
+    });
     if (!confirmar) return;
 
     try {
@@ -460,14 +544,22 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       await cargarUsuarios();
       await cargarResumen().catch(() => {});
     } catch (err) {
-      alert(err.message || "No se pudo cambiar el estado del usuario.");
+      await alertaZyra({
+        titulo: "No se pudo cambiar el usuario",
+        mensaje: err.message || "No se pudo cambiar el estado del usuario.",
+        tipo: "error"
+      });
     }
   };
 
   const eliminarUsuario = async (usuarioSeleccionado) => {
-    const confirmar = window.confirm(
-      `¿Seguro que quieres eliminar a ${nombreCompleto(usuarioSeleccionado)}?\n\nSi tiene pedidos, empresa, productos o tickets relacionados, el sistema puede impedirlo.`
-    );
+    const confirmar = await confirmarZyra({
+      titulo: "Eliminar usuario",
+      mensaje: `¿Seguro que quieres eliminar a ${nombreCompleto(usuarioSeleccionado)}?`,
+      detalle: "Si tiene pedidos, empresa, productos o tickets relacionados, el sistema puede impedirlo. También puedes deshabilitarlo.",
+      tipo: "danger",
+      textoConfirmar: "Eliminar"
+    });
     if (!confirmar) return;
 
     try {
@@ -475,7 +567,11 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       await cargarUsuarios();
       await cargarResumen().catch(() => {});
     } catch (err) {
-      alert(err.message || "No se pudo eliminar el usuario. Puedes deshabilitarlo si tiene registros relacionados.");
+      await alertaZyra({
+        titulo: "No se pudo eliminar",
+        mensaje: err.message || "No se pudo eliminar el usuario. Puedes deshabilitarlo si tiene registros relacionados.",
+        tipo: "error"
+      });
     }
   };
 
@@ -484,7 +580,11 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       await cambiarEstadoSoporteAdminApi(ticket.id_ticket, usuario.id_usuario, estado);
       await cargarSoporte();
     } catch (err) {
-      alert(err.message || "No se pudo cambiar el estado del ticket.");
+      await alertaZyra({
+        titulo: "No se pudo actualizar soporte",
+        mensaje: err.message || "No se pudo cambiar el estado del ticket.",
+        tipo: "error"
+      });
     }
   };
 
@@ -499,7 +599,11 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       const datos = await obtenerMensajesTicketApi(ticket.id_ticket, usuario.id_usuario);
       setMensajesTicket(datos.mensajes || []);
     } catch (err) {
-      alert(err.message || "No se pudieron cargar los mensajes del ticket.");
+      await alertaZyra({
+        titulo: "No se pudo cargar la conversación",
+        mensaje: err.message || "No se pudieron cargar los mensajes del ticket.",
+        tipo: "error"
+      });
     } finally {
       setCargandoMensajesTicket(false);
     }
@@ -510,7 +614,11 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
 
     if (!ticketConversacion) return;
     if (!respuestaTicket.trim()) {
-      alert("Escribe una respuesta antes de enviarla.");
+      await alertaZyra({
+        titulo: "Respuesta vacía",
+        mensaje: "Escribe una respuesta antes de enviarla.",
+        tipo: "warning"
+      });
       return;
     }
 
@@ -523,7 +631,11 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       setMensajesTicket(datos.mensajes || []);
       await cargarSoporte();
     } catch (err) {
-      alert(err.message || "No se pudo enviar la respuesta.");
+      await alertaZyra({
+        titulo: "No se pudo responder",
+        mensaje: err.message || "No se pudo enviar la respuesta.",
+        tipo: "error"
+      });
     } finally {
       setEnviandoRespuestaTicket(false);
     }
@@ -533,6 +645,30 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
     e.preventDefault();
     setMensajeCuenta("");
     setTipoMensajeCuenta("");
+
+    if (!nuevoAdmin.nombre.trim()) {
+      setTipoMensajeCuenta("error");
+      setMensajeCuenta("El nombre del administrador es obligatorio.");
+      return;
+    }
+
+    if (!esCorreoGmailAdmin(nuevoAdmin.email)) {
+      setTipoMensajeCuenta("error");
+      setMensajeCuenta("El administrador debe usar un correo Gmail válido, por ejemplo usuario@gmail.com.");
+      return;
+    }
+
+    if (!nuevoAdmin.password || nuevoAdmin.password.length < 6) {
+      setTipoMensajeCuenta("error");
+      setMensajeCuenta("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+
+    if (!telefonoValidoOpcionalAdmin(nuevoAdmin.telefono)) {
+      setTipoMensajeCuenta("error");
+      setMensajeCuenta("El teléfono debe tener entre 7 y 8 números o dejarse vacío.");
+      return;
+    }
 
     try {
       await crearAdministradorAdminApi({
@@ -567,6 +703,24 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
     setMensajeCuenta("");
     setTipoMensajeCuenta("");
 
+    if (!cuentaAdmin.nombre.trim()) {
+      setTipoMensajeCuenta("error");
+      setMensajeCuenta("El nombre es obligatorio.");
+      return;
+    }
+
+    if (!esCorreoGmailAdmin(cuentaAdmin.email)) {
+      setTipoMensajeCuenta("error");
+      setMensajeCuenta("Debes usar un correo Gmail válido, por ejemplo usuario@gmail.com.");
+      return;
+    }
+
+    if (!telefonoValidoOpcionalAdmin(cuentaAdmin.telefono)) {
+      setTipoMensajeCuenta("error");
+      setMensajeCuenta("El teléfono debe tener entre 7 y 8 números o dejarse vacío.");
+      return;
+    }
+
     try {
       const datos = await actualizarCuentaAdminApi(usuario.id_usuario, {
         nombre: cuentaAdmin.nombre,
@@ -591,7 +745,7 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
         foto_url: fotoActualizada
       };
 
-      localStorage.setItem("usuarioZyra", JSON.stringify(usuarioActualizado));
+      localStorage.setItem("usuario_zyra", JSON.stringify(usuarioActualizado));
 
       setCuentaAdmin({
         nombre: datos.nombre || "",
@@ -1149,6 +1303,387 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
     );
   };
 
+  const coloresGraficoReporte = [
+    "#9d174d",
+    "#d9468f",
+    "#7c3aed",
+    "#14b8a6",
+    "#f59e0b",
+    "#ef4444",
+    "#2563eb",
+    "#64748b"
+  ];
+
+  const calcularTotalReporte = (lista = [], campo = "total") => {
+    return lista.reduce((suma, item) => suma + Number(item[campo] || 0), 0);
+  };
+
+  const calcularPorcentajeReporte = (valor, total) => {
+    const numero = Number(valor || 0);
+    const base = Number(total || 0);
+    if (!base || numero <= 0) return "0%";
+    const porcentaje = (numero / base) * 100;
+    return porcentaje >= 10 ? `${Math.round(porcentaje)}%` : `${porcentaje.toFixed(1)}%`;
+  };
+
+  const obtenerEtiquetaGrafico = (item = {}) => {
+    return (
+      item.nombre_producto ||
+      item.nombre_empresa ||
+      item.termino ||
+      (item.tipo && item.valor ? `${item.tipo}: ${item.valor}` : null) ||
+      "Sin dato"
+    );
+  };
+
+  const renderBarraReporte = (valor, maximo, total) => {
+    const numero = Number(valor || 0);
+    const ancho = maximo > 0 ? Math.max(4, Math.round((numero / maximo) * 100)) : 0;
+    const porcentaje = calcularPorcentajeReporte(numero, total || maximo);
+
+    return (
+      <div className="admin-reporte-barra-wrap">
+        <div className="admin-reporte-barra">
+          <span style={{ width: `${ancho}%` }}></span>
+        </div>
+        <b>{porcentaje}</b>
+      </div>
+    );
+  };
+
+  const renderTopProductosReporte = (titulo, subtitulo, lista = [], campo = "ventas") => {
+    const maximo = Math.max(...lista.map((item) => Number(item[campo] || 0)), 0);
+    const total = calcularTotalReporte(lista, campo);
+
+    return (
+      <article className="admin-reporte-card grande">
+        <div className="admin-reporte-card-head">
+          <div>
+            <span>Producto</span>
+            <h3>{titulo}</h3>
+            <p>{subtitulo}</p>
+          </div>
+        </div>
+
+        {lista.length === 0 ? (
+          <p className="admin-reporte-vacio">Aún no hay datos para este reporte.</p>
+        ) : (
+          <div className="admin-reporte-ranking">
+            {lista.map((producto, index) => (
+              <div className="admin-reporte-renglon" key={`${titulo}-${producto.id_producto}`}>
+                <strong>#{index + 1}</strong>
+                <div className="admin-reporte-producto-mini">
+                  {producto.imagen_principal ? (
+                    <img src={obtenerUrlImagen(producto.imagen_principal)} alt={producto.nombre_producto} />
+                  ) : (
+                    <span>{producto.nombre_producto?.charAt(0) || "P"}</span>
+                  )}
+                  <div>
+                    <b>{producto.nombre_producto}</b>
+                    <small>{producto.empresa || "Sin tienda"} · {producto.categoria || "Sin categoría"}</small>
+                    {renderBarraReporte(producto[campo], maximo, total)}
+                  </div>
+                </div>
+                <em>
+                  <b>{formatearEntero(producto[campo])}</b>
+                </em>
+              </div>
+            ))}
+          </div>
+        )}
+      </article>
+    );
+  };
+
+  const obtenerOpcionesGraficoReporte = (productosReporte, tiendasReporte, busquedasReporte) => [
+    {
+      id: "vendidos",
+      nombre: "Más vendidos",
+      subtitulo: "Distribución de prendas vendidas",
+      lista: productosReporte.mas_vendidos || [],
+      campo: "ventas"
+    },
+    {
+      id: "vistos",
+      nombre: "Más vistos",
+      subtitulo: "Productos más abiertos por clientes",
+      lista: productosReporte.mas_vistos || [],
+      campo: "vistas"
+    },
+    {
+      id: "cotizados",
+      nombre: "Más cotizados",
+      subtitulo: "Productos agregados al carrito",
+      lista: productosReporte.mas_cotizados || [],
+      campo: "cotizaciones"
+    },
+    {
+      id: "busquedas",
+      nombre: "Más buscados",
+      subtitulo: "Términos que más se escriben en el catálogo",
+      lista: busquedasReporte.populares || [],
+      campo: "total"
+    },
+    {
+      id: "tiendas",
+      nombre: "Tiendas visitadas",
+      subtitulo: "Tiendas con más visitas registradas",
+      lista: tiendasReporte.mas_visitadas || [],
+      campo: "visitas"
+    }
+  ];
+
+  const renderGraficoTortaReporte = (opciones = []) => {
+    const opcionActual = opciones.find((opcion) => opcion.id === graficoReporte) || opciones[0];
+    const datos = (opcionActual?.lista || [])
+      .slice(0, 7)
+      .map((item, index) => ({
+        etiqueta: obtenerEtiquetaGrafico(item),
+        valor: Number(item[opcionActual.campo] || 0),
+        color: coloresGraficoReporte[index % coloresGraficoReporte.length]
+      }))
+      .filter((item) => item.valor > 0);
+
+    const total = datos.reduce((suma, item) => suma + item.valor, 0);
+    let acumulado = 0;
+
+    const segmentos = datos.map((item) => {
+      const inicio = acumulado;
+      const porcentaje = total > 0 ? (item.valor / total) * 100 : 0;
+      acumulado += porcentaje;
+      return {
+        ...item,
+        inicio,
+        fin: acumulado,
+        porcentaje
+      };
+    });
+
+    const fondoTorta = segmentos.length
+      ? segmentos.map((item) => `${item.color} ${item.inicio}% ${item.fin}%`).join(", ")
+      : "#f4dce8 0% 100%";
+
+    return (
+      <article className="admin-reporte-card grande admin-reporte-torta-card">
+        <div className="admin-reporte-card-head admin-reporte-torta-head">
+          <div>
+            <span>Gráfico de torta</span>
+            <h3>{opcionActual?.nombre || "Distribución"}</h3>
+            <p>{opcionActual?.subtitulo || "Comparación porcentual de los registros principales."}</p>
+          </div>
+
+          <div className="admin-grafico-selector">
+            {opciones.map((opcion) => (
+              <button
+                key={opcion.id}
+                type="button"
+                className={graficoReporte === opcion.id ? "activo" : ""}
+                onClick={() => setGraficoReporte(opcion.id)}
+              >
+                {opcion.nombre}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {segmentos.length === 0 ? (
+          <p className="admin-reporte-vacio">Aún no hay datos suficientes para generar la torta.</p>
+        ) : (
+          <div className="admin-torta-layout">
+            <div className="admin-torta" style={{ background: `conic-gradient(${fondoTorta})` }}>
+              <div>
+                <strong>{formatearEntero(total)}</strong>
+                <span>Total</span>
+              </div>
+            </div>
+
+            <div className="admin-torta-leyenda">
+              {segmentos.map((item, index) => (
+                <div key={`${item.etiqueta}-${index}`}>
+                  <i style={{ background: item.color }}></i>
+                  <div>
+                    <b>{item.etiqueta}</b>
+                    <small>{formatearEntero(item.valor)} registro(s)</small>
+                  </div>
+                  <strong>{calcularPorcentajeReporte(item.valor, total)}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </article>
+    );
+  };
+
+  const renderReportes = () => {
+    const resumenReporte = reportes?.resumen || {};
+    const productosReporte = reportes?.productos || {};
+    const tiendasReporte = reportes?.tiendas || {};
+    const busquedasReporte = reportes?.busquedas || {};
+    const ventasReporte = reportes?.ventas || {};
+    const maxVisitasTienda = Math.max(...(tiendasReporte.mas_visitadas || []).map((tienda) => Number(tienda.visitas || 0)), 0);
+    const totalVisitasTienda = calcularTotalReporte(tiendasReporte.mas_visitadas || [], "visitas");
+    const maxVentasDia = Math.max(...(ventasReporte.por_dia || []).map((dia) => Number(dia.ingresos || 0)), 0);
+    const totalVentasDia = calcularTotalReporte(ventasReporte.por_dia || [], "ingresos");
+    const opcionesGrafico = obtenerOpcionesGraficoReporte(productosReporte, tiendasReporte, busquedasReporte);
+
+    return (
+      <section className="admin-reportes">
+        <div className="admin-section-header">
+          <div>
+            <span>REPORTES ADMINISTRATIVOS</span>
+            <h2>Estadísticas generales de Zyra</h2>
+            <p>Registro de vistas, visitas a tiendas, búsquedas, cotizaciones y ventas.</p>
+          </div>
+          <button type="button" onClick={cargarReportes}>Actualizar reportes</button>
+        </div>
+
+        <div className="admin-reporte-kpis">
+          <article><span>Vistas de productos</span><strong>{formatearEntero(resumenReporte.vistas_productos)}</strong></article>
+          <article><span>Visitas a tiendas</span><strong>{formatearEntero(resumenReporte.visitas_tiendas)}</strong></article>
+          <article><span>Búsquedas</span><strong>{formatearEntero(resumenReporte.busquedas)}</strong></article>
+          <article><span>Prendas cotizadas</span><strong>{formatearEntero(resumenReporte.cotizaciones)}</strong></article>
+          <article><span>Prendas vendidas</span><strong>{formatearEntero(resumenReporte.prendas_vendidas)}</strong></article>
+          <article><span>Ingresos vendidos</span><strong>{formatearMonto(resumenReporte.ingresos_totales)}</strong></article>
+        </div>
+
+        <div className="admin-reportes-grid">
+          {renderTopProductosReporte("Más vendidos", "Prendas ordenadas por ventas pagadas", productosReporte.mas_vendidos || [], "ventas")}
+          {renderTopProductosReporte("Más vistos", "Prendas que más abrieron los clientes", productosReporte.mas_vistos || [], "vistas")}
+          {renderTopProductosReporte("Más cotizados", "Prendas más agregadas al carrito", productosReporte.mas_cotizados || [], "cotizaciones")}
+
+          <article className="admin-reporte-card">
+            <span>Tiendas</span>
+            <h3>Más visitadas</h3>
+            {(tiendasReporte.mas_visitadas || []).length === 0 ? (
+              <p className="admin-reporte-vacio">Aún no hay visitas registradas.</p>
+            ) : (
+              <div className="admin-reporte-lista-simple">
+                {(tiendasReporte.mas_visitadas || []).map((tienda) => (
+                  <div key={`visita-${tienda.id_empresa}`}>
+                    <b>{tienda.nombre_empresa}</b>
+                    <small>{formatearEntero(tienda.visitas)} visita(s) · {calcularPorcentajeReporte(tienda.visitas, totalVisitasTienda)}</small>
+                    {renderBarraReporte(tienda.visitas, maxVisitasTienda, totalVisitasTienda)}
+                  </div>
+                ))}
+              </div>
+            )}
+          </article>
+
+          <article className="admin-reporte-card">
+            <span>Ventas</span>
+            <h3>Ventas por día</h3>
+            {(ventasReporte.por_dia || []).length === 0 ? (
+              <p className="admin-reporte-vacio">Aún no hay ventas pagadas registradas.</p>
+            ) : (
+              <div className="admin-reporte-lista-simple">
+                {(ventasReporte.por_dia || []).map((dia) => (
+                  <div key={dia.fecha}>
+                    <b>{dia.fecha}</b>
+                    <small>{formatearMonto(dia.ingresos)} · {formatearEntero(dia.cantidad)} prenda(s) · {calcularPorcentajeReporte(dia.ingresos, totalVentasDia)}</small>
+                    {renderBarraReporte(dia.ingresos, maxVentasDia, totalVentasDia)}
+                  </div>
+                ))}
+              </div>
+            )}
+          </article>
+
+          <article className="admin-reporte-card">
+            <span>Búsquedas</span>
+            <h3>Términos populares</h3>
+            {(busquedasReporte.populares || []).length === 0 ? (
+              <p className="admin-reporte-vacio">Aún no hay búsquedas registradas.</p>
+            ) : (
+              <div className="admin-reporte-tags">
+                {(busquedasReporte.populares || []).map((busqueda) => (
+                  <span key={busqueda.termino}>
+                    {busqueda.termino} <b>{formatearEntero(busqueda.total)}</b>
+                    <small>{calcularPorcentajeReporte(busqueda.total, calcularTotalReporte(busquedasReporte.populares || [], "total"))}</small>
+                  </span>
+                ))}
+              </div>
+            )}
+          </article>
+
+          <article className="admin-reporte-card">
+            <span>Filtros</span>
+            <h3>Filtros más usados</h3>
+            {(busquedasReporte.filtros_populares || []).length === 0 ? (
+              <p className="admin-reporte-vacio">Aún no hay filtros registrados.</p>
+            ) : (
+              <div className="admin-reporte-tags">
+                {(busquedasReporte.filtros_populares || []).map((filtro) => (
+                  <span key={`${filtro.tipo}-${filtro.valor}`}>
+                    {filtro.tipo}: {filtro.valor} <b>{formatearEntero(filtro.total)}</b>
+                    <small>{calcularPorcentajeReporte(filtro.total, calcularTotalReporte(busquedasReporte.filtros_populares || [], "total"))}</small>
+                  </span>
+                ))}
+              </div>
+            )}
+          </article>
+
+          {renderGraficoTortaReporte(opcionesGrafico)}
+        </div>
+      </section>
+    );
+  };
+
+  const renderBackups = () => (
+    <section className="admin-backups">
+      <div className="admin-section-header">
+        <div>
+          <span>COPIAS DE SEGURIDAD</span>
+          <h2>Backups administrativos</h2>
+          <p>Crea una copia JSON de los datos principales de Zyra y del registro estadístico.</p>
+        </div>
+        <button type="button" onClick={crearBackup} disabled={creandoBackup}>
+          {creandoBackup ? "Creando backup..." : "Crear copia de seguridad"}
+        </button>
+      </div>
+
+      <div className="admin-backup-info">
+        <article>
+          <span>Qué incluye</span>
+          <strong>Usuarios, tiendas, productos, variantes, pedidos, pagos, soporte y métricas.</strong>
+        </article>
+        <article>
+          <span>Ubicación</span>
+          <strong>backend/backups/</strong>
+        </article>
+      </div>
+
+      {backups.length === 0 ? (
+        <div className="admin-vacio">
+          <h3>Aún no hay copias creadas</h3>
+          <p>Presiona “Crear copia de seguridad” para guardar el primer backup.</p>
+        </div>
+      ) : (
+        <div className="admin-tabla-contenedor">
+          <table className="admin-tabla">
+            <thead>
+              <tr>
+                <th>Archivo</th>
+                <th>Tipo</th>
+                <th>Tamaño</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {backups.map((backup) => (
+                <tr key={backup.id_backup}>
+                  <td>{backup.nombre_archivo}</td>
+                  <td>{backup.tipo_backup}</td>
+                  <td>{formatearBytes(backup.tamanio_bytes)}</td>
+                  <td>{formatearFechaReporte(backup.fecha_backup)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
+
   const renderSoporte = () => (
     <div className="admin-page">
       <div className="admin-section-header">
@@ -1438,9 +1973,15 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
     );
   };
 
+  const nombrePerfilAdmin = nombreCompleto(cuentaAdmin || usuario || {});
+  const fotoPerfilAdmin = obtenerUrlImagen(cuentaAdmin?.foto_url || usuario?.foto_url || null);
+
   return (
     <PortalLayout
-      logo="Zyra Admin"
+      logo={nombrePerfilAdmin}
+      logoUrl={fotoPerfilAdmin}
+      logoInicial={nombrePerfilAdmin.charAt(0).toUpperCase()}
+      logoSubtitulo="Administrador"
       titulo={seccion === "mi_cuenta" ? "Mi cuenta" : usuario?.nombre || "Administrador"}
       subtitulo="Panel administrativo"
       menu={menu}
@@ -1494,6 +2035,8 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       {!cargando && seccion === "productos" && renderProductos()}
       {!cargando && seccion === "pedidos" && renderPedidos()}
       {!cargando && seccion === "pagos" && renderPagos()}
+      {!cargando && seccion === "reportes" && renderReportes()}
+      {!cargando && seccion === "backups" && renderBackups()}
       {!cargando && seccion === "soporte" && renderSoporte()}
       {!cargando && seccion === "mi_cuenta" && renderMiCuenta()}
 
@@ -1552,6 +2095,7 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       )}
 
       {renderDetalleModal()}
+      <ZyraDialogHost dialogo={dialogoZyra} onClose={cerrarDialogoZyra} />
     </PortalLayout>
   );
 }

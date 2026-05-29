@@ -3,12 +3,19 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text, or_
 import os
 import shutil
+import re
 from uuid import uuid4
 
 from app.database import get_db
 from app.models import Usuario, Rol, Empresa, Categoria, Producto, ProductoVariante, ProductoImagen, Carrito, CarritoDetalle, Pedido, PedidoDetalle, Pago, SoporteTicket, SoporteMensaje, Notificacion
 from app.schemas import RegistroCliente, RegistroEmpresa, LoginUsuario, CambioEstadoEmpresa, ProductoCrear, ProductoActualizar, CambioEstadoProducto, VarianteAgregar, VarianteActualizar, AgregarCarrito, ActualizarCantidadCarrito, CrearPedido, RegistrarPago, CambioEstadoPagoEmpresa, CambioEstadoPedidoEmpresa, CrearTicketSoporte, CrearMensajeSoporte, CambiarEstadoTicket, CategoriaCrear, ClienteCuentaActualizar, ClientePasswordCambiar
 from app.seguridad import crear_hash_password, verificar_password
+from app.estadisticas import (
+    registrar_busqueda,
+    registrar_cotizacion_producto,
+    registrar_vista_producto,
+    registrar_visita_tienda,
+)
 
 router = APIRouter()
 
@@ -51,6 +58,50 @@ def verificar_cliente_activo(db: Session, id_usuario: int):
     return usuario
 
 
+def limpiar_texto(valor):
+    return str(valor or "").strip()
+
+
+def validar_email_gmail(email: str):
+    correo = limpiar_texto(email).lower()
+    if not re.match(r"^[^\s@]+@gmail\.com$", correo):
+        raise HTTPException(status_code=400, detail="Usa un correo Gmail válido, por ejemplo usuario@gmail.com")
+    return correo
+
+
+def validar_telefono_opcional(telefono):
+    if telefono is None or limpiar_texto(telefono) == "":
+        return None
+    numero = re.sub(r"\D", "", str(telefono))
+    if len(numero) < 7 or len(numero) > 8:
+        raise HTTPException(status_code=400, detail="El teléfono debe tener entre 7 y 8 números o dejarse vacío")
+    return numero
+
+
+def armar_empresa_publica(empresa: Empresa):
+    if not empresa:
+        return None
+
+    return {
+        "id_empresa": empresa.id_empresa,
+        "nombre_empresa": empresa.nombre_empresa,
+        "descripcion": empresa.descripcion,
+        "direccion": empresa.direccion,
+        "ciudad": empresa.ciudad,
+        "whatsapp": empresa.whatsapp,
+        "instagram": empresa.instagram,
+        "facebook": empresa.facebook,
+        "logo_url": empresa.logo_url,
+        "qr_pago_url": getattr(empresa, "qr_pago_url", None),
+        "color_principal": getattr(empresa, "color_principal", None) or "#8f174d",
+        "color_secundario": getattr(empresa, "color_secundario", None) or "#e879b4",
+        "color_acento": getattr(empresa, "color_acento", None) or "#c02672",
+        "color_fondo": getattr(empresa, "color_fondo", None) or "#fff1f7",
+        "tema_tienda": getattr(empresa, "tema_tienda", None) or "elegante",
+        "google_maps_url": getattr(empresa, "google_maps_url", None),
+    }
+
+
 @router.get("/cliente/cuenta/{id_usuario}")
 def obtener_cuenta_cliente(
     id_usuario: int,
@@ -78,17 +129,6 @@ def actualizar_cuenta_cliente(
 ):
     usuario = verificar_cliente_activo(db, id_usuario)
 
-    email_existente = db.query(Usuario).filter(
-        Usuario.email == datos.email,
-        Usuario.id_usuario != id_usuario
-    ).first()
-
-    if email_existente:
-        raise HTTPException(
-            status_code=400,
-            detail="Ese correo ya está registrado por otro usuario"
-        )
-
     if not datos.nombre.strip():
         raise HTTPException(
             status_code=400,
@@ -101,17 +141,23 @@ def actualizar_cuenta_cliente(
             detail="El correo es obligatorio"
         )
 
-    telefono_limpio = datos.telefono.strip() if datos.telefono else None
+    email_limpio = validar_email_gmail(datos.email)
+    telefono_limpio = validar_telefono_opcional(datos.telefono)
 
-    if telefono_limpio and len(telefono_limpio) != 8:
+    email_existente = db.query(Usuario).filter(
+        Usuario.email == email_limpio,
+        Usuario.id_usuario != id_usuario
+    ).first()
+
+    if email_existente:
         raise HTTPException(
             status_code=400,
-            detail="El teléfono debe tener 8 números"
+            detail="Ese correo ya está registrado por otro usuario"
         )
 
     usuario.nombre = datos.nombre.strip()
     usuario.apellido = datos.apellido.strip() if datos.apellido else None
-    usuario.email = datos.email.strip()
+    usuario.email = email_limpio
     usuario.telefono = telefono_limpio
 
     db.commit()
@@ -210,6 +256,7 @@ def buscar_productos_cliente(
     empresa: str | None = None,
     precio_min: float | None = None,
     precio_max: float | None = None,
+    id_usuario: int | None = None,
     db: Session = Depends(get_db)
 ):
     consulta = db.query(Producto, Empresa, Categoria).join(
@@ -302,18 +349,7 @@ def buscar_productos_cliente(
             "estado_producto": producto.estado_producto,
             "categoria": categoria.nombre_categoria,
             "imagen_principal": imagen.url_imagen if imagen else None,
-            "empresa": {
-                "id_empresa": empresa_obj.id_empresa,
-                "nombre_empresa": empresa_obj.nombre_empresa,
-                "descripcion": empresa_obj.descripcion,
-                "direccion": empresa_obj.direccion,
-                "ciudad": empresa_obj.ciudad,
-                "whatsapp": empresa_obj.whatsapp,
-                "instagram": empresa_obj.instagram,
-                "facebook": empresa_obj.facebook,
-                "logo_url": empresa_obj.logo_url,
-                "qr_pago_url": getattr(empresa_obj, "qr_pago_url", None)
-            },
+            "empresa": armar_empresa_publica(empresa_obj),
             "variantes_disponibles": [
                 {
                     "id_variante": variante.id_variante,
@@ -325,6 +361,23 @@ def buscar_productos_cliente(
                 for variante in variantes
             ]
         })
+
+    registrar_busqueda(
+        db,
+        termino=buscar,
+        filtros={
+            "categoria": id_categoria,
+            "color": color,
+            "talla": talla,
+            "marca": marca,
+            "empresa": empresa,
+            "precio_min": precio_min,
+            "precio_max": precio_max,
+        },
+        id_usuario=id_usuario,
+        total_resultados=len(resultado),
+    )
+    db.commit()
 
     return {
         "mensaje": "Resultados de búsqueda",
@@ -342,18 +395,7 @@ def listar_empresas_cliente(db: Session = Depends(get_db)):
     resultado = []
 
     for empresa in empresas:
-        resultado.append({
-            "id_empresa": empresa.id_empresa,
-            "nombre_empresa": empresa.nombre_empresa,
-            "descripcion": empresa.descripcion,
-            "direccion": empresa.direccion,
-            "ciudad": empresa.ciudad,
-            "whatsapp": empresa.whatsapp,
-            "instagram": empresa.instagram,
-            "facebook": empresa.facebook,
-            "logo_url": empresa.logo_url,
-            "qr_pago_url": getattr(empresa, "qr_pago_url", None)
-        })
+        resultado.append(armar_empresa_publica(empresa))
 
     return {
         "mensaje": "Empresas disponibles en Zyra",
@@ -362,9 +404,33 @@ def listar_empresas_cliente(db: Session = Depends(get_db)):
     }
 
 
+@router.post("/cliente/empresas/{id_empresa}/visita")
+def registrar_visita_empresa_cliente(
+    id_empresa: int,
+    id_usuario: int | None = None,
+    db: Session = Depends(get_db)
+):
+    empresa = db.query(Empresa).filter(
+        Empresa.id_empresa == id_empresa,
+        Empresa.estado_empresa == "APROBADA"
+    ).first()
+
+    if not empresa:
+        raise HTTPException(status_code=404, detail="Empresa no encontrada o no aprobada")
+
+    registrar_visita_tienda(db, id_empresa=id_empresa, id_usuario=id_usuario, origen="modal_tienda")
+    db.commit()
+
+    return {
+        "mensaje": "Visita a tienda registrada",
+        "id_empresa": id_empresa
+    }
+
+
 @router.get("/cliente/empresas/{id_empresa}/catalogo")
 def ver_catalogo_empresa_cliente(
     id_empresa: int,
+    id_usuario: int | None = None,
     db: Session = Depends(get_db)
 ):
     empresa = db.query(Empresa).filter(
@@ -377,6 +443,9 @@ def ver_catalogo_empresa_cliente(
             status_code=404,
             detail="Empresa no encontrada o no aprobada"
         )
+
+    registrar_visita_tienda(db, id_empresa=id_empresa, id_usuario=id_usuario, origen="catalogo_tienda")
+    db.commit()
 
     productos = db.query(Producto, Categoria).join(
         Categoria,
@@ -422,18 +491,7 @@ def ver_catalogo_empresa_cliente(
 
     return {
         "mensaje": "Catálogo de empresa",
-        "empresa": {
-            "id_empresa": empresa.id_empresa,
-            "nombre_empresa": empresa.nombre_empresa,
-            "descripcion": empresa.descripcion,
-            "direccion": empresa.direccion,
-            "ciudad": empresa.ciudad,
-            "whatsapp": empresa.whatsapp,
-            "instagram": empresa.instagram,
-            "facebook": empresa.facebook,
-            "logo_url": empresa.logo_url,
-            "qr_pago_url": getattr(empresa, "qr_pago_url", None)
-        },
+        "empresa": armar_empresa_publica(empresa),
         "total_productos": len(resultado),
         "productos": resultado
     }
@@ -442,6 +500,7 @@ def ver_catalogo_empresa_cliente(
 @router.get("/cliente/productos/{id_producto}")
 def ver_detalle_producto_cliente(
     id_producto: int,
+    id_usuario: int | None = None,
     db: Session = Depends(get_db)
 ):
     producto = db.query(Producto).filter(
@@ -479,6 +538,9 @@ def ver_detalle_producto_cliente(
         ProductoImagen.id_producto == producto.id_producto
     ).all()
 
+    registrar_vista_producto(db, id_producto=producto.id_producto, id_usuario=id_usuario, origen="detalle_producto")
+    db.commit()
+
     return {
         "mensaje": "Detalle del producto",
         "producto": {
@@ -489,18 +551,7 @@ def ver_detalle_producto_cliente(
             "genero": producto.genero,
             "precio": float(producto.precio),
             "categoria": categoria.nombre_categoria if categoria else None,
-            "empresa": {
-                "id_empresa": empresa.id_empresa,
-                "nombre_empresa": empresa.nombre_empresa,
-                "descripcion": empresa.descripcion,
-                "direccion": empresa.direccion,
-                "ciudad": empresa.ciudad,
-                "whatsapp": empresa.whatsapp,
-                "instagram": empresa.instagram,
-                "facebook": empresa.facebook,
-                "logo_url": empresa.logo_url,
-                "qr_pago_url": getattr(empresa, "qr_pago_url", None)
-            },
+            "empresa": armar_empresa_publica(empresa),
             "imagenes": [
                 {
                     "id_imagen": imagen.id_imagen,
@@ -521,6 +572,151 @@ def ver_detalle_producto_cliente(
             ]
         }
     }
+
+
+@router.get("/cliente/productos-destacados")
+def listar_productos_destacados_cliente(
+    criterio: str = "ventas",
+    limite: int = 15,
+    db: Session = Depends(get_db)
+):
+    criterio_normalizado = (criterio or "ventas").lower().strip()
+    limite_seguro = max(1, min(int(limite or 15), 30))
+
+    columna_metrica = "ventas"
+    orden_sql = "ventas DESC, vistas DESC, cotizaciones DESC, p.id_producto DESC"
+
+    if criterio_normalizado == "vistas":
+        columna_metrica = "vistas"
+        orden_sql = "vistas DESC, ventas DESC, cotizaciones DESC, p.id_producto DESC"
+    elif criterio_normalizado in ["cotizados", "cotizaciones", "carrito"]:
+        columna_metrica = "cotizaciones"
+        orden_sql = "cotizaciones DESC, ventas DESC, vistas DESC, p.id_producto DESC"
+    else:
+        criterio_normalizado = "ventas"
+
+    sql = text(f"""
+        SELECT
+            p.id_producto,
+            p.nombre_producto,
+            p.descripcion,
+            p.marca,
+            p.genero,
+            p.precio,
+            p.estado_producto,
+            c.nombre_categoria AS categoria,
+            e.id_empresa,
+            e.nombre_empresa,
+            e.descripcion AS empresa_descripcion,
+            e.direccion,
+            e.ciudad,
+            e.whatsapp,
+            e.instagram,
+            e.facebook,
+            e.logo_url,
+            e.qr_pago_url,
+            e.color_principal,
+            e.color_secundario,
+            e.color_acento,
+            e.color_fondo,
+            e.tema_tienda,
+            e.google_maps_url,
+            pi.url_imagen AS imagen_principal,
+            COALESCE(vistas.total, 0) AS vistas,
+            COALESCE(ventas.total, 0) AS ventas,
+            COALESCE(cotizaciones.total, 0) AS cotizaciones
+        FROM productos p
+        JOIN empresas e ON e.id_empresa = p.id_empresa
+        JOIN categorias c ON c.id_categoria = p.id_categoria
+        LEFT JOIN producto_imagenes pi ON pi.id_producto = p.id_producto AND pi.es_principal = TRUE
+        LEFT JOIN (
+            SELECT id_producto, COUNT(*) AS total
+            FROM producto_vistas
+            GROUP BY id_producto
+        ) vistas ON vistas.id_producto = p.id_producto
+        LEFT JOIN (
+            SELECT id_producto, SUM(cantidad) AS total
+            FROM ventas_registro
+            GROUP BY id_producto
+        ) ventas ON ventas.id_producto = p.id_producto
+        LEFT JOIN (
+            SELECT id_producto, SUM(cantidad) AS total
+            FROM producto_cotizaciones
+            GROUP BY id_producto
+        ) cotizaciones ON cotizaciones.id_producto = p.id_producto
+        WHERE e.estado_empresa = 'APROBADA'
+          AND p.estado_producto = 'ACTIVO'
+        ORDER BY {orden_sql}
+        LIMIT :limite
+    """)
+
+    filas = db.execute(sql, {"limite": limite_seguro}).mappings().all()
+    resultado = []
+
+    for fila in filas:
+        variantes = db.query(ProductoVariante).filter(
+            ProductoVariante.id_producto == fila["id_producto"],
+            ProductoVariante.disponible == True,
+            ProductoVariante.stock > 0
+        ).all()
+
+        empresa_publica = {
+            "id_empresa": fila["id_empresa"],
+            "nombre_empresa": fila["nombre_empresa"],
+            "descripcion": fila["empresa_descripcion"],
+            "direccion": fila["direccion"],
+            "ciudad": fila["ciudad"],
+            "whatsapp": fila["whatsapp"],
+            "instagram": fila["instagram"],
+            "facebook": fila["facebook"],
+            "logo_url": fila["logo_url"],
+            "qr_pago_url": fila["qr_pago_url"],
+            "color_principal": fila["color_principal"] or "#8f174d",
+            "color_secundario": fila["color_secundario"] or "#e879b4",
+            "color_acento": fila["color_acento"] or "#c02672",
+            "color_fondo": fila["color_fondo"] or "#fff1f7",
+            "tema_tienda": fila["tema_tienda"] or "elegante",
+            "google_maps_url": fila["google_maps_url"],
+        }
+
+        resultado.append({
+            "id_producto": fila["id_producto"],
+            "nombre_producto": fila["nombre_producto"],
+            "descripcion": fila["descripcion"],
+            "marca": fila["marca"],
+            "genero": fila["genero"],
+            "precio": float(fila["precio"] or 0),
+            "estado_producto": fila["estado_producto"],
+            "categoria": fila["categoria"],
+            "imagen_principal": fila["imagen_principal"],
+            "empresa": empresa_publica,
+            "metricas": {
+                "vistas": int(fila["vistas"] or 0),
+                "ventas": int(fila["ventas"] or 0),
+                "cotizaciones": int(fila["cotizaciones"] or 0),
+                "criterio": criterio_normalizado,
+                "valor": int(fila[columna_metrica] or 0),
+            },
+            "variantes_disponibles": [
+                {
+                    "id_variante": variante.id_variante,
+                    "color": variante.color,
+                    "talla": variante.talla,
+                    "stock": variante.stock,
+                    "disponible": variante.disponible,
+                }
+                for variante in variantes
+            ],
+        })
+
+    return {
+        "mensaje": "Productos destacados",
+        "criterio": criterio_normalizado,
+        "limite": limite_seguro,
+        "total": len(resultado),
+        "productos": resultado,
+    }
+
 def verificar_cliente(db: Session, id_usuario: int):
     usuario = db.query(Usuario).filter(
         Usuario.id_usuario == id_usuario
@@ -639,6 +835,13 @@ def agregar_producto_carrito(
             )
 
         detalle_existente.cantidad = nueva_cantidad
+        registrar_cotizacion_producto(
+            db,
+            id_producto=producto.id_producto,
+            id_variante=variante.id_variante,
+            id_usuario=datos.id_usuario,
+            cantidad=datos.cantidad,
+        )
         db.commit()
         db.refresh(detalle_existente)
 
@@ -663,6 +866,13 @@ def agregar_producto_carrito(
     )
 
     db.add(nuevo_detalle)
+    registrar_cotizacion_producto(
+        db,
+        id_producto=producto.id_producto,
+        id_variante=variante.id_variante,
+        id_usuario=datos.id_usuario,
+        cantidad=datos.cantidad,
+    )
     db.commit()
     db.refresh(nuevo_detalle)
 
@@ -732,18 +942,7 @@ def ver_carrito_cliente(
             "imagen_principal": imagen.url_imagen if imagen else None,
             "empresa": empresa.nombre_empresa if empresa else None,
             "id_empresa": empresa.id_empresa if empresa else None,
-            "empresa_info": {
-                "id_empresa": empresa.id_empresa,
-                "nombre_empresa": empresa.nombre_empresa,
-                "descripcion": empresa.descripcion,
-                "direccion": empresa.direccion,
-                "ciudad": empresa.ciudad,
-                "whatsapp": empresa.whatsapp,
-                "instagram": empresa.instagram,
-                "facebook": empresa.facebook,
-                "logo_url": empresa.logo_url,
-                "qr_pago_url": getattr(empresa, "qr_pago_url", None)
-            } if empresa else None,
+            "empresa_info": armar_empresa_publica(empresa) if empresa else None,
             "qr_pago_url": getattr(empresa, "qr_pago_url", None) if empresa else None,
             "id_variante": variante.id_variante,
             "color": variante.color,
@@ -986,16 +1185,7 @@ def obtener_empresas_pago_pedido(db: Session, id_pedido: int):
     for detalle, variante, producto, empresa in detalles:
         if empresa.id_empresa not in empresas:
             empresas[empresa.id_empresa] = {
-                "id_empresa": empresa.id_empresa,
-                "nombre_empresa": empresa.nombre_empresa,
-                "descripcion": empresa.descripcion,
-                "direccion": empresa.direccion,
-                "ciudad": empresa.ciudad,
-                "whatsapp": empresa.whatsapp,
-                "instagram": empresa.instagram,
-                "facebook": empresa.facebook,
-                "logo_url": empresa.logo_url,
-                "qr_pago_url": getattr(empresa, "qr_pago_url", None),
+                **armar_empresa_publica(empresa),
                 "total_empresa": 0,
                 "productos": []
             }
@@ -1106,18 +1296,7 @@ def ver_detalle_pedido_cliente(
             "imagen_principal": imagen.url_imagen if imagen else None,
             "empresa": empresa.nombre_empresa if empresa else None,
             "id_empresa": empresa.id_empresa if empresa else None,
-            "empresa_info": {
-                "id_empresa": empresa.id_empresa,
-                "nombre_empresa": empresa.nombre_empresa,
-                "descripcion": empresa.descripcion,
-                "direccion": empresa.direccion,
-                "ciudad": empresa.ciudad,
-                "whatsapp": empresa.whatsapp,
-                "instagram": empresa.instagram,
-                "facebook": empresa.facebook,
-                "logo_url": empresa.logo_url,
-                "qr_pago_url": getattr(empresa, "qr_pago_url", None)
-            } if empresa else None,
+            "empresa_info": armar_empresa_publica(empresa) if empresa else None,
             "qr_pago_url": getattr(empresa, "qr_pago_url", None) if empresa else None,
             "id_variante": variante.id_variante,
             "color": variante.color,

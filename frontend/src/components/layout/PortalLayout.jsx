@@ -96,6 +96,9 @@ export default function PortalLayout({
   titulo,
   subtitulo,
   logo = "Zyra",
+  logoUrl = null,
+  logoInicial = "",
+  logoSubtitulo = "",
   menu = [],
   activo = "",
   onMenuClick,
@@ -104,6 +107,8 @@ export default function PortalLayout({
   children
 }) {
   const [menuContraido, setMenuContraido] = useState(false);
+  const mostrarPerfil = Boolean(logoUrl || logoInicial || logoSubtitulo);
+  const inicialVisible = String(logoInicial || logo || "Z").trim().charAt(0).toUpperCase();
 
   return (
     <main className={`portal-panel ${menuContraido ? "menu-contraido" : ""}`}>
@@ -118,10 +123,22 @@ export default function PortalLayout({
           <MenuIcon tipo="menu" />
         </button>
 
-        <div className="portal-logo">
-          <div>Z</div>
-          <span>{logo}</span>
-        </div>
+        {mostrarPerfil ? (
+          <div className="portal-logo portal-logo-perfil" title={logo}>
+            <div className="portal-logo-avatar">
+              {logoUrl ? <img src={logoUrl} alt={logo || "Perfil"} /> : <span>{inicialVisible}</span>}
+            </div>
+            <div className="portal-logo-textos">
+              <span className="portal-logo-nombre">{logo}</span>
+              {logoSubtitulo && <small>{logoSubtitulo}</small>}
+            </div>
+          </div>
+        ) : (
+          <div className="portal-logo">
+            <div className="portal-logo-marca">Z</div>
+            <span>{logo}</span>
+          </div>
+        )}
 
         <nav>
           {menu.map((item) => (

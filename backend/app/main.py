@@ -4,6 +4,9 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import os
 
+from app.database import Base, engine
+from app import models  # registra todos los modelos antes de crear tablas nuevas
+
 from app.routers import (
     inicio,
     auth,
@@ -22,6 +25,9 @@ app = FastAPI(
     description="Backend",
     version="1.0.0"
 )
+
+# Crea automáticamente las tablas nuevas de estadísticas/reportes si aún no existen.
+Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,

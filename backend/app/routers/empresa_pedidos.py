@@ -9,6 +9,7 @@ from app.database import get_db
 from app.models import Usuario, Rol, Empresa, Categoria, Producto, ProductoVariante, ProductoImagen, Carrito, CarritoDetalle, Pedido, PedidoDetalle, Pago, SoporteTicket, SoporteMensaje, Notificacion
 from app.schemas import RegistroCliente, RegistroEmpresa, LoginUsuario, CambioEstadoEmpresa, ProductoCrear, ProductoActualizar, CambioEstadoProducto, VarianteAgregar, VarianteActualizar, AgregarCarrito, ActualizarCantidadCarrito, CrearPedido, RegistrarPago, CambioEstadoPagoEmpresa, CambioEstadoPedidoEmpresa, CrearTicketSoporte, CrearMensajeSoporte, CambiarEstadoTicket, CategoriaCrear
 from app.seguridad import crear_hash_password, verificar_password
+from app.estadisticas import registrar_ventas_de_pedido
 
 router = APIRouter()
 
@@ -295,6 +296,7 @@ def cambiar_estado_pago_empresa(
 
     if datos.estado_pago == "PAGADO":
         pedido.estado_pedido = "PAGADO"
+        registrar_ventas_de_pedido(db, pedido)
 
     if datos.estado_pago == "RECHAZADO":
         pedido.estado_pedido = "CONFIRMADO"

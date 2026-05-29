@@ -4,7 +4,8 @@ import {
   loginUsuario,
   registrarClienteApi,
   registrarEmpresaApi,
-  crearSoportePublicoApi
+  crearSoportePublicoApi,
+  aceptarTerminosUsuarioApi
 } from "../services/api";
 
 const estadoInicialCliente = {
@@ -55,13 +56,14 @@ export default function LoginPage({
   const [cargando, setCargando] = useState(false);
 
   const [login, setLogin] = useState({
-    email: "empresa1@zyra.com",
+    email: "",
     password: "123456"
   });
 
   const [cliente, setCliente] = useState(estadoInicialCliente);
   const [empresa, setEmpresa] = useState(estadoInicialEmpresa);
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
+  const [aceptaTerminosRegistro, setAceptaTerminosRegistro] = useState(false);
   const [mostrarTerminos, setMostrarTerminos] = useState(false);
   const [mostrarSoporte, setMostrarSoporte] = useState(false);
   const [soporte, setSoporte] = useState(estadoInicialSoporte);
@@ -73,6 +75,20 @@ export default function LoginPage({
 
   const esEmailValido = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const esCorreoPermitido = (email) => {
+    const dominio = String(email || "").trim().toLowerCase().split("@").pop();
+    return dominio === "gmail.com";
+  };
+
+  const validarTelefonoOpcional = (telefono) => {
+    if (!telefono) return true;
+    return /^\d{7,8}$/.test(telefono);
+  };
+
+  const validarWhatsappObligatorio = (whatsapp) => {
+    return /^\d{8}$/.test(whatsapp || "");
   };
 
   const mostrarError = (texto) => {
@@ -120,7 +136,15 @@ export default function LoginPage({
 
     const { name, value } = e.target;
 
-    if (name === "telefono" || name === "whatsapp") {
+    if (name === "telefono") {
+      setEmpresa({
+        ...empresa,
+        [name]: value.replace(/\D/g, "").slice(0, 8)
+      });
+      return;
+    }
+
+    if (name === "whatsapp") {
       setEmpresa({
         ...empresa,
         [name]: value.replace(/\D/g, "").slice(0, 8)
@@ -212,6 +236,7 @@ export default function LoginPage({
   const validarLogin = () => {
     if (!limpiarTexto(login.email)) return "Debes ingresar tu correo electrónico.";
     if (!esEmailValido(login.email)) return "El correo electrónico no tiene un formato válido.";
+    if (!esCorreoPermitido(login.email)) return "Para ingresar debes usar un correo Gmail válido, por ejemplo usuario@gmail.com.";
     if (!login.password) return "Debes ingresar tu contraseña.";
     if (login.password.length < 6) return "La contraseña debe tener al menos 6 caracteres.";
     return "";
@@ -221,10 +246,12 @@ export default function LoginPage({
     if (!limpiarTexto(cliente.nombre)) return "Debes ingresar tu nombre.";
     if (!limpiarTexto(cliente.email)) return "Debes ingresar tu correo electrónico.";
     if (!esEmailValido(cliente.email)) return "El correo electrónico no tiene un formato válido.";
+    if (!esCorreoPermitido(cliente.email)) return "Usa un correo Gmail válido, por ejemplo usuario@gmail.com.";
     if (!cliente.password) return "Debes crear una contraseña.";
     if (cliente.password.length < 6) return "La contraseña debe tener al menos 6 caracteres.";
     if (cliente.password !== cliente.confirmarPassword) return "Las contraseñas no coinciden.";
-    if (cliente.telefono && cliente.telefono.length !== 8) return "El teléfono debe tener exactamente 8 números.";
+    if (!validarTelefonoOpcional(cliente.telefono)) return "El teléfono debe tener entre 7 y 8 números o puedes dejarlo vacío.";
+    if (!aceptaTerminosRegistro) return "Debes aceptar los términos y condiciones para crear tu cuenta.";
     return "";
   };
 
@@ -233,12 +260,14 @@ export default function LoginPage({
     if (!limpiarTexto(empresa.nombre_empresa)) return "Debes ingresar el nombre de la empresa.";
     if (!limpiarTexto(empresa.email)) return "Debes ingresar el correo electrónico de la empresa.";
     if (!esEmailValido(empresa.email)) return "El correo electrónico no tiene un formato válido.";
+    if (!esCorreoPermitido(empresa.email)) return "Usa un correo Gmail válido, por ejemplo usuario@gmail.com.";
     if (!empresa.password) return "Debes crear una contraseña para la cuenta empresarial.";
     if (empresa.password.length < 6) return "La contraseña debe tener al menos 6 caracteres.";
-    if (empresa.telefono && empresa.telefono.length !== 8) return "El teléfono debe tener exactamente 8 números.";
-    if (empresa.whatsapp && empresa.whatsapp.length !== 8) return "El WhatsApp debe tener exactamente 8 números.";
+    if (!validarTelefonoOpcional(empresa.telefono)) return "El teléfono debe tener entre 7 y 8 números o puedes dejarlo vacío.";
+    if (!validarWhatsappObligatorio(empresa.whatsapp)) return "El WhatsApp es obligatorio y debe tener exactamente 8 números.";
     if (empresa.nit && empresa.nit.length < 5) return "El NIT debe tener al menos 5 números o puedes dejarlo vacío.";
     if (empresa.descripcion && empresa.descripcion.length < 10) return "La descripción debe tener al menos 10 caracteres o puedes dejarla vacía.";
+    if (!aceptaTerminosRegistro) return "Debes aceptar los términos y condiciones para registrar tu empresa.";
     return "";
   };
 
@@ -290,7 +319,8 @@ export default function LoginPage({
         apellido: limpiarTexto(cliente.apellido),
         email: limpiarTexto(cliente.email),
         password: cliente.password,
-        telefono: cliente.telefono || null
+        telefono: cliente.telefono || null,
+        acepto_terminos: true
       });
 
       mostrarOk("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
@@ -301,6 +331,7 @@ export default function LoginPage({
       });
 
       setCliente(estadoInicialCliente);
+      setAceptaTerminosRegistro(false);
 
       setTimeout(() => {
         setModo("login");
@@ -340,7 +371,8 @@ export default function LoginPage({
         whatsapp: empresa.whatsapp || null,
         instagram: limpiarTexto(empresa.instagram) || null,
         facebook: limpiarTexto(empresa.facebook) || null,
-        logo_url: ""
+        logo_url: "",
+        acepto_terminos: true
       });
 
       mostrarOk(
@@ -353,12 +385,39 @@ export default function LoginPage({
       });
 
       setEmpresa(estadoInicialEmpresa);
+      setAceptaTerminosRegistro(false);
 
       setTimeout(() => {
         setModo("login");
       }, 1800);
     } catch (error) {
       mostrarError(error.message || "No se pudo registrar la empresa.");
+    }
+
+    setCargando(false);
+  };
+
+
+  const aceptarTerminosPlataforma = async () => {
+    if (!usuario?.id_usuario) return;
+
+    setCargando(true);
+    setMensaje("");
+    setTipoMensaje("");
+
+    try {
+      const respuesta = await aceptarTerminosUsuarioApi(usuario.id_usuario);
+      const usuarioActualizado = {
+        ...usuario,
+        acepto_terminos: true,
+        fecha_aceptacion_terminos: respuesta.fecha_aceptacion_terminos || new Date().toISOString()
+      };
+      setUsuario(usuarioActualizado);
+      setAceptaTerminos(false);
+      localStorage.setItem("usuario_zyra", JSON.stringify(usuarioActualizado));
+      setMostrarTerminos(false);
+    } catch (error) {
+      mostrarError(error.message || "No se pudo guardar la aceptación de términos.");
     }
 
     setCargando(false);
@@ -417,6 +476,7 @@ export default function LoginPage({
   };
 
   const contenidoRol = textoPorRol();
+  const terminosGuardados = Boolean(usuario?.acepto_terminos);
 
   return (
     <main className="pagina">
@@ -675,11 +735,20 @@ export default function LoginPage({
                       name="telefono"
                       value={cliente.telefono}
                       onChange={cambiarCliente}
-                      placeholder="8 números"
+                      placeholder="7 a 8 números"
                       maxLength="8"
                       inputMode="numeric"
                     />
                   </div>
+
+                  <label className="terminos-registro-check">
+                    <input
+                      type="checkbox"
+                      checked={aceptaTerminosRegistro}
+                      onChange={(e) => setAceptaTerminosRegistro(e.target.checked)}
+                    />
+                    <span>Confirmo que leí y acepto los términos y condiciones de Zyra.</span>
+                  </label>
 
                   <button className="btn-principal" type="submit" disabled={cargando}>
                     {cargando ? "Creando cuenta..." : "Crear cuenta"}
@@ -771,14 +840,14 @@ export default function LoginPage({
                         name="telefono"
                         value={empresa.telefono}
                         onChange={cambiarEmpresa}
-                        placeholder="8 números"
+                        placeholder="7 a 8 números"
                         maxLength="8"
                         inputMode="numeric"
                       />
                     </div>
 
                     <div className="campo">
-                      <label>WhatsApp</label>
+                      <label>WhatsApp *</label>
                       <input
                         name="whatsapp"
                         value={empresa.whatsapp}
@@ -821,6 +890,15 @@ export default function LoginPage({
                     />
                   </div>
 
+                  <label className="terminos-registro-check">
+                    <input
+                      type="checkbox"
+                      checked={aceptaTerminosRegistro}
+                      onChange={(e) => setAceptaTerminosRegistro(e.target.checked)}
+                    />
+                    <span>Confirmo que leí y acepto los términos y condiciones de Zyra.</span>
+                  </label>
+
                   <button className="btn-principal" type="submit" disabled={cargando}>
                     {cargando ? "Enviando..." : "Enviar solicitud"}
                   </button>
@@ -856,43 +934,50 @@ export default function LoginPage({
                 {contenidoRol.extra}
               </div>
 
-              <div className="terminos-acceso-card">
-                <div>
-                  <strong>Términos y condiciones de uso</strong>
-                  <p>
-                    Para ingresar a la plataforma, acepta que Zyra actúa como intermediaria digital.
-                    Las tiendas son responsables de sus productos, datos publicados, pagos, entregas
-                    y atención directa al cliente.
-                  </p>
-                  <button type="button" onClick={() => setMostrarTerminos(true)}>
-                    Ver términos completos
-                  </button>
-                </div>
+              {!terminosGuardados && (
+                <div className="terminos-acceso-card">
+                  <div>
+                    <strong>Términos y condiciones de uso</strong>
+                    <p>
+                      Esta aceptación se solicita solo la primera vez. Después de aceptarla, Zyra guardará
+                      tu confirmación y no volverá a pedirla en los siguientes ingresos.
+                    </p>
+                    <button type="button" onClick={() => setMostrarTerminos(true)}>
+                      Ver términos completos
+                    </button>
+                  </div>
 
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={aceptaTerminos}
-                    onChange={(e) => setAceptaTerminos(e.target.checked)}
-                  />
-                  <span>Acepto los términos y condiciones para continuar.</span>
-                </label>
-              </div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={aceptaTerminos}
+                      onChange={(e) => setAceptaTerminos(e.target.checked)}
+                    />
+                    <span>Confirmo que leí y acepto los términos y condiciones.</span>
+                  </label>
+
+                  {aceptaTerminos && (
+                    <button className="btn-principal" type="button" onClick={aceptarTerminosPlataforma} disabled={cargando}>
+                      {cargando ? "Guardando..." : "Guardar aceptación"}
+                    </button>
+                  )}
+                </div>
+              )}
 
               {usuario.rol === "EMPRESA" && usuario.estado_empresa === "APROBADA" && (
-                <button className="btn-principal" type="button" onClick={onIngresarEmpresa} disabled={!aceptaTerminos}>
+                <button className="btn-principal" type="button" onClick={onIngresarEmpresa} disabled={!terminosGuardados}>
                   Ingresar a mi empresa
                 </button>
               )}
 
               {usuario.rol === "CLIENTE" && (
-                <button className="btn-principal" type="button" onClick={onIngresarCliente} disabled={!aceptaTerminos}>
+                <button className="btn-principal" type="button" onClick={onIngresarCliente} disabled={!terminosGuardados}>
                   Ver plataforma
                 </button>
               )}
 
               {usuario.rol === "ADMIN" && (
-                <button className="btn-principal" type="button" onClick={onIngresarAdmin} disabled={!aceptaTerminos}>
+                <button className="btn-principal" type="button" onClick={onIngresarAdmin} disabled={!terminosGuardados}>
                   Entrar a administración
                 </button>
               )}
@@ -943,23 +1028,29 @@ export default function LoginPage({
             <h2>Uso responsable de Zyra</h2>
             <div className="terminos-texto-scroll">
               <p>
-                Zyra es una plataforma digital de conexión entre clientes y tiendas de moda. La plataforma permite visualizar productos, registrar pedidos, cargar comprobantes y facilitar la comunicación entre las partes.
+                Zyra es una plataforma digital que conecta clientes con tiendas de moda registradas. Su función principal es mostrar catálogos, facilitar pedidos, registrar comprobantes de pago y mejorar la comunicación entre cliente y empresa.
               </p>
               <p>
-                Las tiendas registradas son responsables de la veracidad de sus productos, precios, imágenes, tallas, colores, disponibilidad, datos de contacto, QR de pago, dirección y condiciones de entrega o recojo.
+                Cada tienda es responsable de la información que publica, incluyendo nombres de productos, imágenes, precios, tallas, colores, stock, QR de pago, ubicación, WhatsApp y condiciones de recojo o entrega.
               </p>
               <p>
-                Los clientes son responsables de revisar los datos del pedido, realizar el pago correspondiente, subir un comprobante válido y coordinar el recojo o entrega con la tienda cuando corresponda.
+                El cliente debe revisar cuidadosamente su pedido antes de confirmarlo, realizar el pago al QR indicado por la tienda y subir un comprobante legible. La aprobación del pago depende de la revisión de la empresa correspondiente.
               </p>
               <p>
-                Zyra no se responsabiliza por acuerdos externos, errores de datos publicados por terceros, incumplimientos de entrega, diferencias de producto, pagos realizados fuera del flujo mostrado o conflictos comerciales entre cliente y tienda.
+                Zyra actúa como intermediaria tecnológica. No reemplaza la responsabilidad comercial de las tiendas ni garantiza acuerdos externos realizados fuera de la plataforma.
               </p>
               <p>
-                El administrador puede revisar empresas, tickets de soporte, pedidos y pagos registrados con fines de control académico, operativo y de seguridad dentro de la plataforma.
+                La plataforma puede almacenar datos necesarios para el funcionamiento del sistema, como usuarios, productos, pedidos, pagos, soporte, notificaciones y registros de actividad. Estos datos se usan con fines operativos, académicos, de seguridad y mejora del servicio.
+              </p>
+              <p>
+                El administrador puede revisar empresas, productos, pagos, pedidos y tickets de soporte para mantener el orden de la plataforma. También puede habilitar o deshabilitar cuentas cuando corresponda.
+              </p>
+              <p>
+                Al aceptar estos términos, el usuario declara que comprende el funcionamiento de Zyra y acepta utilizar la plataforma de forma responsable.
               </p>
             </div>
-            <button className="btn-principal" type="button" onClick={() => { setAceptaTerminos(true); setMostrarTerminos(false); }}>
-              Aceptar términos
+            <button className="btn-principal" type="button" onClick={aceptarTerminosPlataforma} disabled={cargando}>
+              {cargando ? "Guardando..." : "Aceptar y guardar términos"}
             </button>
           </section>
         </div>

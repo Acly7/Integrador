@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Numeric, Boolean
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Numeric, Boolean, DateTime, UniqueConstraint
 from app.database import Base
+from datetime import datetime
 
 
 class Rol(Base):
@@ -20,6 +21,8 @@ class Usuario(Base):
     password_hash = Column(Text, nullable=False)
     telefono = Column(String(30))
     foto_url = Column(Text)
+    acepto_terminos = Column(Boolean, default=False)
+    fecha_aceptacion_terminos = Column(DateTime, nullable=True)
     estado = Column(String(20), default="ACTIVO")
 
 
@@ -38,6 +41,12 @@ class Empresa(Base):
     facebook = Column(String(150))
     logo_url = Column(Text)
     qr_pago_url = Column(Text)
+    color_principal = Column(String(20), default="#8f174d")
+    color_secundario = Column(String(20), default="#e879b4")
+    color_acento = Column(String(20), default="#c02672")
+    color_fondo = Column(String(20), default="#fff1f7")
+    tema_tienda = Column(String(30), default="elegante")
+    google_maps_url = Column(Text)
     estado_empresa = Column(String(20), default="PENDIENTE")
 
 class Categoria(Base):
@@ -156,3 +165,80 @@ class Notificacion(Base):
     titulo = Column(String(150), nullable=False)
     mensaje = Column(Text, nullable=False)
     leido = Column(Boolean, default=False)
+
+class ProductoVista(Base):
+    __tablename__ = "producto_vistas"
+
+    id_vista = Column(Integer, primary_key=True, index=True)
+    id_producto = Column(Integer, ForeignKey("productos.id_producto"), nullable=False, index=True)
+    id_usuario = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=True, index=True)
+    origen = Column(String(80), default="detalle_producto")
+    fecha_vista = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+
+class TiendaVisita(Base):
+    __tablename__ = "tienda_visitas"
+
+    id_visita = Column(Integer, primary_key=True, index=True)
+    id_empresa = Column(Integer, ForeignKey("empresas.id_empresa"), nullable=False, index=True)
+    id_usuario = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=True, index=True)
+    origen = Column(String(80), default="cliente")
+    fecha_visita = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+
+class BusquedaRegistro(Base):
+    __tablename__ = "busquedas_registro"
+
+    id_busqueda = Column(Integer, primary_key=True, index=True)
+    id_usuario = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=True, index=True)
+    termino = Column(String(150), nullable=True, index=True)
+    filtro_categoria = Column(String(100), nullable=True)
+    filtro_color = Column(String(50), nullable=True)
+    filtro_talla = Column(String(30), nullable=True)
+    filtro_marca = Column(String(100), nullable=True)
+    filtro_empresa = Column(String(150), nullable=True)
+    precio_min = Column(Numeric(10, 2), nullable=True)
+    precio_max = Column(Numeric(10, 2), nullable=True)
+    total_resultados = Column(Integer, default=0)
+    fecha_busqueda = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+
+class ProductoCotizacion(Base):
+    __tablename__ = "producto_cotizaciones"
+
+    id_cotizacion = Column(Integer, primary_key=True, index=True)
+    id_producto = Column(Integer, ForeignKey("productos.id_producto"), nullable=False, index=True)
+    id_variante = Column(Integer, ForeignKey("producto_variantes.id_variante"), nullable=True, index=True)
+    id_usuario = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=True, index=True)
+    cantidad = Column(Integer, default=1)
+    fecha_cotizacion = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+
+class VentaRegistro(Base):
+    __tablename__ = "ventas_registro"
+    __table_args__ = (UniqueConstraint("id_pedido_detalle", name="uq_ventas_registro_pedido_detalle"),)
+
+    id_venta = Column(Integer, primary_key=True, index=True)
+    id_pedido = Column(Integer, ForeignKey("pedidos.id_pedido"), nullable=False, index=True)
+    id_pedido_detalle = Column(Integer, ForeignKey("pedido_detalle.id_pedido_detalle"), nullable=False, index=True)
+    id_usuario = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False, index=True)
+    id_empresa = Column(Integer, ForeignKey("empresas.id_empresa"), nullable=False, index=True)
+    id_producto = Column(Integer, ForeignKey("productos.id_producto"), nullable=False, index=True)
+    id_variante = Column(Integer, ForeignKey("producto_variantes.id_variante"), nullable=True, index=True)
+    cantidad = Column(Integer, nullable=False)
+    precio_unitario = Column(Numeric(10, 2), nullable=False)
+    subtotal = Column(Numeric(10, 2), nullable=False)
+    estado_venta = Column(String(30), default="PAGADA")
+    fecha_venta = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+
+class BackupRegistro(Base):
+    __tablename__ = "backup_registros"
+
+    id_backup = Column(Integer, primary_key=True, index=True)
+    nombre_archivo = Column(String(255), nullable=False)
+    ruta_archivo = Column(Text, nullable=False)
+    tipo_backup = Column(String(40), default="JSON")
+    tamanio_bytes = Column(Integer, default=0)
+    id_admin = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=True)
+    fecha_backup = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)

@@ -1,3 +1,87 @@
+const COLORES_PREDETERMINADOS = [
+  "Negro",
+  "Blanco",
+  "Rojo",
+  "Azul",
+  "Verde",
+  "Amarillo",
+  "Rosado",
+  "Morado",
+  "Café",
+  "Beige",
+  "Gris",
+  "Celeste",
+  "Vino",
+  "Marrón",
+  "Naranja"
+];
+
+const TALLAS_ADULTO = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+const TALLAS_NINOS = ["2", "4", "6", "8", "10", "12", "14", "16"];
+const VALOR_OTRO = "__OTRO__";
+
+const obtenerTallasPorGenero = (genero = "") => {
+  const texto = String(genero || "").toLowerCase();
+  if (texto.includes("niñ")) return TALLAS_NINOS;
+  return TALLAS_ADULTO;
+};
+
+const obtenerOpcionNormalizada = (valor, opciones) => {
+  const texto = String(valor || "").trim();
+  if (!texto) return "";
+  const encontrada = opciones.find(
+    (opcion) => opcion.toLowerCase() === texto.toLowerCase()
+  );
+  return encontrada || VALOR_OTRO;
+};
+
+const esPersonalizado = (valor, opciones) => {
+  const texto = String(valor || "").trim();
+  if (!texto) return false;
+  if (texto === VALOR_OTRO) return true;
+  return !opciones.some((opcion) => opcion.toLowerCase() === texto.toLowerCase());
+};
+
+const enviarCambio = (onChange, name, value) => {
+  onChange({ target: { name, value } });
+};
+
+function CampoConOpciones({ label, name, value, opciones, onChange, placeholder }) {
+  const valorSelect = obtenerOpcionNormalizada(value, opciones);
+  const mostrarOtro = esPersonalizado(value, opciones) || value === VALOR_OTRO;
+
+  return (
+    <div className="campo-panel campo-opciones">
+      <label>{label}</label>
+      <select
+        name={name}
+        value={valorSelect}
+        onChange={(e) => {
+          const nuevoValor = e.target.value;
+          enviarCambio(onChange, name, nuevoValor === VALOR_OTRO ? VALOR_OTRO : nuevoValor);
+        }}
+      >
+        <option value="">Seleccionar</option>
+        {opciones.map((opcion) => (
+          <option key={opcion} value={opcion}>
+            {opcion}
+          </option>
+        ))}
+        <option value={VALOR_OTRO}>Otro / escribir manualmente</option>
+      </select>
+
+      {mostrarOtro && (
+        <input
+          className="campo-otro-input"
+          value={value === VALOR_OTRO ? "" : value}
+          onChange={(e) => enviarCambio(onChange, name, e.target.value)}
+          placeholder={placeholder}
+        />
+      )}
+    </div>
+  );
+}
+
 export default function ProductoForm({
   tituloBoton,
   producto,
@@ -14,8 +98,10 @@ export default function ProductoForm({
   onCancel,
   children
 }) {
+  const tallas = obtenerTallasPorGenero(producto.genero);
+
   return (
-    <form className="producto-form" onSubmit={onSubmit}>
+    <form className="producto-form" onSubmit={onSubmit} noValidate>
       {mensaje && (
         <div className={`mensaje-producto ${tipoMensaje}`}>
           {mensaje}
@@ -30,6 +116,7 @@ export default function ProductoForm({
             value={producto.nombre_producto}
             onChange={onChange}
             placeholder="Ej: Polera negra oversize"
+            maxLength={150}
           />
         </div>
 
@@ -61,6 +148,7 @@ export default function ProductoForm({
               value={nuevaCategoria}
               onChange={(e) => setNuevaCategoria(e.target.value)}
               placeholder="Ej: Blusas, Buzos, Ropa deportiva"
+              maxLength={100}
             />
           </div>
         )}
@@ -72,11 +160,12 @@ export default function ProductoForm({
             value={producto.marca}
             onChange={onChange}
             placeholder="Ej: Moda Aby"
+            maxLength={100}
           />
         </div>
 
         <div className="campo-panel">
-          <label>Género</label>
+          <label>Género *</label>
           <select
             name="genero"
             value={producto.genero}
@@ -115,27 +204,25 @@ export default function ProductoForm({
         )}
 
         {"color" in producto && (
-          <div className="campo-panel">
-            <label>Color *</label>
-            <input
-              name="color"
-              value={producto.color}
-              onChange={onChange}
-              placeholder="Ej: Negro"
-            />
-          </div>
+          <CampoConOpciones
+            label="Color *"
+            name="color"
+            value={producto.color}
+            opciones={COLORES_PREDETERMINADOS}
+            onChange={onChange}
+            placeholder="Escribe el color personalizado"
+          />
         )}
 
         {"talla" in producto && (
-          <div className="campo-panel">
-            <label>Talla *</label>
-            <input
-              name="talla"
-              value={producto.talla}
-              onChange={onChange}
-              placeholder="Ej: M"
-            />
-          </div>
+          <CampoConOpciones
+            label="Talla *"
+            name="talla"
+            value={producto.talla}
+            opciones={tallas}
+            onChange={onChange}
+            placeholder="Escribe la talla personalizada"
+          />
         )}
       </div>
 
@@ -146,6 +233,7 @@ export default function ProductoForm({
           value={producto.descripcion}
           onChange={onChange}
           placeholder="Describe la prenda, material, estilo o detalles importantes"
+          maxLength={500}
         />
       </div>
 
@@ -156,9 +244,12 @@ export default function ProductoForm({
           accept="image/png,image/jpeg,image/jpg,image/webp"
           onChange={(e) => setImagen(e.target.files[0] || null)}
         />
+        {imagen && (
+          <small className="producto-imagen-nombre">{imagen.name}</small>
+        )}
       </div>
 
-{children}
+      {children}
 
       <div className="acciones-form">
         <button type="submit" className="btn-panel-principal">

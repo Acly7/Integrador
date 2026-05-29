@@ -7,6 +7,7 @@ class RegistroCliente(BaseModel):
     email: str
     password: str
     telefono: str | None = None
+    acepto_terminos: bool = False
 
 
 class RegistroEmpresa(BaseModel):
@@ -15,6 +16,7 @@ class RegistroEmpresa(BaseModel):
     email: str
     password: str
     telefono: str | None = None
+    acepto_terminos: bool = False
 
     nombre_empresa: str
     descripcion: str | None = None
@@ -26,6 +28,12 @@ class RegistroEmpresa(BaseModel):
     facebook: str | None = None
     logo_url: str | None = None
     qr_pago_url: str | None = None
+    color_principal: str | None = "#8f174d"
+    color_secundario: str | None = "#e879b4"
+    color_acento: str | None = "#c02672"
+    color_fondo: str | None = "#fff1f7"
+    tema_tienda: str | None = "elegante"
+    google_maps_url: str | None = None
 
 
 class LoginUsuario(BaseModel):
@@ -178,6 +186,13 @@ class EmpresaCuentaActualizar(BaseModel):
     instagram: str | None = None
     facebook: str | None = None
 
+
+    color_principal: str | None = "#8f174d"
+    color_secundario: str | None = "#e879b4"
+    color_acento: str | None = "#c02672"
+    color_fondo: str | None = "#fff1f7"
+    tema_tienda: str | None = "elegante"
+    google_maps_url: str | None = None
 
 class EmpresaPasswordCambiar(BaseModel):
     id_usuario: int

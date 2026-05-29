@@ -1217,7 +1217,7 @@ select {
   gap: 12px;
 }
 
-.portal-logo div {
+.portal-logo-marca {
   width: 46px;
   height: 46px;
   border-radius: 16px;
@@ -13925,5 +13925,1335 @@ select {
 
   .cliente-ia-upload.ia-activa {
     max-width: 100%;
+  }
+}
+
+
+/* =========================================================
+   FASE 1 - CORRECCIONES TRIBUNAL: MODALES, TOASTS Y TARJETAS
+   ========================================================= */
+
+.zyra-toast-profesional {
+  position: fixed;
+  top: 28px;
+  right: 32px;
+  z-index: 5000;
+  width: min(380px, calc(100vw - 40px));
+  padding: 15px 17px;
+  border-radius: 18px;
+  background: #ecfdf3;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  box-shadow: 0 22px 55px rgba(31, 23, 36, 0.18);
+  animation: zyraToastIn 0.18s ease;
+}
+
+.zyra-toast-profesional.error {
+  background: #fff1f2;
+  color: #be123c;
+  border-color: #fecdd3;
+}
+
+.zyra-toast-profesional strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.zyra-toast-profesional p {
+  margin: 0;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+@keyframes zyraToastIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.zyra-confirmacion-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 4800;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(31, 23, 36, 0.56);
+  backdrop-filter: blur(8px);
+}
+
+.zyra-confirmacion-card {
+  width: min(440px, 96vw);
+  padding: 24px;
+  border-radius: 26px;
+  background: #ffffff;
+  border: 1px solid #eadce5;
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.24);
+}
+
+.zyra-confirmacion-card > span {
+  color: #8f174d;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.zyra-confirmacion-card h3 {
+  margin: 8px 0 10px;
+  color: #1f1724;
+  font-size: 24px;
+}
+
+.zyra-confirmacion-card p {
+  margin: 0;
+  color: #706878;
+  line-height: 1.6;
+}
+
+.zyra-confirmacion-acciones {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.zyra-confirmacion-acciones button {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.zyra-confirmacion-acciones .cancelar {
+  background: #f2edf1;
+  color: #3e3542;
+}
+
+.zyra-confirmacion-acciones .confirmar {
+  background: linear-gradient(135deg, #8f174d, #c02672);
+  color: white;
+}
+
+.zyra-confirmacion-card.peligro .confirmar {
+  background: linear-gradient(135deg, #be123c, #ef4444);
+}
+
+.zyra-confirmacion-card.advertencia .confirmar {
+  background: linear-gradient(135deg, #b45309, #f59e0b);
+}
+
+.empresa-brand-logo {
+  overflow: hidden;
+}
+
+.empresa-brand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-productos-grid.admin-productos-scroll {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.admin-producto-card {
+  height: 100%;
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.admin-producto-img {
+  width: 100%;
+  height: 230px !important;
+  min-height: 230px;
+  max-height: 230px;
+  overflow: hidden;
+  background: #fff1f7;
+  display: grid;
+  place-items: center;
+}
+
+.admin-producto-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-producto-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-producto-info h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 42px;
+}
+
+.admin-producto-info p,
+.admin-producto-info small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-producto-meta {
+  margin-top: auto;
+}
+
+.terminos-acceso-card .btn-principal {
+  width: 100%;
+  margin-top: 10px;
+}
+
+@media (max-width: 760px) {
+  .zyra-toast-profesional {
+    right: 16px;
+    left: 16px;
+    width: auto;
+  }
+}
+
+
+/* =========================================================
+   FASE 2: VALIDACIONES, TALLAS Y COLORES PREDETERMINADOS
+   ========================================================= */
+.campo-opciones select,
+.campo-opciones input {
+  width: 100%;
+}
+
+.campo-otro-input {
+  margin-top: 8px;
+  background: #fffafc !important;
+  border-style: dashed !important;
+}
+
+.producto-imagen-nombre {
+  display: block;
+  margin-top: 8px;
+  color: #8f174d;
+  font-weight: 800;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.producto-card {
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+.producto-imagen {
+  height: 220px;
+  overflow: hidden;
+  background: #fff1f7;
+}
+
+.producto-imagen img,
+.producto-detalle-imagen img {
+  object-fit: contain !important;
+  background: #fff1f7;
+}
+
+.producto-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.producto-info h3,
+.producto-categoria,
+.producto-descripcion {
+  overflow-wrap: anywhere;
+}
+
+.producto-info h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.producto-descripcion {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.producto-meta {
+  margin-top: auto;
+}
+
+.variante-editor-card {
+  align-items: end;
+}
+
+.variante-editor-card .campo-opciones,
+.nueva-variante-card .campo-opciones {
+  align-self: stretch;
+}
+
+@media (max-width: 850px) {
+  .producto-card {
+    min-height: auto;
+  }
+
+  .producto-imagen {
+    height: 240px;
+  }
+}
+
+/* =========================================================
+   FASE 3: IDENTIDAD VISUAL Y TIENDA PERSONALIZADA
+   ========================================================= */
+
+.empresa-brand-personalizada .empresa-brand-icon {
+  background: linear-gradient(135deg, var(--tienda-principal), var(--tienda-secundario));
+  overflow: hidden;
+}
+
+.empresa-brand-personalizada .empresa-brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.empresa-brand-personalizada .empresa-brand-icon span {
+  color: white;
+  font-weight: 900;
+}
+
+.empresa-brand-personalizada h2 {
+  color: var(--tienda-principal) !important;
+  max-width: 165px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cuenta-tema-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--tienda-fondo), #ffffff) !important;
+  border-color: color-mix(in srgb, var(--tienda-principal) 25%, #eadce5) !important;
+}
+
+.cuenta-tema-card::after {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  right: -36px;
+  top: -36px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--tienda-principal), var(--tienda-secundario));
+  opacity: 0.16;
+}
+
+.cuenta-paleta-mini {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.cuenta-paleta-mini i,
+.tienda-publica-paleta i {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-block;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 6px 14px rgba(31, 23, 36, 0.12);
+}
+
+.cuenta-personalizacion-box {
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 92% 8%, color-mix(in srgb, var(--tienda-secundario) 22%, transparent), transparent 30%),
+    linear-gradient(135deg, var(--tienda-fondo), #ffffff);
+  border: 1px solid color-mix(in srgb, var(--tienda-principal) 22%, #eadce5);
+  display: grid;
+  gap: 16px;
+}
+
+.cuenta-personalizacion-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.cuenta-personalizacion-header span,
+.tienda-preview-personalizada span {
+  color: var(--tienda-principal);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cuenta-personalizacion-header h3,
+.tienda-preview-personalizada h3 {
+  margin: 6px 0;
+  color: #1f1724;
+  font-size: 24px;
+}
+
+.cuenta-personalizacion-header p,
+.tienda-preview-personalizada p {
+  margin: 0;
+  color: #706878;
+  line-height: 1.5;
+}
+
+.cuenta-personalizacion-header strong {
+  padding: 9px 13px;
+  border-radius: 999px;
+  color: white;
+  background: linear-gradient(135deg, var(--tienda-principal), var(--tienda-acento));
+  white-space: nowrap;
+}
+
+.color-picker-field input[type="color"] {
+  width: 100%;
+  height: 52px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.tienda-preview-personalizada {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 18px;
+  align-items: center;
+  padding: 20px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, var(--tienda-principal), var(--tienda-acento));
+  color: white;
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--tienda-principal) 22%, transparent);
+}
+
+.tienda-preview-personalizada.tema-minimalista {
+  background: linear-gradient(135deg, #ffffff, var(--tienda-fondo));
+  border: 1px solid color-mix(in srgb, var(--tienda-principal) 28%, #eadce5);
+  color: #1f1724;
+}
+
+.tienda-preview-personalizada.tema-boutique {
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--tienda-secundario) 45%, transparent), transparent 28%),
+    linear-gradient(135deg, var(--tienda-principal), var(--tienda-acento));
+}
+
+.tienda-preview-personalizada.tema-urbano {
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 10px, transparent 10px 22px),
+    linear-gradient(135deg, var(--tienda-principal), #111827);
+}
+
+.tienda-preview-personalizada.tema-juvenil {
+  background:
+    radial-gradient(circle at 14% 18%, var(--tienda-secundario), transparent 18%),
+    radial-gradient(circle at 86% 72%, var(--tienda-acento), transparent 20%),
+    linear-gradient(135deg, var(--tienda-fondo), #ffffff);
+  color: #1f1724;
+}
+
+.tienda-preview-logo {
+  width: 92px;
+  height: 92px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: white;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.tienda-preview-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tienda-preview-personalizada button {
+  margin-top: 12px;
+  border: none;
+  border-radius: 14px;
+  padding: 11px 14px;
+  background: white;
+  color: var(--tienda-principal);
+  font-weight: 900;
+}
+
+.tienda-preview-deco {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  right: -50px;
+  top: -50px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.cliente-empresa-logo-modal,
+.cliente-empresa-mini-logo {
+  background: linear-gradient(135deg, var(--tienda-principal), var(--tienda-secundario)) !important;
+}
+
+.tienda-publica {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--tienda-principal) 20%, #eadce5) !important;
+  background:
+    radial-gradient(circle at 92% 8%, color-mix(in srgb, var(--tienda-secundario) 18%, transparent), transparent 28%),
+    linear-gradient(135deg, #ffffff, var(--tienda-fondo)) !important;
+}
+
+.tienda-publica::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 10px;
+  background: linear-gradient(90deg, var(--tienda-principal), var(--tienda-secundario), var(--tienda-acento));
+}
+
+.tienda-publica.tema-urbano::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  top: 55px;
+  width: 180px;
+  height: 180px;
+  transform: rotate(30deg);
+  background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--tienda-principal) 18%, transparent) 0 10px, transparent 10px 20px);
+  pointer-events: none;
+}
+
+.tienda-publica.tema-boutique .cliente-empresa-logo-modal {
+  border-radius: 999px;
+}
+
+.tienda-publica.tema-minimalista {
+  background: white !important;
+}
+
+.tienda-publica.tema-juvenil .cliente-empresa-info-grid div {
+  border-radius: 28px;
+}
+
+.tienda-publica .cliente-empresa-modal-header span,
+.tienda-publica .cliente-empresa-info-grid span {
+  color: var(--tienda-principal);
+}
+
+.tienda-publica .cliente-empresa-modal-header h2 {
+  color: #1f1724;
+}
+
+.tienda-publica .cliente-empresa-info-grid div {
+  background: color-mix(in srgb, var(--tienda-fondo) 78%, #ffffff) !important;
+  border: 1px solid color-mix(in srgb, var(--tienda-principal) 10%, #eadce5);
+}
+
+.tienda-publica-paleta {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.cliente-btn-mapa {
+  min-height: 50px;
+  padding: 0 18px;
+  border-radius: 16px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
+  display: inline-grid;
+  place-items: center;
+  text-decoration: none;
+}
+
+.tienda-publica .cliente-btn-whatsapp {
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+.tienda-publica .cliente-carrito-seguir {
+  background: linear-gradient(135deg, var(--tienda-principal), var(--tienda-acento));
+  color: white;
+}
+
+@media (max-width: 850px) {
+  .cuenta-personalizacion-header,
+  .tienda-preview-personalizada {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .tienda-preview-logo {
+    width: 82px;
+    height: 82px;
+  }
+}
+
+
+
+/* ===== PARCHE PERFIL EN MENÚ CLIENTE/PORTAL ===== */
+.portal-logo-perfil {
+  align-items: center;
+}
+
+.portal-logo-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #8f174d, #e879b4);
+  color: white;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 18px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  box-shadow: 0 12px 26px rgba(143, 23, 77, 0.18);
+}
+
+.portal-logo-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portal-logo-avatar span {
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.portal-logo-textos {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.portal-logo-textos .portal-logo-nombre {
+  display: block;
+  color: #8f174d;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.1;
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-logo-textos small {
+  display: block;
+  color: #706878;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.portal-panel.menu-contraido .portal-logo-textos {
+  opacity: 0;
+  width: 0;
+  pointer-events: none;
+}
+
+
+/* ===== AJUSTE: logo de usuario en menú cliente/admin ===== */
+.portal-logo-marca {
+  flex: 0 0 auto;
+}
+
+.portal-logo-textos {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  place-items: initial;
+  box-shadow: none;
+}
+
+.portal-logo-perfil .portal-logo-avatar {
+  flex: 0 0 46px;
+}
+
+.portal-panel.menu-contraido .portal-logo-perfil {
+  justify-content: center;
+}
+
+/* ===== AJUSTE: términos en registro ===== */
+.terminos-registro-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #eadce5;
+  border-radius: 15px;
+  background: #fff7fb;
+  color: #3e3542;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.terminos-registro-check input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: #8f174d;
+  flex: 0 0 auto;
+}
+
+.terminos-registro-check span {
+  display: block;
+}
+
+/* ================= REPORTES ADMINISTRATIVOS Y DESTACADOS ================= */
+.admin-reportes,
+.admin-backups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-reporte-kpis,
+.admin-backup-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.admin-reporte-kpis article,
+.admin-backup-info article {
+  background: #fff;
+  border: 1px solid rgba(148, 27, 88, 0.14);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 14px 35px rgba(143, 23, 77, 0.07);
+}
+
+.admin-reporte-kpis span,
+.admin-backup-info span,
+.admin-reporte-card > span {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a51258;
+  margin-bottom: 8px;
+}
+
+.admin-reporte-kpis strong {
+  display: block;
+  font-size: 1.65rem;
+  color: #251527;
+}
+
+.admin-backup-info strong {
+  font-size: 0.95rem;
+  color: #251527;
+}
+
+.admin-reportes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-reporte-card {
+  background: #fff;
+  border: 1px solid rgba(148, 27, 88, 0.14);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 14px 35px rgba(143, 23, 77, 0.07);
+}
+
+.admin-reporte-card.grande {
+  grid-column: span 2;
+}
+
+.admin-reporte-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-reporte-card h3 {
+  margin: 0;
+  color: #251527;
+  font-size: 1.2rem;
+}
+
+.admin-reporte-card p,
+.admin-reporte-vacio {
+  color: #6f5d73;
+  margin: 5px 0 0;
+  font-size: 0.88rem;
+}
+
+.admin-reporte-ranking,
+.admin-reporte-lista-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.admin-reporte-renglon {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fff7fb;
+  border: 1px solid rgba(148, 27, 88, 0.1);
+}
+
+.admin-reporte-renglon > strong {
+  color: #a51258;
+  font-size: 0.86rem;
+}
+
+.admin-reporte-renglon > em {
+  color: #251527;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.admin-reporte-producto-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.admin-reporte-producto-mini img,
+.admin-reporte-producto-mini > span {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #b72e75, #e879b4);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+}
+
+.admin-reporte-producto-mini div {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-reporte-producto-mini b,
+.admin-reporte-lista-simple b {
+  display: block;
+  color: #251527;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-reporte-producto-mini small,
+.admin-reporte-lista-simple small {
+  display: block;
+  color: #806f84;
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+.admin-reporte-barra {
+  height: 7px;
+  background: #f4dce8;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.admin-reporte-barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #9d174d, #e879b4);
+}
+
+.admin-reporte-lista-simple > div {
+  padding: 12px;
+  background: #fff7fb;
+  border: 1px solid rgba(148, 27, 88, 0.1);
+  border-radius: 16px;
+}
+
+.admin-reporte-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.admin-reporte-tags span {
+  border: 1px solid rgba(148, 27, 88, 0.14);
+  background: #fff7fb;
+  color: #6f1845;
+  border-radius: 999px;
+  padding: 8px 11px;
+  font-size: 0.82rem;
+}
+
+.admin-reporte-tags b {
+  background: #9d174d;
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 7px;
+  margin-left: 4px;
+}
+
+.cliente-destacados-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: -4px 0 16px;
+}
+
+.cliente-destacados-filtros button {
+  border: 1px solid rgba(148, 27, 88, 0.18);
+  background: #fff;
+  color: #7a254e;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.cliente-destacados-filtros button.activo {
+  background: linear-gradient(135deg, #9d174d, #d9468f);
+  color: #fff;
+  box-shadow: 0 12px 25px rgba(157, 23, 77, 0.18);
+}
+
+@media (max-width: 900px) {
+  .admin-reportes-grid,
+  .admin-reporte-card.grande {
+    display: block;
+  }
+
+  .admin-reportes-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-reporte-renglon {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+}
+
+.cliente-destacado-metricas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 10px;
+}
+
+.cliente-destacado-metricas span {
+  border-radius: 999px;
+  background: #fff1f7;
+  color: #8f174d;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 5px 8px;
+}
+
+/* ================= MODALES PERSONALIZADOS ZYRA ================= */
+.zyra-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(38, 18, 35, 0.34);
+  backdrop-filter: blur(8px);
+  animation: zyraDialogFade 0.18s ease-out;
+}
+
+.zyra-dialog-card {
+  position: relative;
+  width: min(440px, 100%);
+  border: 1px solid rgba(180, 43, 111, 0.18);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 225, 241, 0.95), transparent 36%),
+    linear-gradient(145deg, #ffffff, #fff7fb);
+  box-shadow: 0 30px 80px rgba(72, 20, 54, 0.24);
+  padding: 30px;
+  text-align: center;
+  animation: zyraDialogPop 0.2s ease-out;
+}
+
+.zyra-dialog-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #8f174d;
+  font-size: 1.35rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(143, 23, 77, 0.12);
+}
+
+.zyra-dialog-icon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 16px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 1.75rem;
+  font-weight: 950;
+  background: linear-gradient(135deg, #9d174d, #d9468f);
+  box-shadow: 0 16px 35px rgba(157, 23, 77, 0.24);
+}
+
+.zyra-dialog-card.ok .zyra-dialog-icon {
+  background: linear-gradient(135deg, #059669, #34d399);
+}
+
+.zyra-dialog-card.error .zyra-dialog-icon,
+.zyra-dialog-card.danger .zyra-dialog-icon {
+  background: linear-gradient(135deg, #b91c1c, #fb7185);
+}
+
+.zyra-dialog-card.warning .zyra-dialog-icon {
+  background: linear-gradient(135deg, #9d174d, #f59e0b);
+}
+
+.zyra-dialog-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #a51258;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.zyra-dialog-card h2 {
+  margin: 0;
+  color: #251527;
+  font-size: 1.55rem;
+  line-height: 1.1;
+}
+
+.zyra-dialog-card p {
+  margin: 12px auto 0;
+  max-width: 340px;
+  color: #6f5d73;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.zyra-dialog-card small {
+  display: block;
+  margin: 12px auto 0;
+  max-width: 340px;
+  border-radius: 16px;
+  background: #fff1f7;
+  color: #7a254e;
+  padding: 10px 12px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.zyra-dialog-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.zyra-dialog-btn {
+  border: 0;
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-weight: 950;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.zyra-dialog-btn:hover {
+  transform: translateY(-1px);
+}
+
+.zyra-dialog-btn.principal {
+  background: linear-gradient(135deg, #9d174d, #d9468f);
+  color: #fff;
+  box-shadow: 0 14px 30px rgba(157, 23, 77, 0.24);
+}
+
+.zyra-dialog-btn.secundario {
+  background: #f5edf2;
+  color: #5f4a61;
+}
+
+@keyframes zyraDialogFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zyraDialogPop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ================= REPORTES CON PORCENTAJES Y TORTAS ================= */
+.admin-reporte-barra-wrap {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.admin-reporte-barra-wrap > b {
+  color: #9d174d;
+  font-size: 0.78rem;
+  font-weight: 950;
+  min-width: 42px;
+  text-align: right;
+}
+
+.admin-reporte-renglon > em {
+  display: flex;
+  min-width: 58px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.admin-reporte-renglon > em b {
+  font-size: 0.95rem;
+  color: #251527;
+}
+
+.admin-reporte-renglon > em span {
+  color: #a51258;
+  font-size: 0.74rem;
+  font-weight: 950;
+}
+
+.admin-reporte-tags span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.admin-reporte-tags small {
+  color: #9d174d;
+  font-size: 0.72rem;
+  font-weight: 950;
+}
+
+.admin-reporte-torta-card {
+  overflow: hidden;
+}
+
+.admin-reporte-torta-head {
+  align-items: center;
+  gap: 18px;
+}
+
+.admin-grafico-selector {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.admin-grafico-selector button {
+  border: 1px solid rgba(148, 27, 88, 0.15);
+  background: #fff7fb;
+  color: #7a254e;
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-size: 0.78rem;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.admin-grafico-selector button.activo {
+  background: linear-gradient(135deg, #9d174d, #d9468f);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(157, 23, 77, 0.18);
+}
+
+.admin-torta-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  align-items: center;
+  gap: 24px;
+  margin-top: 18px;
+}
+
+.admin-torta {
+  position: relative;
+  width: min(280px, 100%);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 20px 45px rgba(111, 24, 69, 0.18);
+}
+
+.admin-torta::before {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+}
+
+.admin-torta > div {
+  position: relative;
+  z-index: 1;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  box-shadow: inset 0 0 0 1px rgba(148, 27, 88, 0.1), 0 12px 25px rgba(60, 20, 48, 0.14);
+}
+
+.admin-torta strong {
+  color: #251527;
+  font-size: 1.45rem;
+  font-weight: 950;
+}
+
+.admin-torta span {
+  color: #a51258;
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.admin-torta-leyenda {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-torta-leyenda > div {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fff7fb;
+  border: 1px solid rgba(148, 27, 88, 0.1);
+}
+
+.admin-torta-leyenda i {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.admin-torta-leyenda b {
+  display: block;
+  max-width: 100%;
+  color: #251527;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-torta-leyenda small {
+  display: block;
+  margin-top: 2px;
+  color: #806f84;
+  font-size: 0.76rem;
+}
+
+.admin-torta-leyenda strong {
+  color: #a51258;
+  font-size: 0.9rem;
+  font-weight: 950;
+}
+
+@media (max-width: 900px) {
+  .admin-reporte-torta-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-grafico-selector {
+    justify-content: flex-start;
+  }
+
+  .admin-torta-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-torta {
+    margin: 0 auto;
+  }
+
+  .zyra-dialog-card {
+    padding: 26px 20px;
+  }
+
+  .zyra-dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  .zyra-dialog-btn {
+    width: 100%;
   }
 }

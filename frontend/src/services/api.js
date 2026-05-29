@@ -90,6 +90,17 @@ export const registrarEmpresaApi = async (empresa) => {
   return procesarRespuesta(respuesta, "No se pudo registrar la empresa.");
 };
 
+export const aceptarTerminosUsuarioApi = async (idUsuario) => {
+  const respuesta = await fetch(`${API_URL}/auth/usuarios/${idUsuario}/terminos`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  return procesarRespuesta(respuesta, "No se pudo guardar la aceptación de términos.");
+};
+
 /* CATEGORÍAS */
 
 export const obtenerCategorias = async () => {
@@ -136,6 +147,28 @@ export const crearProductoEmpresa = async (producto) => {
   });
 
   return procesarRespuesta(respuesta, "No se pudo registrar el producto.");
+};
+
+
+export const crearProductoEmpresaConImagen = async (producto, archivo) => {
+  const formData = new FormData();
+
+  formData.append("id_empresa", producto.id_empresa);
+  formData.append("id_categoria", producto.id_categoria);
+  formData.append("nombre_producto", producto.nombre_producto);
+  formData.append("descripcion", producto.descripcion || "");
+  formData.append("marca", producto.marca || "");
+  formData.append("genero", producto.genero || "Unisex");
+  formData.append("precio", producto.precio);
+  formData.append("variantes", JSON.stringify(producto.variantes || []));
+  formData.append("archivo", archivo);
+
+  const respuesta = await fetch(`${API_URL}/empresa/productos-con-imagen`, {
+    method: "POST",
+    body: formData
+  });
+
+  return procesarRespuesta(respuesta, "No se pudo registrar el producto con imagen.");
 };
 
 export const editarProductoEmpresa = async (idProducto, producto) => {
@@ -460,6 +493,25 @@ export const obtenerSoporteAdminApi = async (idAdmin) => {
   return datos.tickets || [];
 };
 
+export const obtenerReportesAdminApi = async (idAdmin, limite = 15) => {
+  const respuesta = await fetch(`${API_URL}/admin/reportes?id_admin=${idAdmin}&limite=${limite}`);
+  return procesarRespuesta(respuesta, "No se pudieron cargar los reportes administrativos.");
+};
+
+export const obtenerBackupsAdminApi = async (idAdmin) => {
+  const respuesta = await fetch(`${API_URL}/admin/backups?id_admin=${idAdmin}`);
+  const datos = await procesarRespuesta(respuesta, "No se pudieron cargar las copias de seguridad.");
+  return datos.backups || [];
+};
+
+export const crearBackupAdminApi = async (idAdmin) => {
+  const respuesta = await fetch(`${API_URL}/admin/backups/crear?id_admin=${idAdmin}`, {
+    method: "POST"
+  });
+
+  return procesarRespuesta(respuesta, "No se pudo crear la copia de seguridad.");
+};
+
 export const cambiarEstadoSoporteAdminApi = async (idTicket, idAdmin, estadoTicket) => {
   const respuesta = await fetch(`${API_URL}/admin/soporte/${idTicket}/estado`, {
     method: "PUT",
@@ -608,24 +660,6 @@ export const responderTicketSoporteApi = async (idTicket, idUsuario, mensaje) =>
   return procesarRespuesta(respuesta, "No se pudo enviar la respuesta de soporte.");
 };
 
-
-
-/* INTELIGENCIA ARTIFICIAL - BÚSQUEDA VISUAL */
-
-export const buscarProductosPorImagenApi = async (idUsuario, archivo, limite = 12) => {
-  const formData = new FormData();
-  formData.append("archivo", archivo);
-
-  const respuesta = await fetch(
-    `${API_URL}/cliente/buscar-por-imagen?id_usuario=${idUsuario}&limite=${limite}`,
-    {
-      method: "POST",
-      body: formData
-    }
-  );
-
-  return procesarRespuesta(respuesta, "No se pudo realizar la búsqueda visual.");
-};
 
 /* NOTIFICACIONES DE USUARIO */
 
