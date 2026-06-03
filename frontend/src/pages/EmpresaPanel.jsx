@@ -137,7 +137,112 @@ const obtenerEstiloTienda = (empresa = {}) => ({
 const obtenerTemaNombre = (tema) =>
   TEMAS_TIENDA.find((item) => item.id === tema)?.nombre || "Elegante";
 
-export default function EmpresaPanel({ usuario, onVolver, onCerrarSesion }) {
+const obtenerColoresDecoracionTienda = (empresa = {}) => ({
+  principal: empresa.color_principal || COLOR_TIENDA_DEFAULT.color_principal,
+  secundario: empresa.color_secundario || COLOR_TIENDA_DEFAULT.color_secundario,
+  acento: empresa.color_acento || COLOR_TIENDA_DEFAULT.color_acento,
+  fondo: empresa.color_fondo || COLOR_TIENDA_DEFAULT.color_fondo
+});
+
+const DecoracionTemaTienda = ({ tema = "elegante", empresa = {}, compacto = false }) => {
+  const colores = obtenerColoresDecoracionTienda(empresa);
+  const opacidad = compacto ? 0.72 : 0.55;
+  const decorBase = {
+    position: "absolute",
+    inset: 0,
+    overflow: "hidden",
+    borderRadius: "inherit",
+    pointerEvents: "none",
+    zIndex: 0
+  };
+  const pieza = (key, estilo) => (
+    <span key={key} style={{ position: "absolute", display: "block", pointerEvents: "none", ...estilo }} />
+  );
+
+  if (tema === "minimalista") {
+    return (
+      <div aria-hidden="true" style={decorBase}>
+        {[0, 1, 2, 3, 4, 5].map((item) =>
+          pieza(`minimal-${item}`, {
+            width: compacto ? 18 : 26,
+            height: compacto ? 18 : 26,
+            border: `2px solid ${item % 2 ? colores.secundario : colores.principal}`,
+            background: item % 3 === 0 ? colores.fondo : "transparent",
+            opacity: opacidad,
+            borderRadius: 6,
+            left: `${8 + item * 15}%`,
+            top: item % 2 ? "68%" : "12%",
+            transform: `rotate(${item % 2 ? -8 : 8}deg)`
+          })
+        )}
+        {pieza("minimal-line", { left: "6%", right: "6%", bottom: 14, height: 2, background: colores.acento, opacity: 0.28 })}
+      </div>
+    );
+  }
+
+  if (tema === "boutique") {
+    return (
+      <div aria-hidden="true" style={decorBase}>
+        {pieza("boutique-1", { width: compacto ? 92 : 150, height: compacto ? 92 : 150, borderRadius: "999px", background: colores.secundario, opacity: 0.26, filter: "blur(6px)", right: "-4%", top: "-18%" })}
+        {pieza("boutique-2", { width: compacto ? 76 : 120, height: compacto ? 76 : 120, borderRadius: "999px", background: colores.acento, opacity: 0.2, filter: "blur(8px)", left: "6%", bottom: "-18%" })}
+        {pieza("boutique-3", { width: compacto ? 34 : 48, height: compacto ? 34 : 48, borderRadius: "999px", border: `2px solid ${colores.principal}`, opacity: 0.38, right: "18%", bottom: "18%" })}
+        {pieza("boutique-brillo", { width: 56, height: 2, background: colores.principal, opacity: 0.35, left: "12%", top: "18%", transform: "rotate(-12deg)", borderRadius: 99 })}
+      </div>
+    );
+  }
+
+  if (tema === "urbano") {
+    return (
+      <div aria-hidden="true" style={decorBase}>
+        {[-1, 0, 1, 2].map((item) =>
+          pieza(`urbano-bar-${item}`, {
+            width: compacto ? 130 : 210,
+            height: compacto ? 16 : 24,
+            background: item % 2 ? colores.principal : colores.acento,
+            opacity: item % 2 ? 0.24 : 0.18,
+            borderRadius: 999,
+            right: `${-8 + item * 14}%`,
+            top: `${18 + item * 18}%`,
+            transform: "rotate(-22deg)"
+          })
+        )}
+        {pieza("urbano-block", { width: compacto ? 52 : 74, height: compacto ? 52 : 74, background: colores.secundario, opacity: 0.22, left: "5%", top: "12%", borderRadius: 16, transform: "rotate(8deg)" })}
+      </div>
+    );
+  }
+
+  if (tema === "juvenil") {
+    return (
+      <div aria-hidden="true" style={decorBase}>
+        {[0, 1, 2, 3, 4, 5, 6].map((item) =>
+          pieza(`juvenil-dot-${item}`, {
+            width: compacto ? 12 + (item % 3) * 4 : 16 + (item % 3) * 6,
+            height: compacto ? 12 + (item % 3) * 4 : 16 + (item % 3) * 6,
+            borderRadius: item % 2 ? "999px" : "10px",
+            background: [colores.principal, colores.secundario, colores.acento][item % 3],
+            opacity: 0.28,
+            left: `${6 + item * 13}%`,
+            top: `${14 + ((item * 19) % 68)}%`,
+            transform: `rotate(${item * 14}deg)`
+          })
+        )}
+        {pieza("juvenil-wave", { left: "8%", right: "8%", bottom: 18, height: 5, borderRadius: 999, background: `linear-gradient(90deg, ${colores.principal}, ${colores.secundario}, ${colores.acento})`, opacity: 0.32 })}
+      </div>
+    );
+  }
+
+  return (
+    <div aria-hidden="true" style={decorBase}>
+      {pieza("elegante-marco-a", { left: "5%", top: "12%", width: compacto ? 60 : 92, height: compacto ? 36 : 52, borderTop: `2px solid ${colores.principal}`, borderLeft: `2px solid ${colores.principal}`, opacity: 0.34, borderRadius: 12 })}
+      {pieza("elegante-marco-b", { right: "6%", bottom: "12%", width: compacto ? 70 : 110, height: compacto ? 38 : 58, borderRight: `2px solid ${colores.acento}`, borderBottom: `2px solid ${colores.acento}`, opacity: 0.34, borderRadius: 12 })}
+      {pieza("elegante-linea-1", { left: "9%", right: "42%", top: "22%", height: 2, background: colores.secundario, opacity: 0.34, borderRadius: 99 })}
+      {pieza("elegante-linea-2", { left: "48%", right: "8%", bottom: "24%", height: 2, background: colores.principal, opacity: 0.24, borderRadius: 99 })}
+    </div>
+  );
+};
+
+
+export default function EmpresaPanel({ usuario, onVolver, onCerrarSesion, onUsuarioActualizado }) {
   const [seccionEmpresa, setSeccionEmpresa] = useState("vista");
   const [menuEmpresaContraido, setMenuEmpresaContraido] = useState(false);
   const [mostrarNotificacionesEmpresa, setMostrarNotificacionesEmpresa] = useState(false);
@@ -155,6 +260,15 @@ export default function EmpresaPanel({ usuario, onVolver, onCerrarSesion }) {
   const mostrarAvisoEmpresa = (texto, tipo = "ok") => {
     setToastEmpresa({ texto, tipo });
     window.setTimeout(() => setToastEmpresa(null), 3200);
+  };
+
+  const actualizarSesionEmpresa = (usuarioActualizado) => {
+    setCuentaEmpresaActual(usuarioActualizado);
+    localStorage.setItem("usuario_zyra", JSON.stringify(usuarioActualizado));
+
+    if (typeof onUsuarioActualizado === "function") {
+      onUsuarioActualizado(usuarioActualizado);
+    }
   };
 
   const pedirConfirmacion = (opciones) => {
@@ -448,15 +562,12 @@ const guardarCuentaEmpresa = async (e) => {
       };
     }
 
-    localStorage.setItem("usuario_zyra", JSON.stringify(usuarioActualizado));
-    setCuentaEmpresaActual(usuarioActualizado);
+    actualizarSesionEmpresa(usuarioActualizado);
 
     setMensajeCuenta("Datos de la cuenta actualizados correctamente.");
     setTipoMensajeCuenta("ok");
     setEditandoCuenta(false);
     setLogoCuenta(null);
-
-    window.location.reload();
   } catch (error) {
     setMensajeCuenta(error.message || "No se pudo actualizar la cuenta.");
     setTipoMensajeCuenta("error");
@@ -585,8 +696,7 @@ const cargarCuentaEmpresa = async () => {
       ...datosCuenta
     };
 
-    setCuentaEmpresaActual(usuarioActualizado);
-    localStorage.setItem("usuario_zyra", JSON.stringify(usuarioActualizado));
+    actualizarSesionEmpresa(usuarioActualizado);
   } catch (error) {
     console.error("No se pudieron cargar los datos de la cuenta:", error);
   }
@@ -616,8 +726,7 @@ const actualizarQrPagoEmpresa = async (e) => {
       qr_pago_url: respuestaQr.qr_pago_url
     };
 
-    setCuentaEmpresaActual(usuarioActualizado);
-    localStorage.setItem("usuario_zyra", JSON.stringify(usuarioActualizado));
+    actualizarSesionEmpresa(usuarioActualizado);
 
     setQrPagoArchivo(null);
     setMensajeQrPago("QR de pago actualizado correctamente.");
@@ -3008,7 +3117,7 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
                 <div>
                   <span>Personalización de tienda</span>
                   <h3>Colores y tema visual</h3>
-                  <p>Estos colores se usarán cuando el cliente vea tu tienda.</p>
+                  <p>Estos colores también pintan los cuadros, redonditos, líneas y detalles decorativos del tema.</p>
                 </div>
                 <strong>{obtenerTemaNombre(cuentaForm.tema_tienda)}</strong>
               </div>
@@ -3016,21 +3125,25 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
               <div className="form-grid">
                 <div className="campo-panel color-picker-field">
                   <label>Color principal</label>
+                  <small>Líneas principales, bordes y bloques del tema.</small>
                   <input type="color" name="color_principal" value={cuentaForm.color_principal} onChange={cambiarCuentaForm} />
                 </div>
 
                 <div className="campo-panel color-picker-field">
                   <label>Color secundario</label>
+                  <small>Figuras suaves, sombras y detalles secundarios.</small>
                   <input type="color" name="color_secundario" value={cuentaForm.color_secundario} onChange={cambiarCuentaForm} />
                 </div>
 
                 <div className="campo-panel color-picker-field">
                   <label>Color de acento</label>
+                  <small>Puntos llamativos, brillos y elementos especiales.</small>
                   <input type="color" name="color_acento" value={cuentaForm.color_acento} onChange={cambiarCuentaForm} />
                 </div>
 
                 <div className="campo-panel color-picker-field">
                   <label>Color de fondo</label>
+                  <small>Base visual sobre la que se dibuja el tema.</small>
                   <input type="color" name="color_fondo" value={cuentaForm.color_fondo} onChange={cambiarCuentaForm} />
                 </div>
               </div>
@@ -3044,9 +3157,12 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
                 </select>
               </div>
 
-              <div className={`tienda-preview-personalizada tema-${cuentaForm.tema_tienda || "elegante"}`}>
-                <div className="tienda-preview-deco" />
-                <div className="tienda-preview-logo">
+              <div
+                className={`tienda-preview-personalizada tema-${cuentaForm.tema_tienda || "elegante"}`}
+                style={{ position: "relative", overflow: "hidden", isolation: "isolate" }}
+              >
+                <DecoracionTemaTienda tema={cuentaForm.tema_tienda || "elegante"} empresa={cuentaForm} compacto />
+                <div className="tienda-preview-logo" style={{ position: "relative", zIndex: 1 }}>
                   {logoCuenta ? (
                     <img src={URL.createObjectURL(logoCuenta)} alt="Vista previa" />
                   ) : (cuentaEmpresaActual?.logo_url || usuario.logo_url) ? (
@@ -3055,7 +3171,7 @@ const ultimosPedidosResumen = pedidosEmpresa.slice(0, 3);
                     <span>{cuentaForm.nombre_empresa?.charAt(0) || "Z"}</span>
                   )}
                 </div>
-                <div>
+                <div style={{ position: "relative", zIndex: 1 }}>
                   <span>Vista previa pública</span>
                   <h3>{cuentaForm.nombre_empresa || "Nombre de tu tienda"}</h3>
                   <p>{cuentaForm.descripcion || "Descripción breve de la tienda para tus clientes."}</p>

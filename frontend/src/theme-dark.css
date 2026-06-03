@@ -1,0 +1,1223 @@
+/* =========================================================
+   Zyra - modo oscuro completo sin cuadros ni botones blancos
+   Reemplaza frontend/src/theme-dark.css completo.
+   ========================================================= */
+
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --vino: #ff7abf;
+  --vino-oscuro: #ff9bcf;
+  --rosa: #f7b4d8;
+  --rosa-suave: rgba(255, 122, 191, 0.16);
+  --fondo: #14091b;
+  --texto: #fff4fb;
+  --gris: #e9cade;
+  --borde: rgba(255, 182, 222, 0.24);
+  --blanco: #24122d;
+  --sombra: 0 28px 80px rgba(0, 0, 0, 0.48);
+
+  --zyra-bg: #14091b;
+  --zyra-bg-2: #1d0d27;
+  --zyra-bg-3: #261331;
+  --zyra-surface: #27142f;
+  --zyra-surface-2: #301936;
+  --zyra-surface-3: #3b1e43;
+  --zyra-soft: rgba(255, 122, 191, 0.11);
+  --zyra-soft-2: rgba(167, 139, 250, 0.12);
+  --zyra-border: rgba(255, 167, 215, 0.28);
+  --zyra-border-strong: rgba(255, 122, 191, 0.46);
+  --zyra-text: #fff4fb;
+  --zyra-text-2: #f2d2e6;
+  --zyra-muted: #d7aec9;
+  --zyra-muted-2: #c593b6;
+  --zyra-label: #ff7abf;
+  --zyra-label-2: #ffc4e4;
+  --zyra-pink: #d94697;
+  --zyra-pink-2: #a21d65;
+  --zyra-purple: #8b5cf6;
+  --zyra-danger: #ff6b9e;
+  --zyra-success: #86efac;
+  --zyra-warning: #fbbf24;
+}
+
+html[data-theme="dark"],
+body[data-theme="dark"] {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 10% 8%, rgba(217, 70, 151, 0.16), transparent 34%),
+    radial-gradient(circle at 92% 10%, rgba(139, 92, 246, 0.15), transparent 32%),
+    radial-gradient(circle at 58% 95%, rgba(255, 122, 191, 0.08), transparent 30%),
+    linear-gradient(135deg, var(--zyra-bg) 0%, var(--zyra-bg-2) 54%, #120718 100%) !important;
+  color: var(--zyra-text) !important;
+}
+
+/* =========================================================
+   Botón de modo oscuro
+   Login/registro: se queda arriba a la derecha.
+   Paneles: va abajo a la izquierda, encima de Volver/Cerrar sesión.
+   ========================================================= */
+
+.zyra-theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 92px;
+  z-index: 99999;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgba(143, 23, 77, 0.22);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffe8f4, #f4defd);
+  color: #8f174d;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+  box-shadow: 0 16px 36px rgba(55, 19, 43, 0.14);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.zyra-theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 42px rgba(55, 19, 43, 0.2);
+}
+
+.zyra-theme-toggle-icon {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  flex: 0 0 23px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #8f174d, #e879b4);
+  color: #fff4fb;
+  font-size: 13px;
+}
+
+html[data-theme="dark"] .zyra-theme-toggle {
+  border-color: rgba(255, 122, 191, 0.42);
+  background: linear-gradient(135deg, #44183b, #83235d) !important;
+  color: var(--zyra-text) !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+}
+
+html[data-theme="dark"] .zyra-theme-toggle-icon {
+  background: linear-gradient(135deg, #ff7abf, #8b5cf6);
+  color: #24122d;
+}
+
+body:not([data-vista-zyra="login"]) .zyra-theme-toggle-panel,
+body:has(.portal-sidebar) .zyra-theme-toggle,
+body:has(.empresa-sidebar) .zyra-theme-toggle {
+  top: auto;
+  right: auto;
+  left: 17px;
+  bottom: 92px;
+  width: 151px;
+  min-height: 40px;
+  padding: 9px 12px;
+  justify-content: flex-start;
+}
+
+@media (max-width: 760px) {
+  body:not([data-vista-zyra="login"]) .zyra-theme-toggle-panel,
+  body:has(.portal-sidebar) .zyra-theme-toggle,
+  body:has(.empresa-sidebar) .zyra-theme-toggle {
+    left: 14px;
+    bottom: 94px;
+    width: 142px;
+  }
+}
+
+/* =========================================================
+   Texto base legible
+   ========================================================= */
+
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] h6,
+html[data-theme="dark"] strong,
+html[data-theme="dark"] b {
+  color: var(--zyra-text) !important;
+}
+
+html[data-theme="dark"] p,
+html[data-theme="dark"] small,
+html[data-theme="dark"] label,
+html[data-theme="dark"] li,
+html[data-theme="dark"] em,
+html[data-theme="dark"] td,
+html[data-theme="dark"] th,
+html[data-theme="dark"] span {
+  color: inherit;
+}
+
+html[data-theme="dark"] .descripcion,
+html[data-theme="dark"] .subtitulo,
+html[data-theme="dark"] .mini-texto,
+html[data-theme="dark"] .frase,
+html[data-theme="dark"] .text-muted,
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] .portal-subtitle,
+html[data-theme="dark"] .section-subtitle,
+html[data-theme="dark"] .cliente-section-title p,
+html[data-theme="dark"] .admin-panel-title p,
+html[data-theme="dark"] .empresa-panel-title p,
+html[data-theme="dark"] .admin-reporte-card p,
+html[data-theme="dark"] .resumen-card p,
+html[data-theme="dark"] .cuenta-info-card p,
+html[data-theme="dark"] .cliente-cuenta-card p,
+html[data-theme="dark"] .cliente-pedido-aviso p,
+html[data-theme="dark"] .pago-card p,
+html[data-theme="dark"] .pedido-card p,
+html[data-theme="dark"] .soporte-ticket-item p {
+  color: var(--zyra-text-2) !important;
+}
+
+html[data-theme="dark"] .eyebrow,
+html[data-theme="dark"] .section-label,
+html[data-theme="dark"] .card-label,
+html[data-theme="dark"] .stat-label,
+html[data-theme="dark"] .admin-panel-title small,
+html[data-theme="dark"] .section-header small,
+html[data-theme="dark"] .cliente-section-title small,
+html[data-theme="dark"] .empresa-panel-title small,
+html[data-theme="dark"] .categoria-mini-label,
+html[data-theme="dark"] .admin-categoria-admin,
+html[data-theme="dark"] .admin-producto-meta,
+html[data-theme="dark"] .cliente-producto-top,
+html[data-theme="dark"] .cuenta-personalizacion-header small,
+html[data-theme="dark"] .resumen-panel-header small {
+  color: var(--zyra-label) !important;
+  letter-spacing: 0.08em;
+}
+
+/* =========================================================
+   Fondos principales
+   ========================================================= */
+
+html[data-theme="dark"] .pagina,
+html[data-theme="dark"] .portal-panel,
+html[data-theme="dark"] .empresa-panel,
+html[data-theme="dark"] .portal-main,
+html[data-theme="dark"] .empresa-main,
+html[data-theme="dark"] .admin-page,
+html[data-theme="dark"] .cliente-home,
+html[data-theme="dark"] .cliente-catalogo,
+html[data-theme="dark"] .cliente-carrito-page,
+html[data-theme="dark"] .cliente-pedidos-page,
+html[data-theme="dark"] .cliente-soporte-page,
+html[data-theme="dark"] .cliente-cuenta-page,
+html[data-theme="dark"] .cliente-pago-page,
+html[data-theme="dark"] .cliente-ia-page {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(217, 70, 151, 0.12), transparent 30%),
+    radial-gradient(circle at 90% 40%, rgba(139, 92, 246, 0.11), transparent 30%),
+    linear-gradient(135deg, var(--zyra-bg) 0%, var(--zyra-bg-2) 100%) !important;
+  color: var(--zyra-text) !important;
+}
+
+/* =========================================================
+   Sidebar
+   ========================================================= */
+
+html[data-theme="dark"] .portal-sidebar,
+html[data-theme="dark"] .empresa-sidebar {
+  background: linear-gradient(180deg, #110718 0%, #16091e 100%) !important;
+  border-color: rgba(255, 167, 215, 0.14) !important;
+  box-shadow: 18px 0 52px rgba(0, 0, 0, 0.22) !important;
+}
+
+html[data-theme="dark"] .portal-sidebar a,
+html[data-theme="dark"] .empresa-sidebar a,
+html[data-theme="dark"] .portal-sidebar button,
+html[data-theme="dark"] .empresa-sidebar button,
+html[data-theme="dark"] .portal-sidebar .menu-item,
+html[data-theme="dark"] .empresa-sidebar .menu-item,
+html[data-theme="dark"] .empresa-nav button,
+html[data-theme="dark"] .empresa-nav a {
+  color: var(--zyra-text-2) !important;
+}
+
+html[data-theme="dark"] .portal-sidebar a.active,
+html[data-theme="dark"] .empresa-sidebar a.active,
+html[data-theme="dark"] .portal-sidebar button.active,
+html[data-theme="dark"] .empresa-sidebar button.active,
+html[data-theme="dark"] .empresa-nav button.activo,
+html[data-theme="dark"] .empresa-nav a.activo,
+html[data-theme="dark"] .menu-item.active {
+  background: linear-gradient(135deg, rgba(132, 36, 93, 0.72), rgba(83, 32, 92, 0.72)) !important;
+  color: var(--zyra-text) !important;
+  border-color: rgba(255, 122, 191, 0.28) !important;
+}
+
+html[data-theme="dark"] .portal-sidebar-footer button,
+html[data-theme="dark"] .empresa-sidebar-footer button,
+html[data-theme="dark"] .portal-sidebar .btn-panel-secundario,
+html[data-theme="dark"] .portal-sidebar .btn-panel-principal,
+html[data-theme="dark"] .empresa-sidebar .btn-panel-secundario,
+html[data-theme="dark"] .empresa-sidebar .btn-panel-principal {
+  background: linear-gradient(135deg, #5c1f49, #84245d) !important;
+  color: var(--zyra-text) !important;
+  border: 1px solid rgba(255, 122, 191, 0.42) !important;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* =========================================================
+   Superficies oscuras generales: elimina cuadros blancos
+   ========================================================= */
+
+html[data-theme="dark"] :is(
+  .panel-info,
+  .formulario,
+  .bienvenida,
+  .login-modal-card,
+  .auth-card,
+  .terminos-acceso-card,
+  .portal-card,
+  .card,
+  .panel-card,
+  .dashboard-card,
+  .summary-card,
+  .stat-card,
+  .section-header,
+  .admin-hero,
+  .admin-hero-mini,
+  .admin-panel-card,
+  .admin-metrica,
+  .admin-empresa-card,
+  .admin-empresa-selector-card,
+  .admin-usuarios-grupo,
+  .admin-usuario-row,
+  .admin-producto-card,
+  .admin-pedido-card,
+  .admin-pago-card,
+  .admin-reporte-card,
+  .admin-reporte-torta-card,
+  .admin-reporte-renglon,
+  .admin-backup-info,
+  .admin-vacio-card,
+  .admin-ticket-card,
+  .admin-ticket-mejorado,
+  .admin-soporte-modal,
+  .admin-detalle-modal,
+  .admin-nuevo-admin-card,
+  .admin-cuenta-card,
+  .admin-cuenta-principal,
+  .admin-cuenta-seguridad-horizontal,
+  .admin-cuenta-form,
+  .admin-password-form,
+  .admin-tabla-contenedor,
+  .admin-grupo-header,
+  .cliente-home-section,
+  .cliente-home-panel,
+  .cliente-filtros-card,
+  .cliente-card-carrito,
+  .cliente-carrito-vacio,
+  .cliente-carrito-resumen,
+  .cliente-carrito-item,
+  .cliente-producto-info,
+  .cliente-modal-producto,
+  .cliente-empresa-modal,
+  .cliente-cuenta-card,
+  .cliente-cuenta-perfil,
+  .cliente-cuenta-header,
+  .cliente-cuenta-form,
+  .cliente-cuenta-foto-box,
+  .cliente-password-panel,
+  .cliente-pago-form-card,
+  .cliente-pago-qr-card,
+  .cliente-pago-datos-tienda,
+  .cliente-pago-alerta,
+  .cliente-pago-total,
+  .cliente-pedido-card,
+  .cliente-pedido-aviso,
+  .cliente-pedido-direccion,
+  .cliente-pedido-productos,
+  .cliente-pedido-producto-item,
+  .cliente-pedido-total-tienda,
+  .cliente-tienda-card,
+  .cliente-ia-cards > *,
+  .cliente-ia-upload,
+  .soporte-form-card,
+  .soporte-lista-card,
+  .soporte-conversacion-card,
+  .soporte-ticket-item,
+  .soporte-mensaje,
+  .empresa-section,
+  .empresa-mini-card,
+  .empresa-notification-popover,
+  .categoria-grupo,
+  .categoria-titulo,
+  .producto-card-clickable,
+  .nueva-variante-card,
+  .variante-editor-card,
+  .resumen-card,
+  .resumen-panel,
+  .resumen-estado-tienda,
+  .resumen-item,
+  .pedido-card,
+  .pedido-item,
+  .pago-card,
+  .pago-comprobante-box,
+  .pago-info-grid,
+  .qr-pago-card,
+  .cuenta-perfil-card,
+  .cuenta-info-card,
+  .cuenta-personalizacion-box,
+  .cuenta-tema-card,
+  .cuenta-password-box,
+  .cuenta-form,
+  .cuenta-logo-editor,
+  .tienda-preview,
+  .vacio-card,
+  .estado-carga,
+  .estado-error,
+  .comprobante-modal,
+  .zyra-confirmacion-card
+) {
+  background: linear-gradient(145deg, rgba(39, 20, 47, 0.97), rgba(31, 14, 40, 0.97)) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.28) !important;
+}
+
+/* Contenedores que aparecían blancos por grupos/headers/listas */
+html[data-theme="dark"] :is(
+  .admin-productos-scroll,
+  .admin-scroll-grid,
+  .admin-usuarios-scroll,
+  .admin-empresa-grupos-lista,
+  .admin-reportes-grid,
+  .admin-reporte-kpis,
+  .admin-reporte-ranking,
+  .admin-reporte-lista-simple,
+  .admin-reporte-tags,
+  .admin-torta-leyenda,
+  .admin-info-lista,
+  .admin-items-lista,
+  .admin-lista,
+  .admin-tabla,
+  .cliente-productos-grid,
+  .cliente-destacados-grid,
+  .cliente-carrito-items,
+  .cliente-pedidos-lista,
+  .cliente-pedido-tienda-productos,
+  .cliente-variantes-lista,
+  .cliente-tiendas-grid,
+  .cliente-empresa-info-grid,
+  .cliente-notification-popover,
+  .empresa-header-actions-mini,
+  .productos-grid,
+  .categorias-productos,
+  .variantes-editor,
+  .variantes-lista,
+  .pedidos-lista,
+  .pagos-lista,
+  .pagos-resumen,
+  .pago-productos,
+  .resumen-grid,
+  .resumen-lista,
+  .cuenta-grid,
+  .cuenta-edicion-layout,
+  .soporte-usuario-layout,
+  .soporte-tickets-lista,
+  .soporte-mensajes-lista
+) {
+  background: transparent !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+/* Caza cuadros blancos remanentes dentro de paneles sin afectar imágenes */
+html[data-theme="dark"] :is(.portal-main, .empresa-main, .admin-page, .cliente-home, .cliente-catalogo, .cliente-carrito-page, .cliente-pedidos-page, .cliente-soporte-page, .cliente-cuenta-page, .cliente-pago-page, .cliente-ia-page) :is(
+  [class*="card"],
+  [class*="panel"],
+  [class*="box"],
+  [class*="grupo"],
+  [class*="header"],
+  [class*="lista"],
+  [class*="resumen"],
+  [class*="vacio"],
+  [class*="carga"],
+  [class*="info"],
+  [class*="aviso"],
+  [class*="datos"],
+  [class*="detalle"],
+  [class*="modal"],
+  [class*="popover"],
+  [class*="ticket"],
+  [class*="pedido"],
+  [class*="pago"],
+  [class*="cuenta"],
+  [class*="soporte"],
+  [class*="categoria"],
+  [class*="empresa"],
+  [class*="tienda"]
+) {
+  background-color: var(--zyra-surface) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+/* Mantener imágenes reales limpias, pero con contenedor oscuro */
+html[data-theme="dark"] img,
+html[data-theme="dark"] video,
+html[data-theme="dark"] canvas,
+html[data-theme="dark"] svg {
+  color: inherit;
+}
+
+html[data-theme="dark"] :is(.cliente-producto-imagen, .admin-producto-img, .cliente-carrito-img, .cliente-pago-qr-img, .pago-comprobante-box, .cuenta-logo-preview, .cliente-cuenta-avatar, .admin-avatar, .empresa-brand-logo) {
+  background: linear-gradient(145deg, #2d1836, #1f0e29) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+/* =========================================================
+   Formularios, inputs, selects y cargas de archivos
+   ========================================================= */
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .campo-panel,
+html[data-theme="dark"] .password-input-panel,
+html[data-theme="dark"] .campo-otro-input,
+html[data-theme="dark"] .cliente-filtro-busqueda,
+html[data-theme="dark"] .cliente-pago-file,
+html[data-theme="dark"] .qr-upload-label,
+html[data-theme="dark"] input[type="file"] {
+  background: #180b20 !important;
+  color: var(--zyra-text) !important;
+  border: 1px solid var(--zyra-border-strong) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 122, 191, 0.04) !important;
+  caret-color: var(--zyra-label) !important;
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #c99ab9 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] input[type="color"] {
+  background: #180b20 !important;
+  border: 1px solid var(--zyra-border-strong) !important;
+  padding: 4px !important;
+}
+
+html[data-theme="dark"] input[type="checkbox"],
+html[data-theme="dark"] input[type="radio"] {
+  accent-color: var(--zyra-pink);
+}
+
+/* =========================================================
+   Botones: elimina botones blancos en modo oscuro
+   ========================================================= */
+
+html[data-theme="dark"] button:not(.zyra-theme-toggle):not(.btn-ojo-password),
+html[data-theme="dark"] .btn,
+html[data-theme="dark"] .btn-panel-principal,
+html[data-theme="dark"] .btn-panel-secundario,
+html[data-theme="dark"] .cliente-card-ver,
+html[data-theme="dark"] .cliente-carrito-finalizar,
+html[data-theme="dark"] .cliente-carrito-seguir,
+html[data-theme="dark"] .cliente-btn-carrito,
+html[data-theme="dark"] .cliente-btn-whatsapp,
+html[data-theme="dark"] .cliente-btn-mapa,
+html[data-theme="dark"] .cliente-pedido-tienda-btn,
+html[data-theme="dark"] .cliente-pedido-producto-boton,
+html[data-theme="dark"] .cliente-producto-empresa-btn,
+html[data-theme="dark"] .cliente-detalle-empresa-btn,
+html[data-theme="dark"] .cliente-modal-cerrar,
+html[data-theme="dark"] .admin-add-admin-btn,
+html[data-theme="dark"] .admin-mini-acciones button,
+html[data-theme="dark"] .admin-header-botones button,
+html[data-theme="dark"] .admin-empresa-acciones button,
+html[data-theme="dark"] .admin-pago-acciones button,
+html[data-theme="dark"] .admin-ticket-acciones button,
+html[data-theme="dark"] .btn-ver-producto,
+html[data-theme="dark"] .btn-editar-producto,
+html[data-theme="dark"] .btn-aprobar-pago,
+html[data-theme="dark"] .btn-rechazar-pago,
+html[data-theme="dark"] .btn-cancelar-pedido,
+html[data-theme="dark"] .btn-entregar-pedido,
+html[data-theme="dark"] .qr-pago-acciones button,
+html[data-theme="dark"] .acciones-form button,
+html[data-theme="dark"] .acciones-producto button,
+html[data-theme="dark"] .acciones-variante button,
+html[data-theme="dark"] .filtros-pagos button,
+html[data-theme="dark"] .zyra-confirmacion-acciones button {
+  background: linear-gradient(135deg, #84245d, #5c1f49) !important;
+  color: var(--zyra-text) !important;
+  border: 1px solid rgba(255, 122, 191, 0.42) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22) !important;
+}
+
+html[data-theme="dark"] button:not(.zyra-theme-toggle):not(.btn-ojo-password):hover,
+html[data-theme="dark"] .btn-panel-principal:hover,
+html[data-theme="dark"] .btn-panel-secundario:hover {
+  background: linear-gradient(135deg, #9d2b70, #7c2d69) !important;
+  color: var(--zyra-text) !important;
+}
+
+html[data-theme="dark"] button:disabled,
+html[data-theme="dark"] button[disabled],
+html[data-theme="dark"] .disabled {
+  background: linear-gradient(135deg, #3a203e, #2a1730) !important;
+  color: #b989a6 !important;
+  border-color: rgba(255, 167, 215, 0.18) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.78 !important;
+}
+
+html[data-theme="dark"] .btn-ojo-password {
+  background: transparent !important;
+  color: var(--zyra-muted) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Botones de peligro/estado con contraste */
+html[data-theme="dark"] .eliminar,
+html[data-theme="dark"] .deshabilitar,
+html[data-theme="dark"] .cancelar,
+html[data-theme="dark"] .rechazar,
+html[data-theme="dark"] .btn-rechazar-pago,
+html[data-theme="dark"] .btn-cancelar-pedido {
+  background: linear-gradient(135deg, #7f1d4e, #5d1939) !important;
+  color: #ffeaf4 !important;
+  border-color: rgba(255, 107, 158, 0.44) !important;
+}
+
+html[data-theme="dark"] .confirmar,
+html[data-theme="dark"] .aprobar,
+html[data-theme="dark"] .btn-aprobar-pago,
+html[data-theme="dark"] .btn-entregar-pedido {
+  background: linear-gradient(135deg, #116047, #164e3d) !important;
+  color: #eafff4 !important;
+  border-color: rgba(134, 239, 172, 0.4) !important;
+}
+
+/* =========================================================
+   Badges, estados, chips y variantes
+   ========================================================= */
+
+html[data-theme="dark"] :is(
+  .estado-badge,
+  .admin-estado-badge,
+  .pago-estado,
+  .estado_pago,
+  .categoria-cantidad-pill,
+  .cliente-catalogo-contador,
+  .cliente-mini-variantes span,
+  .cliente-variantes-selector button,
+  .variante-color-preview,
+  .cuenta-paleta-mini span,
+  .empresa-estado,
+  .admin-reporte-tags span,
+  .admin-filtros-pills button,
+  .cliente-destacados-filtros button,
+  .filtros-pagos button,
+  .notificacion,
+  .sin-leer
+) {
+  background: rgba(132, 36, 93, 0.58) !important;
+  color: var(--zyra-text) !important;
+  border-color: rgba(255, 122, 191, 0.38) !important;
+}
+
+html[data-theme="dark"] .activo,
+html[data-theme="dark"] .aprobada,
+html[data-theme="dark"] .pagado,
+html[data-theme="dark"] .ok {
+  background: rgba(22, 101, 52, 0.52) !important;
+  color: #dcfce7 !important;
+  border-color: rgba(134, 239, 172, 0.34) !important;
+}
+
+html[data-theme="dark"] .pendiente,
+html[data-theme="dark"] .revision,
+html[data-theme="dark"] .warning {
+  background: rgba(133, 77, 14, 0.48) !important;
+  color: #fef3c7 !important;
+  border-color: rgba(251, 191, 36, 0.34) !important;
+}
+
+/* =========================================================
+   Admin: productos, reportes, pedidos, pagos, soporte, cuenta
+   ========================================================= */
+
+html[data-theme="dark"] .admin-grupo-header,
+html[data-theme="dark"] .admin-reporte-card-head,
+html[data-theme="dark"] .admin-torta-layout,
+html[data-theme="dark"] .admin-backups thead,
+html[data-theme="dark"] .admin-tabla thead,
+html[data-theme="dark"] .admin-section-header,
+html[data-theme="dark"] .admin-vacio,
+html[data-theme="dark"] .admin-soporte-mensaje,
+html[data-theme="dark"] .admin-ticket-descripcion,
+html[data-theme="dark"] .admin-cuenta-foto-editor,
+html[data-theme="dark"] .admin-detalle-producto {
+  background: linear-gradient(145deg, #2b1633, #211129) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+html[data-theme="dark"] .admin-reporte-barra-wrap,
+html[data-theme="dark"] .admin-reporte-barra {
+  background: rgba(255, 122, 191, 0.14) !important;
+}
+
+html[data-theme="dark"] .admin-reporte-barra::before,
+html[data-theme="dark"] .admin-reporte-barra span {
+  background: linear-gradient(90deg, #b22576, #ff7abf) !important;
+}
+
+/* =========================================================
+   Cliente: destacados, catálogo, IA, carrito, pedidos, cuenta
+   ========================================================= */
+
+html[data-theme="dark"] .cliente-home-hero,
+html[data-theme="dark"] .cliente-catalogo-hero,
+html[data-theme="dark"] .cliente-ia-hero,
+html[data-theme="dark"] .cliente-pago-hero,
+html[data-theme="dark"] .cliente-carrito-header,
+html[data-theme="dark"] .cliente-pedido-header,
+html[data-theme="dark"] .cliente-cuenta-header,
+html[data-theme="dark"] .soporte-header {
+  background: linear-gradient(135deg, #9d1b63 0%, #84245d 55%, #6d28d9 100%) !important;
+  color: var(--zyra-text) !important;
+  border-color: rgba(255, 122, 191, 0.3) !important;
+}
+
+html[data-theme="dark"] .cliente-producto-info,
+html[data-theme="dark"] .cliente-destacado-metricas,
+html[data-theme="dark"] .cliente-mini-variantes,
+html[data-theme="dark"] .cliente-detalle-datos,
+html[data-theme="dark"] .cliente-detalle-info,
+html[data-theme="dark"] .cliente-detalle-galeria,
+html[data-theme="dark"] .cliente-pedido-notificaciones,
+html[data-theme="dark"] .cliente-pedido-badges,
+html[data-theme="dark"] .cliente-notification-item,
+html[data-theme="dark"] .cliente-notification-empty {
+  background: linear-gradient(145deg, #2d1734, #22112b) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+html[data-theme="dark"] .cliente-toast,
+html[data-theme="dark"] .toastCliente,
+html[data-theme="dark"] .toastEmpresa,
+html[data-theme="dark"] .zyra-toast-profesional {
+  background: linear-gradient(135deg, #33173b, #84245d) !important;
+  color: var(--zyra-text) !important;
+  border-color: rgba(255, 122, 191, 0.42) !important;
+}
+
+/* =========================================================
+   Empresa: tienda, productos, variantes, pedidos, pagos, resumen, cuenta
+   ========================================================= */
+
+html[data-theme="dark"] .empresa-topbar,
+html[data-theme="dark"] .empresa-brand,
+html[data-theme="dark"] .empresa-brand-personalizada,
+html[data-theme="dark"] .tienda-preview-personalizada,
+html[data-theme="dark"] .tienda-publica,
+html[data-theme="dark"] .tienda-publica-paleta,
+html[data-theme="dark"] .categoria-bonita,
+html[data-theme="dark"] .variantes-header,
+html[data-theme="dark"] .pedido-card-header,
+html[data-theme="dark"] .pago-card-header,
+html[data-theme="dark"] .resumen-panel-header,
+html[data-theme="dark"] .cuenta-personalizacion-header {
+  background: linear-gradient(145deg, #2d1734, #211129) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+html[data-theme="dark"] .producto-card-clickable,
+html[data-theme="dark"] .fila-producto,
+html[data-theme="dark"] .pedido-item,
+html[data-theme="dark"] .pago-productos,
+html[data-theme="dark"] .resumen-lista li,
+html[data-theme="dark"] .resumen-nota,
+html[data-theme="dark"] .cuenta-logo-editor,
+html[data-theme="dark"] .color-picker-field,
+html[data-theme="dark"] .qr-archivo-seleccionado {
+  background: linear-gradient(145deg, #2b1633, #211129) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+/* =========================================================
+   Soporte y mensajes: sin burbujas blancas
+   ========================================================= */
+
+html[data-theme="dark"] .soporte-mensaje,
+html[data-theme="dark"] .soporte-mensaje.usuario,
+html[data-theme="dark"] .soporte-mensaje.respondioZyra,
+html[data-theme="dark"] .soporte-responder-form,
+html[data-theme="dark"] .soporte-vacio-texto,
+html[data-theme="dark"] .cliente-error,
+html[data-theme="dark"] .alerta,
+html[data-theme="dark"] .mensaje-producto,
+html[data-theme="dark"] .estado-error {
+  background: linear-gradient(145deg, #2d1734, #22112b) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+/* =========================================================
+   Tablas y filas
+   ========================================================= */
+
+html[data-theme="dark"] table,
+html[data-theme="dark"] .admin-tabla,
+html[data-theme="dark"] .tabla-productos {
+  background: #211129 !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+html[data-theme="dark"] tr,
+html[data-theme="dark"] td,
+html[data-theme="dark"] th {
+  background: transparent !important;
+  color: var(--zyra-text-2) !important;
+  border-color: rgba(255, 167, 215, 0.18) !important;
+}
+
+html[data-theme="dark"] thead,
+html[data-theme="dark"] th {
+  background: #3a1d43 !important;
+  color: var(--zyra-text) !important;
+}
+
+/* =========================================================
+   Modales
+   ========================================================= */
+
+html[data-theme="dark"] .cliente-modal-fondo,
+html[data-theme="dark"] .admin-detalle-modal-fondo,
+html[data-theme="dark"] .admin-soporte-modal-fondo,
+html[data-theme="dark"] .comprobante-modal-fondo,
+html[data-theme="dark"] .zyra-confirmacion-fondo {
+  background: rgba(10, 4, 14, 0.72) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* =========================================================
+   Reglas finales: ningún botón/cuadro blanco en paneles
+   ========================================================= */
+
+html[data-theme="dark"] :is(.portal-main, .empresa-main, .admin-page, .cliente-home, .cliente-catalogo, .cliente-carrito-page, .cliente-pedidos-page, .cliente-soporte-page, .cliente-cuenta-page, .cliente-pago-page, .cliente-ia-page) :is(button, a[class*="btn"], [role="button"]):not(.zyra-theme-toggle):not(.btn-ojo-password) {
+  background: linear-gradient(135deg, #84245d, #5c1f49) !important;
+  color: var(--zyra-text) !important;
+  border-color: rgba(255, 122, 191, 0.42) !important;
+}
+
+html[data-theme="dark"] :is(.portal-main, .empresa-main, .admin-page, .cliente-home, .cliente-catalogo, .cliente-carrito-page, .cliente-pedidos-page, .cliente-soporte-page, .cliente-cuenta-page, .cliente-pago-page, .cliente-ia-page) :is(.admin-metrica, .admin-reporte-card, .admin-grupo-header, .admin-backup-info, .cliente-home-section, .cliente-carrito-vacio, .cliente-pedido-aviso, .cliente-pedido-direccion, .cliente-cuenta-perfil, .cliente-password-panel, .resumen-estado-tienda, .pago-card, .pedido-card, .vacio-card, .estado-carga) {
+  background: linear-gradient(145deg, #2b1633, #211129) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+/* Si algún contenedor quedó con texto rosado sobre claro, forzamos fondo oscuro */
+html[data-theme="dark"] :is(.portal-main, .empresa-main, .admin-page, .cliente-home, .cliente-catalogo, .cliente-carrito-page, .cliente-pedidos-page, .cliente-soporte-page, .cliente-cuenta-page, .cliente-pago-page, .cliente-ia-page) :is([style*="background: white"], [style*="background:#fff"], [style*="background: #fff"], [style*="background-color: white"], [style*="background-color:#fff"], [style*="background-color: #fff"]) {
+  background: linear-gradient(145deg, #2b1633, #211129) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-border) !important;
+}
+
+/* Selección y scrollbar */
+html[data-theme="dark"] ::selection {
+  background: rgba(255, 122, 191, 0.44);
+  color: var(--zyra-text);
+}
+
+html[data-theme="dark"] *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html[data-theme="dark"] *::-webkit-scrollbar-track {
+  background: #16091e;
+}
+
+html[data-theme="dark"] *::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #84245d, #5c1f49);
+  border-radius: 999px;
+}
+
+/* =========================================================
+   FIX DEFINITIVO - Zyra modo oscuro sin superficies blancas
+   Este bloque va al final para ganar prioridad sobre App.css.
+   ========================================================= */
+
+:root[data-theme="dark"] {
+  --zyra-panel-bg: #1a0b22;
+  --zyra-card-bg: #281330;
+  --zyra-card-bg-2: #32183b;
+  --zyra-card-bg-3: #3f1b49;
+  --zyra-card-border: rgba(255, 126, 190, 0.36);
+  --zyra-card-border-soft: rgba(255, 190, 220, 0.22);
+  --zyra-btn-bg: #86265d;
+  --zyra-btn-bg-2: #5f214e;
+  --zyra-btn-hover: #a62c71;
+  --zyra-field-bg: #17091f;
+  --zyra-field-border: rgba(255, 126, 190, 0.44);
+  --zyra-white-replace: linear-gradient(145deg, #2a1432, #211029) !important;
+}
+
+/* El botón de tema en paneles va encima de Volver/Cerrar sesión, sin taparlos. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) .zyra-theme-toggle,
+body:not([data-vista-zyra="login"]) .zyra-theme-toggle-panel,
+body:has(.portal-sidebar) .zyra-theme-toggle,
+body:has(.empresa-sidebar) .zyra-theme-toggle {
+  top: auto !important;
+  right: auto !important;
+  left: 17px !important;
+  bottom: 158px !important;
+  width: 151px !important;
+  min-height: 40px !important;
+  padding: 9px 12px !important;
+  justify-content: flex-start !important;
+  border-radius: 14px !important;
+  z-index: 99999 !important;
+}
+
+/* En login y registro queda arriba a la derecha. */
+body[data-theme="dark"][data-vista-zyra="login"] .zyra-theme-toggle,
+body[data-vista-zyra="login"] .zyra-theme-toggle-login {
+  top: 16px !important;
+  right: 92px !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: auto !important;
+  border-radius: 999px !important;
+}
+
+/* Fondo base de paneles, sin negro puro. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]),
+body[data-theme="dark"]:not([data-vista-zyra="login"]) .portal-main,
+body[data-theme="dark"]:not([data-vista-zyra="login"]) .empresa-main,
+body[data-theme="dark"]:not([data-vista-zyra="login"]) .admin-page,
+body[data-theme="dark"]:not([data-vista-zyra="login"]) main {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(217, 70, 151, 0.13), transparent 28%),
+    radial-gradient(circle at 90% 20%, rgba(139, 92, 246, 0.10), transparent 32%),
+    linear-gradient(135deg, #130718 0%, #1a0b22 52%, #220d2b 100%) !important;
+  color: var(--zyra-text) !important;
+}
+
+/* Regla fuerte: cualquier superficie de panel que antes quedaba blanca pasa a morado oscuro. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  [class*="card"],
+  [class*="Card"],
+  [class*="box"],
+  [class*="Box"],
+  [class*="panel"],
+  [class*="Panel"],
+  [class*="section"],
+  [class*="Section"],
+  [class*="header"],
+  [class*="Header"],
+  [class*="grupo"],
+  [class*="Grupo"],
+  [class*="contenedor"],
+  [class*="container"],
+  [class*="lista"],
+  [class*="list"],
+  [class*="row"],
+  [class*="fila"],
+  [class*="item"],
+  [class*="info"],
+  [class*="datos"],
+  [class*="detalle"],
+  [class*="resumen"],
+  [class*="estado"],
+  [class*="bloque"],
+  [class*="aviso"],
+  [class*="alerta"],
+  [class*="empty"],
+  [class*="vacio"],
+  [class*="carga"],
+  [class*="mensaje"],
+  [class*="conversacion"],
+  [class*="ticket"],
+  [class*="pedido"],
+  [class*="pago"],
+  [class*="backup"],
+  [class*="soporte"],
+  [class*="cuenta"],
+  [class*="producto"],
+  [class*="empresa"],
+  [class*="tienda"],
+  [class*="categoria"],
+  [class*="direccion"],
+  [class*="total"],
+  [class*="notificacion"],
+  [class*="notification"],
+  [class*="popover"],
+  [class*="modal"],
+  [class*="form"],
+  [class*="grid"],
+  [class*="tabla"],
+  [class*="table"],
+  section,
+  article,
+  form,
+  table,
+  thead,
+  tbody,
+  tr,
+  td,
+  th,
+  ul,
+  li
+):not(.zyra-theme-toggle):not(.zyra-theme-toggle-icon):not(.portal-sidebar):not(.empresa-sidebar):not(.cliente-home-hero):not(.cliente-catalogo-hero):not(.cliente-ia-hero):not(.cliente-pago-hero):not(.login-modal-card):not(.auth-card) {
+  background: var(--zyra-white-replace);
+  background-color: var(--zyra-card-bg) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-card-border-soft) !important;
+}
+
+/* Restaurar bloques hero/encabezados que deben conservar degradado, pero sin blanco. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  .cliente-home-hero,
+  .cliente-catalogo-hero,
+  .cliente-ia-hero,
+  .cliente-pago-hero,
+  .cliente-carrito-header,
+  .cliente-pedido-header,
+  .cliente-cuenta-header,
+  .soporte-header,
+  .admin-hero,
+  .admin-hero-mini,
+  .empresa-hero,
+  .empresa-header,
+  .empresa-panel-title,
+  .admin-panel-title,
+  .section-header,
+  .resumen-panel-header
+) {
+  background: linear-gradient(135deg, #45143f 0%, #7e245d 48%, #4f1d68 100%) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-card-border) !important;
+}
+
+/* Algunos bloques usaban blanco inline o muy específico. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  [style*="background: white"],
+  [style*="background:white"],
+  [style*="background: #fff"],
+  [style*="background:#fff"],
+  [style*="background-color: white"],
+  [style*="background-color:white"],
+  [style*="background-color: #fff"],
+  [style*="background-color:#fff"],
+  [style*="rgb(255, 255, 255)"],
+  [style*="rgba(255, 255, 255"]
+) {
+  background: var(--zyra-white-replace);
+  background-color: var(--zyra-card-bg) !important;
+  color: var(--zyra-text) !important;
+  border-color: var(--zyra-card-border-soft) !important;
+}
+
+/* Botones: ningún botón blanco en paneles. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  button,
+  .btn,
+  [class*="btn"],
+  [class*="Btn"],
+  [class*="button"],
+  [class*="boton"],
+  [role="button"],
+  a[class*="btn"],
+  a[class*="button"],
+  label[class*="btn"],
+  label[class*="upload"],
+  label[class*="archivo"],
+  label[class*="qr"]
+):not(.zyra-theme-toggle):not(.zyra-theme-toggle-icon):not(.btn-ojo-password) {
+  background: linear-gradient(135deg, var(--zyra-btn-bg), var(--zyra-btn-bg-2)) !important;
+  color: #fff4fb !important;
+  border: 1px solid rgba(255, 126, 190, 0.48) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24) !important;
+}
+
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  button,
+  .btn,
+  [class*="btn"],
+  [class*="button"],
+  [class*="boton"],
+  [role="button"]
+):not(.zyra-theme-toggle):not(.zyra-theme-toggle-icon):not(.btn-ojo-password):hover {
+  background: linear-gradient(135deg, var(--zyra-btn-hover), #6f2a69) !important;
+  color: #fff4fb !important;
+}
+
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(button:disabled, button[disabled], .disabled, [aria-disabled="true"]) {
+  background: linear-gradient(135deg, #3a203e, #2a1730) !important;
+  color: #cda0bc !important;
+  border-color: rgba(255, 167, 215, 0.22) !important;
+  opacity: 0.74 !important;
+}
+
+/* Inputs, selects, textareas y file input sin blanco. */
+body[data-theme="dark"] :where(input, select, textarea) {
+  background: var(--zyra-field-bg) !important;
+  color: var(--zyra-text) !important;
+  border: 1px solid var(--zyra-field-border) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 126, 190, 0.05) !important;
+}
+
+body[data-theme="dark"] :where(input, select, textarea)::placeholder {
+  color: #cf9fbd !important;
+  opacity: 1 !important;
+}
+
+body[data-theme="dark"] input[type="file"]::file-selector-button {
+  background: linear-gradient(135deg, var(--zyra-btn-bg), var(--zyra-btn-bg-2)) !important;
+  color: #fff4fb !important;
+  border: 1px solid rgba(255, 126, 190, 0.48) !important;
+  border-radius: 10px !important;
+  padding: 7px 10px !important;
+  margin-right: 10px !important;
+}
+
+/* Texto informativo: visible sobre fondo oscuro. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  h1,h2,h3,h4,h5,h6,strong,b,
+  p,span,small,label,em,td,th,li,a
+) {
+  color: inherit;
+}
+
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  h1,h2,h3,h4,h5,h6,strong,b,
+  [class*="title"],
+  [class*="titulo"],
+  [class*="nombre"],
+  [class*="precio"],
+  [class*="total"]
+) {
+  color: #fff4fb !important;
+}
+
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  p,span,small,label,em,td,th,li,
+  [class*="descripcion"],
+  [class*="subtitle"],
+  [class*="subtitulo"],
+  [class*="meta"],
+  [class*="texto"],
+  [class*="dato"],
+  [class*="info"],
+  [class*="mensaje"]
+) {
+  color: #f3d0e5 !important;
+}
+
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  .eyebrow,
+  .section-label,
+  .card-label,
+  .stat-label,
+  [class*="label"],
+  [class*="mini"],
+  [class*="categoria"],
+  [class*="estado"]
+) {
+  color: #ff87c4 !important;
+}
+
+/* Badges/chips con fondo oscuro rosado, no blanco. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  [class*="badge"],
+  [class*="pill"],
+  [class*="chip"],
+  [class*="tag"],
+  [class*="estado"],
+  [class*="activo"],
+  [class*="pendiente"],
+  [class*="revision"],
+  [class*="aprobada"]
+) {
+  background: rgba(134, 38, 93, 0.72) !important;
+  color: #fff4fb !important;
+  border-color: rgba(255, 126, 190, 0.38) !important;
+}
+
+/* Los estados positivos conservan verde, pero oscuro. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(.activo, .aprobada, .pagado, .ok, [class*="aprob"], [class*="pagado"]) {
+  background: rgba(22, 101, 52, 0.56) !important;
+  color: #dcfce7 !important;
+  border-color: rgba(134, 239, 172, 0.36) !important;
+}
+
+/* Cajas de chat/soporte y avisos que quedaban crema/blancas. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(
+  [class*="mensaje"],
+  [class*="chat"],
+  [class*="respuesta"],
+  [class*="conversacion"],
+  [class*="notificacion"],
+  [class*="aviso"],
+  [class*="alerta"]
+) {
+  background: linear-gradient(145deg, #32183b, #25112d) !important;
+  color: #f8d7eb !important;
+  border-color: rgba(255, 126, 190, 0.32) !important;
+}
+
+/* Tablas y listas. */
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(table, thead, tbody, tr, td, th) {
+  background: #24112d !important;
+  color: #f3d0e5 !important;
+  border-color: rgba(255, 167, 215, 0.18) !important;
+}
+
+body[data-theme="dark"]:not([data-vista-zyra="login"]) :where(thead, th) {
+  background: #3b1b44 !important;
+  color: #fff4fb !important;
+}
+
+/* Mantener imágenes reales sin pintar por encima. El fondo blanco que sea parte de la foto no se modifica. */
+body[data-theme="dark"] img,
+body[data-theme="dark"] video,
+body[data-theme="dark"] canvas,
+body[data-theme="dark"] picture {
+  background: transparent !important;
+}
+
+/* Evita que el SVG del icono/menú se convierta en caja oscura extraña. */
+body[data-theme="dark"] svg {
+  background: transparent !important;
+}
+
+/* Scrollbar con tono Zyra. */
+body[data-theme="dark"] *::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #a72c72, #6f2a69) !important;
+  border-radius: 999px !important;
+}
+
+body[data-theme="dark"] *::-webkit-scrollbar-track {
+  background: #16091e !important;
+}

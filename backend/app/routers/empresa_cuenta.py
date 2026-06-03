@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from sqlalchemy.orm import Session
 from pathlib import Path
 from uuid import uuid4
@@ -7,7 +7,7 @@ import re
 
 from app.database import get_db
 from app.models import Usuario, Empresa
-from app.schemas import EmpresaCuentaActualizar, EmpresaPasswordCambiar
+from app.schemas import EmpresaPasswordCambiar
 from app.seguridad import crear_hash_password, verificar_password
 
 router = APIRouter()
@@ -138,37 +138,82 @@ def obtener_cuenta_empresa(
     return armar_respuesta_cuenta(usuario, empresa)
 
 
-@router.put("/empresa/cuenta/{id_empresa}")
-def actualizar_cuenta_empresa(
+
+
+@router.get("/cliente/empresas/{id_empresa}")
+def obtener_empresa_publica(
     id_empresa: int,
-    datos: EmpresaCuentaActualizar,
     db: Session = Depends(get_db)
 ):
+    empresa = db.query(Empresa).filter(Empresa.id_empresa == id_empresa).first()
+
+    if not empresa:
+        raise HTTPException(status_code=404, detail="Tienda no encontrada")
+
+    return {
+        "empresa": {
+            "id_empresa": empresa.id_empresa,
+            "nombre_empresa": empresa.nombre_empresa,
+            "descripcion": empresa.descripcion,
+            "direccion": empresa.direccion,
+            "ciudad": empresa.ciudad,
+            "whatsapp": empresa.whatsapp,
+            "instagram": empresa.instagram,
+            "facebook": empresa.facebook,
+            "logo_url": empresa.logo_url,
+            "qr_pago_url": getattr(empresa, "qr_pago_url", None),
+            "color_principal": getattr(empresa, "color_principal", None) or "#8f174d",
+            "color_secundario": getattr(empresa, "color_secundario", None) or "#e879b4",
+            "color_acento": getattr(empresa, "color_acento", None) or "#c02672",
+            "color_fondo": getattr(empresa, "color_fondo", None) or "#fff1f7",
+            "tema_tienda": getattr(empresa, "tema_tienda", None) or "elegante",
+            "google_maps_url": getattr(empresa, "google_maps_url", None),
+            "estado_empresa": empresa.estado_empresa
+        }
+    }
+
+@router.put("/empresa/cuenta/{id_empresa}")
+async def actualizar_cuenta_empresa(
+    id_empresa: int,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    # Se lee el JSON directamente para no depender de que el schema ignore campos nuevos.
+    # Así se conservan colores, tema visual y enlace de mapa sin tocar otros módulos.
+    datos = await request.json()
+
+    def dato(clave, defecto=None):
+        return datos.get(clave, defecto)
+
+    id_usuario = dato("id_usuario")
+    if not id_usuario:
+        raise HTTPException(status_code=400, detail="El usuario de la empresa es obligatorio")
+
     empresa, usuario = verificar_empresa_usuario(
         db,
         id_empresa,
-        datos.id_usuario
+        int(id_usuario)
     )
 
-    email_limpio = validar_email_permitido(datos.email)
-    telefono_limpio = validar_telefono_opcional(datos.telefono)
-    whatsapp_limpio = validar_whatsapp_obligatorio(datos.whatsapp)
-    color_principal = validar_color_hex(getattr(datos, "color_principal", None), "#8f174d")
-    color_secundario = validar_color_hex(getattr(datos, "color_secundario", None), "#e879b4")
-    color_acento = validar_color_hex(getattr(datos, "color_acento", None), "#c02672")
-    color_fondo = validar_color_hex(getattr(datos, "color_fondo", None), "#fff1f7")
-    tema_tienda = validar_tema_tienda(getattr(datos, "tema_tienda", None))
-    google_maps_url = validar_google_maps_url(getattr(datos, "google_maps_url", None))
+    email_limpio = validar_email_permitido(dato("email"))
+    telefono_limpio = validar_telefono_opcional(dato("telefono"))
+    whatsapp_limpio = validar_whatsapp_obligatorio(dato("whatsapp"))
+    color_principal = validar_color_hex(dato("color_principal"), "#8f174d")
+    color_secundario = validar_color_hex(dato("color_secundario"), "#e879b4")
+    color_acento = validar_color_hex(dato("color_acento"), "#c02672")
+    color_fondo = validar_color_hex(dato("color_fondo"), "#fff1f7")
+    tema_tienda = validar_tema_tienda(dato("tema_tienda"))
+    google_maps_url = validar_google_maps_url(dato("google_maps_url"))
 
-    if not limpiar_texto(datos.nombre):
+    if not limpiar_texto(dato("nombre")):
         raise HTTPException(status_code=400, detail="El nombre del responsable es obligatorio")
 
-    if not limpiar_texto(datos.nombre_empresa):
+    if not limpiar_texto(dato("nombre_empresa")):
         raise HTTPException(status_code=400, detail="El nombre de la empresa es obligatorio")
 
     email_existente = db.query(Usuario).filter(
         Usuario.email == email_limpio,
-        Usuario.id_usuario != datos.id_usuario
+        Usuario.id_usuario != int(id_usuario)
     ).first()
 
     if email_existente:
@@ -177,19 +222,19 @@ def actualizar_cuenta_empresa(
             detail="Ese correo ya está registrado por otro usuario"
         )
 
-    usuario.nombre = limpiar_texto(datos.nombre)
-    usuario.apellido = limpiar_texto(datos.apellido) or None
+    usuario.nombre = limpiar_texto(dato("nombre"))
+    usuario.apellido = limpiar_texto(dato("apellido")) or None
     usuario.email = email_limpio
     usuario.telefono = telefono_limpio
 
-    empresa.nombre_empresa = limpiar_texto(datos.nombre_empresa)
-    empresa.descripcion = limpiar_texto(datos.descripcion) or None
-    empresa.nit = limpiar_texto(datos.nit) or None
-    empresa.direccion = limpiar_texto(datos.direccion) or None
-    empresa.ciudad = limpiar_texto(datos.ciudad) or "La Paz"
+    empresa.nombre_empresa = limpiar_texto(dato("nombre_empresa"))
+    empresa.descripcion = limpiar_texto(dato("descripcion")) or None
+    empresa.nit = limpiar_texto(dato("nit")) or None
+    empresa.direccion = limpiar_texto(dato("direccion")) or None
+    empresa.ciudad = limpiar_texto(dato("ciudad")) or "La Paz"
     empresa.whatsapp = whatsapp_limpio
-    empresa.instagram = limpiar_texto(datos.instagram) or None
-    empresa.facebook = limpiar_texto(datos.facebook) or None
+    empresa.instagram = limpiar_texto(dato("instagram")) or None
+    empresa.facebook = limpiar_texto(dato("facebook")) or None
     empresa.color_principal = color_principal
     empresa.color_secundario = color_secundario
     empresa.color_acento = color_acento
@@ -220,12 +265,12 @@ def actualizar_cuenta_empresa(
         "facebook": empresa.facebook,
         "logo_url": empresa.logo_url,
         "qr_pago_url": getattr(empresa, "qr_pago_url", None),
-            "color_principal": getattr(empresa, "color_principal", None) or "#8f174d",
-            "color_secundario": getattr(empresa, "color_secundario", None) or "#e879b4",
-            "color_acento": getattr(empresa, "color_acento", None) or "#c02672",
-            "color_fondo": getattr(empresa, "color_fondo", None) or "#fff1f7",
-            "tema_tienda": getattr(empresa, "tema_tienda", None) or "elegante",
-            "google_maps_url": getattr(empresa, "google_maps_url", None),
+        "color_principal": getattr(empresa, "color_principal", None) or "#8f174d",
+        "color_secundario": getattr(empresa, "color_secundario", None) or "#e879b4",
+        "color_acento": getattr(empresa, "color_acento", None) or "#c02672",
+        "color_fondo": getattr(empresa, "color_fondo", None) or "#fff1f7",
+        "tema_tienda": getattr(empresa, "tema_tienda", None) or "elegante",
+        "google_maps_url": getattr(empresa, "google_maps_url", None),
         "estado_empresa": empresa.estado_empresa
     }
 

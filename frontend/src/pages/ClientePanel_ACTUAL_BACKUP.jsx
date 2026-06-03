@@ -63,110 +63,6 @@ const obtenerEstiloTienda = (empresa = {}) => ({
 const obtenerTemaTienda = (empresa = {}) =>
   TEMAS_TIENDA[empresa?.tema_tienda || "elegante"] || "Elegante";
 
-const obtenerColoresDecoracionTienda = (empresa = {}) => ({
-  principal: empresa?.color_principal || "#8f174d",
-  secundario: empresa?.color_secundario || "#e879b4",
-  acento: empresa?.color_acento || "#c02672",
-  fondo: empresa?.color_fondo || "#fff1f7"
-});
-
-const DecoracionTemaTienda = ({ tema = "elegante", empresa = {} }) => {
-  const colores = obtenerColoresDecoracionTienda(empresa);
-  const decorBase = {
-    position: "absolute",
-    inset: 0,
-    overflow: "hidden",
-    borderRadius: "inherit",
-    pointerEvents: "none",
-    zIndex: 0
-  };
-  const pieza = (key, estilo) => (
-    <span key={key} style={{ position: "absolute", display: "block", pointerEvents: "none", ...estilo }} />
-  );
-
-  if (tema === "minimalista") {
-    return (
-      <div aria-hidden="true" style={decorBase}>
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((item) =>
-          pieza(`minimal-${item}`, {
-            width: 28,
-            height: 28,
-            border: `2px solid ${item % 2 ? colores.secundario : colores.principal}`,
-            background: item % 3 === 0 ? colores.fondo : "transparent",
-            opacity: 0.48,
-            borderRadius: 7,
-            left: `${5 + item * 12}%`,
-            top: item % 2 ? "74%" : "7%",
-            transform: `rotate(${item % 2 ? -7 : 7}deg)`
-          })
-        )}
-        {pieza("minimal-line", { left: "6%", right: "6%", bottom: 18, height: 2, background: colores.acento, opacity: 0.22 })}
-      </div>
-    );
-  }
-
-  if (tema === "boutique") {
-    return (
-      <div aria-hidden="true" style={decorBase}>
-        {pieza("boutique-1", { width: 190, height: 190, borderRadius: "999px", background: colores.secundario, opacity: 0.24, filter: "blur(8px)", right: "-5%", top: "-20%" })}
-        {pieza("boutique-2", { width: 150, height: 150, borderRadius: "999px", background: colores.acento, opacity: 0.18, filter: "blur(10px)", left: "3%", bottom: "-18%" })}
-        {pieza("boutique-3", { width: 64, height: 64, borderRadius: "999px", border: `2px solid ${colores.principal}`, opacity: 0.36, right: "18%", bottom: "18%" })}
-        {pieza("boutique-brillo", { width: 80, height: 3, background: colores.principal, opacity: 0.26, left: "16%", top: "16%", transform: "rotate(-12deg)", borderRadius: 99 })}
-      </div>
-    );
-  }
-
-  if (tema === "urbano") {
-    return (
-      <div aria-hidden="true" style={decorBase}>
-        {[-1, 0, 1, 2, 3].map((item) =>
-          pieza(`urbano-bar-${item}`, {
-            width: 230,
-            height: 26,
-            background: item % 2 ? colores.principal : colores.acento,
-            opacity: item % 2 ? 0.22 : 0.16,
-            borderRadius: 999,
-            right: `${-10 + item * 12}%`,
-            top: `${12 + item * 16}%`,
-            transform: "rotate(-22deg)"
-          })
-        )}
-        {pieza("urbano-block", { width: 82, height: 82, background: colores.secundario, opacity: 0.2, left: "4%", top: "10%", borderRadius: 18, transform: "rotate(8deg)" })}
-      </div>
-    );
-  }
-
-  if (tema === "juvenil") {
-    return (
-      <div aria-hidden="true" style={decorBase}>
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((item) =>
-          pieza(`juvenil-dot-${item}`, {
-            width: 18 + (item % 3) * 7,
-            height: 18 + (item % 3) * 7,
-            borderRadius: item % 2 ? "999px" : "10px",
-            background: [colores.principal, colores.secundario, colores.acento][item % 3],
-            opacity: 0.24,
-            left: `${4 + item * 10}%`,
-            top: `${12 + ((item * 19) % 70)}%`,
-            transform: `rotate(${item * 14}deg)`
-          })
-        )}
-        {pieza("juvenil-wave", { left: "8%", right: "8%", bottom: 18, height: 6, borderRadius: 999, background: `linear-gradient(90deg, ${colores.principal}, ${colores.secundario}, ${colores.acento})`, opacity: 0.28 })}
-      </div>
-    );
-  }
-
-  return (
-    <div aria-hidden="true" style={decorBase}>
-      {pieza("elegante-marco-a", { left: "4%", top: "10%", width: 120, height: 70, borderTop: `2px solid ${colores.principal}`, borderLeft: `2px solid ${colores.principal}`, opacity: 0.28, borderRadius: 16 })}
-      {pieza("elegante-marco-b", { right: "5%", bottom: "12%", width: 150, height: 82, borderRight: `2px solid ${colores.acento}`, borderBottom: `2px solid ${colores.acento}`, opacity: 0.28, borderRadius: 16 })}
-      {pieza("elegante-linea-1", { left: "10%", right: "45%", top: "20%", height: 2, background: colores.secundario, opacity: 0.28, borderRadius: 99 })}
-      {pieza("elegante-linea-2", { left: "48%", right: "8%", bottom: "24%", height: 2, background: colores.principal, opacity: 0.18, borderRadius: 99 })}
-    </div>
-  );
-};
-
-
 const obtenerNombrePerfilCliente = (usuario = {}) => {
   const nombreCompleto = `${usuario?.nombre || ""} ${usuario?.apellido || ""}`.trim();
   return nombreCompleto || usuario?.email || "Mi cuenta";
@@ -358,14 +254,6 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     precioMax: "",
     soloStock: true
   });
-
-
-  const [imagenBusquedaIa, setImagenBusquedaIa] = useState(null);
-  const [previewBusquedaIa, setPreviewBusquedaIa] = useState(null);
-  const [resultadosBusquedaIa, setResultadosBusquedaIa] = useState([]);
-  const [cargandoBusquedaIa, setCargandoBusquedaIa] = useState(false);
-  const [mensajeBusquedaIa, setMensajeBusquedaIa] = useState("");
-  const [tipoMensajeBusquedaIa, setTipoMensajeBusquedaIa] = useState("");
 
   const menu = [
     { id: "inicio", nombre: "Inicio", icono: "home" },
@@ -1608,7 +1496,7 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
       </div>
     );
 
-  const abrirDetalleEmpresa = async (empresa) => {
+  const abrirDetalleEmpresa = (empresa) => {
     if (!empresa) return;
     setEmpresaSeleccionada(empresa);
 
@@ -1617,37 +1505,6 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
       fetch(`${API_URL}/cliente/empresas/${empresa.id_empresa}/visita${params}`, {
         method: "POST"
       }).catch(() => {});
-
-      try {
-        const respuesta = await fetch(`${API_URL}/cliente/empresas/${empresa.id_empresa}`);
-        const datos = await respuesta.json().catch(() => ({}));
-
-        if (respuesta.ok && datos.empresa) {
-          const empresaActualizada = {
-            ...empresa,
-            ...datos.empresa,
-            totalProductos: empresa.totalProductos || empresa.total_productos || 0
-          };
-
-          setEmpresaSeleccionada(empresaActualizada);
-          setProductos((actuales) =>
-            actuales.map((producto) =>
-              producto.empresa?.id_empresa === empresa.id_empresa
-                ? { ...producto, empresa: { ...producto.empresa, ...datos.empresa } }
-                : producto
-            )
-          );
-          setProductosDestacadosCliente((actuales) =>
-            actuales.map((producto) =>
-              producto.empresa?.id_empresa === empresa.id_empresa
-                ? { ...producto, empresa: { ...producto.empresa, ...datos.empresa } }
-                : producto
-            )
-          );
-        }
-      } catch (error) {
-        console.error("No se pudieron cargar los datos públicos de la tienda:", error);
-      }
     }
   };
 
@@ -2061,211 +1918,53 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
     </div>
   );
 
-  const seleccionarImagenBusquedaIa = (e) => {
-    const archivo = e.target.files?.[0];
-
-    if (!archivo) return;
-
-    if (!archivo.type.startsWith("image/")) {
-      setMensajeBusquedaIa("Selecciona una imagen válida en formato JPG, PNG o WEBP.");
-      setTipoMensajeBusquedaIa("error");
-      return;
-    }
-
-    setImagenBusquedaIa(archivo);
-    setPreviewBusquedaIa(URL.createObjectURL(archivo));
-    setResultadosBusquedaIa([]);
-    setMensajeBusquedaIa("Imagen lista. Presiona Buscar similares para analizarla con IA.");
-    setTipoMensajeBusquedaIa("ok");
-  };
-
-  const limpiarBusquedaVisualIa = () => {
-    setImagenBusquedaIa(null);
-    setPreviewBusquedaIa(null);
-    setResultadosBusquedaIa([]);
-    setMensajeBusquedaIa("");
-    setTipoMensajeBusquedaIa("");
-  };
-
-  const ejecutarBusquedaVisualIa = async () => {
-    if (!usuario?.id_usuario) {
-      setMensajeBusquedaIa("No se encontró el usuario cliente. Vuelve a iniciar sesión.");
-      setTipoMensajeBusquedaIa("error");
-      return;
-    }
-
-    if (!imagenBusquedaIa) {
-      setMensajeBusquedaIa("Primero selecciona una imagen para buscar prendas similares.");
-      setTipoMensajeBusquedaIa("error");
-      return;
-    }
-
-    setCargandoBusquedaIa(true);
-    setMensajeBusquedaIa("Analizando imagen y buscando prendas similares...");
-    setTipoMensajeBusquedaIa("ok");
-
-    try {
-      const formData = new FormData();
-      formData.append("archivo", imagenBusquedaIa);
-
-      const respuesta = await fetch(
-        `${API_URL}/cliente/buscar-por-imagen?id_usuario=${usuario.id_usuario}&limite=12`,
-        {
-          method: "POST",
-          body: formData
-        }
-      );
-
-      const datos = await respuesta.json().catch(() => ({}));
-
-      if (!respuesta.ok) {
-        throw new Error(datos.detail || "No se pudo realizar la búsqueda visual.");
-      }
-
-      const resultados = datos.resultados || [];
-      setResultadosBusquedaIa(resultados);
-
-      if (resultados.length === 0) {
-        setMensajeBusquedaIa("La IA no encontró prendas similares por ahora. Prueba con otra imagen más clara.");
-        setTipoMensajeBusquedaIa("error");
-      } else {
-        setMensajeBusquedaIa(`La IA encontró ${resultados.length} prenda(s) similares en Zyra.`);
-        setTipoMensajeBusquedaIa("ok");
-      }
-    } catch (error) {
-      setResultadosBusquedaIa([]);
-      setMensajeBusquedaIa(error.message || "No se pudo conectar con la búsqueda visual.");
-      setTipoMensajeBusquedaIa("error");
-    }
-
-    setCargandoBusquedaIa(false);
-  };
-
   const renderBuscarImagen = () => (
     <div className="cliente-ia-page cliente-page-con-carrito">
-      <section className="cliente-ia-hero cliente-ia-hero-activa">
+      <section className="cliente-ia-hero">
         <div>
           <span>Búsqueda visual con inteligencia artificial</span>
-          <h2>Busca prendas reales usando una imagen.</h2>
+          <h2>Próximamente podrás buscar prendas usando una imagen.</h2>
           <p>
-            Sube una foto de referencia y Zyra comparará colores, formas y estilo
-            contra los productos publicados por las tiendas aprobadas.
+            La idea es que subas una foto de referencia y Zyra busque productos
+            parecidos dentro de los catálogos de empresas bolivianas.
           </p>
         </div>
 
-        <div className="cliente-ia-upload ia-activa">
-          <label className="cliente-ia-drop">
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/jpg,image/webp"
-              onChange={seleccionarImagenBusquedaIa}
-            />
-
-            {previewBusquedaIa ? (
-              <span className="cliente-ia-preview">
-                <img src={previewBusquedaIa} alt="Imagen seleccionada para búsqueda visual" />
-              </span>
-            ) : (
-              <span className="cliente-ia-icono">IA</span>
-            )}
-
-            <strong>{imagenBusquedaIa ? imagenBusquedaIa.name : "Sube una imagen"}</strong>
-            <p>
-              Usa una foto clara de una prenda. Mientras más visible sea la ropa,
-              mejores serán los resultados.
-            </p>
-          </label>
-
-          <div className="cliente-ia-actions">
-            <button
-              type="button"
-              className="principal"
-              onClick={ejecutarBusquedaVisualIa}
-              disabled={cargandoBusquedaIa || !imagenBusquedaIa}
-            >
-              {cargandoBusquedaIa ? "Buscando..." : "Buscar similares"}
-            </button>
-
-            <button type="button" onClick={limpiarBusquedaVisualIa} disabled={cargandoBusquedaIa}>
-              Limpiar
-            </button>
-          </div>
+        <div className="cliente-ia-upload">
+          <div className="cliente-ia-icono">IA</div>
+          <strong>Subir imagen</strong>
+          <p>Este espacio queda reservado para el módulo de inteligencia artificial.</p>
+          <button type="button" disabled>
+            Próximamente
+          </button>
         </div>
       </section>
 
-      {mensajeBusquedaIa && (
-        <div className={`cliente-ia-mensaje ${tipoMensajeBusquedaIa || "ok"}`}>
-          {mensajeBusquedaIa}
-        </div>
-      )}
+      <div className="cliente-ia-cards">
+        <article>
+          <span>1</span>
+          <h3>Subes una referencia</h3>
+          <p>Una foto de una prenda, color, textura o estilo que te guste.</p>
+        </article>
 
-      {cargandoBusquedaIa && (
-        <div className="cliente-vacio cliente-ia-loading">
-          <h3>La IA está analizando tu imagen...</h3>
-          <p>Estamos comparando tu foto con las prendas registradas en Zyra.</p>
-        </div>
-      )}
+        <article>
+          <span>2</span>
+          <h3>Zyra analiza la imagen</h3>
+          <p>El sistema compara visualmente con productos registrados.</p>
+        </article>
 
-      {!cargandoBusquedaIa && resultadosBusquedaIa.length > 0 && (
-        <section className="cliente-home-section cliente-ia-resultados">
-          <div className="cliente-section-title">
-            <div>
-              <span>Resultados inteligentes</span>
-              <h3>Prendas similares encontradas</h3>
-              <p>Ordenadas por coincidencia visual según la imagen que subiste.</p>
-            </div>
-          </div>
-
-          <div className="cliente-productos-grid cliente-ia-resultados-grid">
-            {resultadosBusquedaIa.map((producto) => (
-              <div className="cliente-ia-resultado-card" key={`ia-${producto.id_producto}`}>
-                <div
-                  className={`cliente-ia-score ${
-                    Number(producto.score_similitud || 0) >= 85
-                      ? "alta"
-                      : Number(producto.score_similitud || 0) >= 70
-                      ? "media"
-                      : "baja"
-                  }`}
-                >
-                  <strong>{Number(producto.score_similitud || 0).toFixed(1)}%</strong>
-                  <span>{producto.nivel_similitud || "Similitud visual"}</span>
-                </div>
-
-                {renderProductoCard(producto)}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {!cargandoBusquedaIa && resultadosBusquedaIa.length === 0 && (
-        <div className="cliente-ia-cards">
-          <article>
-            <span>1</span>
-            <h3>Subes una referencia</h3>
-            <p>Una foto de una prenda, color, textura o estilo que te guste.</p>
-          </article>
-
-          <article>
-            <span>2</span>
-            <h3>Zyra analiza la imagen</h3>
-            <p>El sistema compara visualmente con productos registrados.</p>
-          </article>
-
-          <article>
-            <span>3</span>
-            <h3>Encuentras opciones reales</h3>
-            <p>Verás prendas similares disponibles en tiendas locales.</p>
-          </article>
-        </div>
-      )}
+        <article>
+          <span>3</span>
+          <h3>Encuentras opciones reales</h3>
+          <p>Verás prendas similares disponibles en tiendas locales.</p>
+        </article>
+      </div>
 
       <section className="cliente-home-section">
         <div className="cliente-section-title">
           <div>
             <span>Tiendas disponibles</span>
-            <h3>También puedes explorar marcas dentro de Zyra</h3>
+            <h3>Explora marcas mientras llega la IA</h3>
           </div>
         </div>
 
@@ -3310,20 +3009,18 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
         <div className="cliente-modal-fondo" onClick={() => setEmpresaSeleccionada(null)}>
           <div
             className={`cliente-empresa-modal tienda-publica tema-${empresaSeleccionada.tema_tienda || "elegante"}`}
-            style={{ ...obtenerEstiloTienda(empresaSeleccionada), position: "relative", overflow: "hidden", isolation: "isolate" }}
+            style={obtenerEstiloTienda(empresaSeleccionada)}
             onClick={(e) => e.stopPropagation()}
           >
-            <DecoracionTemaTienda tema={empresaSeleccionada.tema_tienda || "elegante"} empresa={empresaSeleccionada} />
             <button
               type="button"
               className="cliente-modal-cerrar"
-              style={{ position: "relative", zIndex: 2 }}
               onClick={() => setEmpresaSeleccionada(null)}
             >
               ×
             </button>
 
-            <div className="cliente-empresa-modal-header" style={{ position: "relative", zIndex: 1 }}>
+            <div className="cliente-empresa-modal-header">
               {renderLogoEmpresa(empresaSeleccionada, true)}
               <div>
                 <span>Tienda dentro de Zyra · Tema {obtenerTemaTienda(empresaSeleccionada)}</span>
@@ -3338,7 +3035,7 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
               </div>
             </div>
 
-            <div className="cliente-empresa-info-grid" style={{ position: "relative", zIndex: 1 }}>
+            <div className="cliente-empresa-info-grid">
               <div>
                 <span>Dirección</span>
                 <strong>{empresaSeleccionada.direccion || "No registrada"}</strong>
@@ -3364,7 +3061,7 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
               </div>
             </div>
 
-            <div className="cliente-empresa-modal-actions" style={{ position: "relative", zIndex: 1 }}>
+            <div className="cliente-empresa-modal-actions">
               {empresaSeleccionada.google_maps_url && (
                 <a
                   href={empresaSeleccionada.google_maps_url}
