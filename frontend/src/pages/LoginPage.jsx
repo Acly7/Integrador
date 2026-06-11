@@ -741,14 +741,19 @@ export default function LoginPage({
                     />
                   </div>
 
-                  <label className="terminos-registro-check">
-                    <input
-                      type="checkbox"
-                      checked={aceptaTerminosRegistro}
-                      onChange={(e) => setAceptaTerminosRegistro(e.target.checked)}
-                    />
-                    <span>Confirmo que leí y acepto los términos y condiciones de Zyra.</span>
-                  </label>
+                  <div className="terminos-registro-box">
+                    <label className="terminos-registro-check">
+                      <input
+                        type="checkbox"
+                        checked={aceptaTerminosRegistro}
+                        onChange={(e) => setAceptaTerminosRegistro(e.target.checked)}
+                      />
+                      <span>Confirmo que leí y acepto los términos, condiciones y política de privacidad de Zyra.</span>
+                    </label>
+                    <button type="button" className="terminos-registro-link" onClick={() => setMostrarTerminos(true)}>
+                      Ver términos, condiciones y privacidad
+                    </button>
+                  </div>
 
                   <button className="btn-principal" type="submit" disabled={cargando}>
                     {cargando ? "Creando cuenta..." : "Crear cuenta"}
@@ -890,14 +895,19 @@ export default function LoginPage({
                     />
                   </div>
 
-                  <label className="terminos-registro-check">
-                    <input
-                      type="checkbox"
-                      checked={aceptaTerminosRegistro}
-                      onChange={(e) => setAceptaTerminosRegistro(e.target.checked)}
-                    />
-                    <span>Confirmo que leí y acepto los términos y condiciones de Zyra.</span>
-                  </label>
+                  <div className="terminos-registro-box">
+                    <label className="terminos-registro-check">
+                      <input
+                        type="checkbox"
+                        checked={aceptaTerminosRegistro}
+                        onChange={(e) => setAceptaTerminosRegistro(e.target.checked)}
+                      />
+                      <span>Confirmo que leí y acepto los términos, condiciones y política de privacidad de Zyra.</span>
+                    </label>
+                    <button type="button" className="terminos-registro-link" onClick={() => setMostrarTerminos(true)}>
+                      Ver términos, condiciones y privacidad
+                    </button>
+                  </div>
 
                   <button className="btn-principal" type="submit" disabled={cargando}>
                     {cargando ? "Enviando..." : "Enviar solicitud"}
@@ -1024,8 +1034,8 @@ export default function LoginPage({
         <div className="login-modal-fondo">
           <section className="login-modal-card terminos-modal-card">
             <button className="login-modal-cerrar" type="button" onClick={() => setMostrarTerminos(false)}>×</button>
-            <span>Términos y condiciones</span>
-            <h2>Uso responsable de Zyra</h2>
+            <span>Términos, condiciones y privacidad</span>
+            <h2>Uso responsable y protección de datos en Zyra</h2>
             <div className="terminos-texto-scroll">
               <p>
                 Zyra es una plataforma digital que conecta clientes con tiendas de moda registradas. Su función principal es mostrar catálogos, facilitar pedidos, registrar comprobantes de pago y mejorar la comunicación entre cliente y empresa.
@@ -1043,15 +1053,27 @@ export default function LoginPage({
                 La plataforma puede almacenar datos necesarios para el funcionamiento del sistema, como usuarios, productos, pedidos, pagos, soporte, notificaciones y registros de actividad. Estos datos se usan con fines operativos, académicos, de seguridad y mejora del servicio.
               </p>
               <p>
+                <strong>Política de privacidad:</strong> Zyra protege la información registrada y solo la utiliza para permitir el acceso a la cuenta, gestionar pedidos, validar pagos, contactar por soporte, mostrar reportes administrativos y mejorar la experiencia de búsqueda dentro de la plataforma.
+              </p>
+              <p>
+                Los datos personales no deben compartirse con terceros fuera del funcionamiento de Zyra. Las empresas solo deben usar los datos de clientes para atender pedidos, coordinar entregas o responder consultas relacionadas con la compra.
+              </p>
+              <p>
                 El administrador puede revisar empresas, productos, pagos, pedidos y tickets de soporte para mantener el orden de la plataforma. También puede habilitar o deshabilitar cuentas cuando corresponda.
               </p>
               <p>
-                Al aceptar estos términos, el usuario declara que comprende el funcionamiento de Zyra y acepta utilizar la plataforma de forma responsable.
+                Al aceptar estos términos y la política de privacidad, el usuario declara que comprende el funcionamiento de Zyra y acepta utilizar la plataforma de forma responsable.
               </p>
             </div>
-            <button className="btn-principal" type="button" onClick={aceptarTerminosPlataforma} disabled={cargando}>
-              {cargando ? "Guardando..." : "Aceptar y guardar términos"}
-            </button>
+            {usuario?.id_usuario ? (
+              <button className="btn-principal" type="button" onClick={aceptarTerminosPlataforma} disabled={cargando}>
+                {cargando ? "Guardando..." : "Aceptar y guardar términos"}
+              </button>
+            ) : (
+              <button className="btn-principal" type="button" onClick={() => setMostrarTerminos(false)}>
+                Entendido
+              </button>
+            )}
           </section>
         </div>
       )}

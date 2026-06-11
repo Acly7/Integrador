@@ -401,6 +401,179 @@ def obtener_producto_detalle(db: Session, id_producto: int, score: float | None 
     }
 
 
+def eliminar_producto_indexado_ia(id_producto: int):
+    """Quita un producto de ChromaDB sin romper el flujo principal.
+    Se usa cuando el producto queda INACTIVO, AGOTADO, sin imagen o cuando su tienda
+    deja de estar APROBADA.
+    """
+    id_vector = f"producto_{id_producto}"
+
+    try:
+        coleccion = obtener_coleccion()
+        coleccion.delete(ids=[id_vector])
+        return {
+            "accion": "eliminado",
+            "id_producto": id_producto,
+            "id_vector": id_vector
+        }
+    except Exception as error:
+        # Chroma puede lanzar error si el vector no existía. No debe bloquear el sistema.
+        return {
+            "accion": "sin_vector_o_no_eliminado",
+            "id_producto": id_producto,
+            "id_vector": id_vector,
+            "detalle": str(error)
+        }
+
+
+def indexar_producto_individual_ia(db: Session, id_producto: int):
+    """Indexa o actualiza un solo producto en ChromaDB.
+    Esta función es la base de la indexación automática. Si el producto no cumple
+    condiciones para aparecer en la búsqueda visual, su vector se elimina.
+    """
+    producto = db.query(Producto).filter(
+        Producto.id_producto == id_producto
+    ).first()
+
+    if not producto:
+        eliminacion = eliminar_producto_indexado_ia(id_producto)
+        return {
+            "indexado": False,
+            "motivo": "Producto no encontrado",
+            "sincronizacion": eliminacion
+        }
+
+    empresa = db.query(Empresa).filter(
+        Empresa.id_empresa == producto.id_empresa
+    ).first()
+
+    categoria = db.query(Categoria).filter(
+        Categoria.id_categoria == producto.id_categoria
+    ).first()
+
+    imagen = db.query(ProductoImagen).filter(
+        ProductoImagen.id_producto == producto.id_producto,
+        ProductoImagen.es_principal == True
+    ).first()
+
+    if producto.estado_producto != "ACTIVO":
+        eliminacion = eliminar_producto_indexado_ia(producto.id_producto)
+        return {
+            "indexado": False,
+            "motivo": f"Producto en estado {producto.estado_producto}",
+            "sincronizacion": eliminacion
+        }
+
+    if not empresa or empresa.estado_empresa != "APROBADA":
+        eliminacion = eliminar_producto_indexado_ia(producto.id_producto)
+        return {
+            "indexado": False,
+            "motivo": "La tienda no está aprobada",
+            "sincronizacion": eliminacion
+        }
+
+    if not imagen or not imagen.url_imagen:
+        eliminacion = eliminar_producto_indexado_ia(producto.id_producto)
+        return {
+            "indexado": False,
+            "motivo": "El producto no tiene imagen principal",
+            "sincronizacion": eliminacion
+        }
+
+    ruta_imagen = resolver_ruta_imagen(imagen.url_imagen)
+
+    if not ruta_imagen:
+        eliminacion = eliminar_producto_indexado_ia(producto.id_producto)
+        return {
+            "indexado": False,
+            "motivo": "No se encontró el archivo físico de la imagen principal",
+            "sincronizacion": eliminacion
+        }
+
+    coleccion = obtener_coleccion()
+    embedding = generar_embedding_lista(generar_embedding_imagen(ruta_imagen))
+    id_vector = f"producto_{producto.id_producto}"
+    familia = familia_categoria(categoria.nombre_categoria if categoria else "")
+
+    metadata = limpiar_metadata({
+        "id_producto": producto.id_producto,
+        "id_empresa": empresa.id_empresa,
+        "nombre_producto": producto.nombre_producto,
+        "nombre_empresa": empresa.nombre_empresa,
+        "categoria": categoria.nombre_categoria if categoria else "",
+        "familia_categoria": familia or "",
+        "precio": convertir_float(producto.precio),
+        "imagen_principal": imagen.url_imagen,
+        "estado_producto": producto.estado_producto,
+        "estado_empresa": empresa.estado_empresa
+    })
+
+    documento = (
+        f"{producto.nombre_producto} "
+        f"{producto.descripcion or ''} "
+        f"{producto.marca or ''} "
+        f"{categoria.nombre_categoria if categoria else ''} "
+        f"{familia or ''} "
+        f"{empresa.nombre_empresa}"
+    )
+
+    coleccion.upsert(
+        ids=[id_vector],
+        embeddings=[embedding],
+        metadatas=[metadata],
+        documents=[documento]
+    )
+
+    return {
+        "indexado": True,
+        "id_producto": producto.id_producto,
+        "id_vector": id_vector,
+        "nombre_producto": producto.nombre_producto,
+        "total_en_chromadb": coleccion.count()
+    }
+
+
+def sincronizar_producto_ia_seguro(db: Session, id_producto: int):
+    """Sincroniza un producto sin detener la operación principal.
+    Si CLIP/ChromaDB falla, el producto igual se guarda en PostgreSQL y se reporta
+    el problema para que pueda revisarse luego.
+    """
+    try:
+        return indexar_producto_individual_ia(db, id_producto)
+    except Exception as error:
+        print(f"[IA Zyra] No se pudo sincronizar el producto {id_producto}: {error}")
+        return {
+            "indexado": False,
+            "id_producto": id_producto,
+            "motivo": str(error),
+            "error": True
+        }
+
+
+def sincronizar_productos_empresa_ia_seguro(db: Session, id_empresa: int):
+    """Sincroniza todos los productos de una tienda.
+    Sirve cuando el administrador aprueba, deshabilita o cambia el estado de una empresa.
+    """
+    productos = db.query(Producto).filter(
+        Producto.id_empresa == id_empresa
+    ).all()
+
+    resultados = []
+
+    for producto in productos:
+        resultados.append(
+            sincronizar_producto_ia_seguro(db, producto.id_producto)
+        )
+
+    return {
+        "id_empresa": id_empresa,
+        "total_productos": len(productos),
+        "indexados": sum(1 for item in resultados if item.get("indexado")),
+        "omitidos": sum(1 for item in resultados if not item.get("indexado")),
+        "resultados": resultados
+    }
+
+
 @router.get("/ia/estado")
 def estado_ia():
     coleccion = obtener_coleccion()
@@ -410,6 +583,26 @@ def estado_ia():
         "coleccion": NOMBRE_COLECCION,
         "productos_indexados": coleccion.count()
     }
+
+
+@router.post("/ia/productos/{id_producto}/sincronizar")
+def sincronizar_producto_ia_manual(
+    id_producto: int,
+    id_admin: int,
+    db: Session = Depends(get_db)
+):
+    verificar_admin(db, id_admin)
+    return sincronizar_producto_ia_seguro(db, id_producto)
+
+
+@router.post("/ia/empresas/{id_empresa}/sincronizar")
+def sincronizar_empresa_ia_manual(
+    id_empresa: int,
+    id_admin: int,
+    db: Session = Depends(get_db)
+):
+    verificar_admin(db, id_admin)
+    return sincronizar_productos_empresa_ia_seguro(db, id_empresa)
 
 
 @router.post("/ia/indexar-productos")

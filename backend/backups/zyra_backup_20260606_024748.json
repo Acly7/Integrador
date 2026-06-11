@@ -1,0 +1,1902 @@
+{
+  "metadata": {
+    "proyecto": "Zyra",
+    "tipo": "backup_json_administrativo",
+    "fecha_backup": "2026-06-06T02:47:48.978322",
+    "creado_por_admin": 1
+  },
+  "tablas": {
+    "roles": [
+      {
+        "id_rol": 1,
+        "nombre_rol": "ADMIN"
+      },
+      {
+        "id_rol": 2,
+        "nombre_rol": "EMPRESA"
+      },
+      {
+        "id_rol": 3,
+        "nombre_rol": "CLIENTE"
+      }
+    ],
+    "usuarios": [
+      {
+        "id_usuario": 2,
+        "id_rol": 2,
+        "nombre": "Abigail",
+        "apellido": "Loza",
+        "email": "empresa1@gmail.com",
+        "telefono": null,
+        "foto_url": null,
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-28T22:06:23.316884",
+        "estado": "ACTIVO"
+      },
+      {
+        "id_usuario": 3,
+        "id_rol": 3,
+        "nombre": "Cliente",
+        "apellido": "Prueba",
+        "email": "cliente3@zyra.com",
+        "telefono": "77770000",
+        "foto_url": null,
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-29T12:51:45.560514",
+        "estado": "ACTIVO"
+      },
+      {
+        "id_usuario": 4,
+        "id_rol": 2,
+        "nombre": "nasckins",
+        "apellido": "sc",
+        "email": "empresa3@zyra.com",
+        "telefono": "12345678",
+        "foto_url": null,
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-29T12:51:45.560514",
+        "estado": "ACTIVO"
+      },
+      {
+        "id_usuario": 5,
+        "id_rol": 3,
+        "nombre": "jbbo",
+        "apellido": "knkn",
+        "email": "presa1@zyra.com",
+        "telefono": null,
+        "foto_url": null,
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-29T12:51:45.560514",
+        "estado": "ACTIVO"
+      },
+      {
+        "id_usuario": 6,
+        "id_rol": 3,
+        "nombre": "July",
+        "apellido": "jkbkjbk",
+        "email": "empa1@zyra.com",
+        "telefono": "77244996",
+        "foto_url": null,
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-29T12:51:45.560514",
+        "estado": "ACTIVO"
+      },
+      {
+        "id_usuario": 8,
+        "id_rol": 1,
+        "nombre": "admin2",
+        "apellido": "zyra",
+        "email": "admin2@zyra.com",
+        "telefono": "77244996",
+        "foto_url": null,
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-29T12:51:45.560514",
+        "estado": "ACTIVO"
+      },
+      {
+        "id_usuario": 9,
+        "id_rol": 2,
+        "nombre": "bub",
+        "apellido": "bu",
+        "email": "empresa2@zyra.com",
+        "telefono": null,
+        "foto_url": null,
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-29T12:51:45.560514",
+        "estado": "ACTIVO"
+      },
+      {
+        "id_usuario": 10,
+        "id_rol": 3,
+        "nombre": "zuzi",
+        "apellido": null,
+        "email": "empresa3@gmail.com",
+        "telefono": "77244996",
+        "foto_url": null,
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-29T12:51:45.560514",
+        "estado": "ACTIVO"
+      },
+      {
+        "id_usuario": 11,
+        "id_rol": 3,
+        "nombre": "July",
+        "apellido": null,
+        "email": "empa1@gmail.com",
+        "telefono": null,
+        "foto_url": "/uploads/clientes/95764694-3494-4943-b289-68dbd46a29df.jpg",
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-29T12:51:45.560514",
+        "estado": "ACTIVO"
+      },
+      {
+        "id_usuario": 1,
+        "id_rol": 1,
+        "nombre": "Holi",
+        "apellido": "",
+        "email": "admin@gmail.com",
+        "telefono": "77244996",
+        "foto_url": "/uploads/usuarios/ae63245e-7251-4f83-8120-4c24098d7bf5.png",
+        "acepto_terminos": true,
+        "fecha_aceptacion_terminos": "2026-05-29T12:51:45.560514",
+        "estado": "ACTIVO"
+      }
+    ],
+    "empresas": [
+      {
+        "id_empresa": 1,
+        "id_usuario": 2,
+        "nombre_empresa": "Movy",
+        "descripcion": null,
+        "nit": null,
+        "direccion": "esquina norte centro La Paz",
+        "ciudad": "La Paz",
+        "whatsapp": "77244996",
+        "instagram": null,
+        "facebook": null,
+        "logo_url": "/uploads/empresas/afde4afc-e4df-4d27-8bf8-20cfb730b8c5.jpeg",
+        "qr_pago_url": "/uploads/empresas/qr/c2c7c73f-27d4-414c-bcc6-57036f17d33c.jpeg",
+        "color_principal": "#a1729b",
+        "color_secundario": "#bc67b5",
+        "color_acento": "#c02672",
+        "color_fondo": "#d3a4d6",
+        "tema_tienda": "minimalista",
+        "google_maps_url": "https://maps.app.goo.gl/NHJZNQmiybfnrsxN7",
+        "estado_empresa": "APROBADA"
+      },
+      {
+        "id_empresa": 2,
+        "id_usuario": 4,
+        "nombre_empresa": "ajn sionoi noi",
+        "descripcion": "jnolkñmnpom",
+        "nit": "15153",
+        "direccion": "noino",
+        "ciudad": "La Paz",
+        "whatsapp": "12345678",
+        "instagram": null,
+        "facebook": null,
+        "logo_url": "",
+        "qr_pago_url": null,
+        "color_principal": "#8f174d",
+        "color_secundario": "#e879b4",
+        "color_acento": "#c02672",
+        "color_fondo": "#fff1f7",
+        "tema_tienda": "elegante",
+        "google_maps_url": null,
+        "estado_empresa": "APROBADA"
+      },
+      {
+        "id_empresa": 3,
+        "id_usuario": 9,
+        "nombre_empresa": "cel",
+        "descripcion": null,
+        "nit": null,
+        "direccion": null,
+        "ciudad": "La Paz",
+        "whatsapp": "77244996",
+        "instagram": null,
+        "facebook": null,
+        "logo_url": "",
+        "qr_pago_url": null,
+        "color_principal": "#8f174d",
+        "color_secundario": "#e879b4",
+        "color_acento": "#c02672",
+        "color_fondo": "#fff1f7",
+        "tema_tienda": "elegante",
+        "google_maps_url": null,
+        "estado_empresa": "APROBADA"
+      }
+    ],
+    "categorias": [
+      {
+        "id_categoria": 1,
+        "nombre_categoria": "Poleras",
+        "descripcion": "Prendas superiores como camisetas y poleras",
+        "estado": true
+      },
+      {
+        "id_categoria": 2,
+        "nombre_categoria": "Pantalones",
+        "descripcion": "Jeans, pantalones formales y casuales",
+        "estado": true
+      },
+      {
+        "id_categoria": 3,
+        "nombre_categoria": "Vestidos",
+        "descripcion": "Vestidos casuales, formales y de fiesta",
+        "estado": true
+      },
+      {
+        "id_categoria": 4,
+        "nombre_categoria": "Chamarras",
+        "descripcion": "Chamarras, chaquetas y abrigos",
+        "estado": true
+      },
+      {
+        "id_categoria": 5,
+        "nombre_categoria": "Zapatos",
+        "descripcion": "Calzado de diferentes estilos",
+        "estado": true
+      },
+      {
+        "id_categoria": 6,
+        "nombre_categoria": "Accesorios",
+        "descripcion": "Bolsos, gorras, cinturones y otros accesorios",
+        "estado": true
+      },
+      {
+        "id_categoria": 7,
+        "nombre_categoria": "sacos",
+        "descripcion": "Categoría creada por Moda Aby",
+        "estado": true
+      },
+      {
+        "id_categoria": 8,
+        "nombre_categoria": "Chompas",
+        "descripcion": "Categoría creada por Moda Aby",
+        "estado": true
+      },
+      {
+        "id_categoria": 9,
+        "nombre_categoria": "Canguros",
+        "descripcion": "Categoría creada por Moda Aby",
+        "estado": true
+      },
+      {
+        "id_categoria": 10,
+        "nombre_categoria": "Busos",
+        "descripcion": "Categoría creada por cel",
+        "estado": true
+      }
+    ],
+    "productos": [
+      {
+        "id_producto": 27,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 28,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 29,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 30,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 31,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 32,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 9,
+        "id_empresa": 1,
+        "id_categoria": 8,
+        "nombre_producto": "chompa de lana",
+        "descripcion": "calentita",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 150.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 10,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "Polera tricolor",
+        "descripcion": "casual",
+        "marca": "Moda Aby",
+        "genero": "Unisex",
+        "precio": 110.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 11,
+        "id_empresa": 1,
+        "id_categoria": 9,
+        "nombre_producto": "Canguro abrigador",
+        "descripcion": "sutil",
+        "marca": "Moda Aby",
+        "genero": "Unisex",
+        "precio": 160.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 2,
+        "id_empresa": 1,
+        "id_categoria": 4,
+        "nombre_producto": "chamarra roja de cuero",
+        "descripcion": "es grande",
+        "marca": "Moda Aby",
+        "genero": "Mujer",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 4,
+        "id_empresa": 1,
+        "id_categoria": 7,
+        "nombre_producto": "chamarra roja de cuero",
+        "descripcion": "delgado y abrigador",
+        "marca": "Moda Aby",
+        "genero": "Niña",
+        "precio": 111.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 12,
+        "id_empresa": 1,
+        "id_categoria": 3,
+        "nombre_producto": "Vestido Negro con Lazos",
+        "descripcion": "Vestido elegante",
+        "marca": "Moda Aby",
+        "genero": "Mujer",
+        "precio": 513.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 13,
+        "id_empresa": 1,
+        "id_categoria": 3,
+        "nombre_producto": "Vestido Vino",
+        "descripcion": "sensual",
+        "marca": "Moda Aby",
+        "genero": "Unisex",
+        "precio": 540.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 14,
+        "id_empresa": 1,
+        "id_categoria": 3,
+        "nombre_producto": "Vestido con Lazos",
+        "descripcion": "dulce",
+        "marca": "Moda Aby",
+        "genero": "Mujer",
+        "precio": 513.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 15,
+        "id_empresa": 1,
+        "id_categoria": 3,
+        "nombre_producto": "Vestifo con Lazos",
+        "descripcion": "encantador",
+        "marca": "Moda Aby",
+        "genero": "Unisex",
+        "precio": 520.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 6,
+        "id_empresa": 1,
+        "id_categoria": 2,
+        "nombre_producto": "chompa",
+        "descripcion": "kcasmdpmaspod",
+        "marca": "Moda Aby",
+        "genero": "Mujer",
+        "precio": 170.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 16,
+        "id_empresa": 3,
+        "id_categoria": 10,
+        "nombre_producto": "Busos oversize",
+        "descripcion": "relajante",
+        "marca": "Moda Aby",
+        "genero": "Mujer",
+        "precio": 111.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 17,
+        "id_empresa": 3,
+        "id_categoria": 2,
+        "nombre_producto": "Pantalon Cargo",
+        "descripcion": "sutil",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 18,
+        "id_empresa": 3,
+        "id_categoria": 2,
+        "nombre_producto": "Cargo",
+        "descripcion": null,
+        "marca": "Moda Aby",
+        "genero": "Unisex",
+        "precio": 150.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 19,
+        "id_empresa": 3,
+        "id_categoria": 2,
+        "nombre_producto": "Pantalon de Mezclilla",
+        "descripcion": "convine con todo",
+        "marca": "Moda Aby",
+        "genero": "Unisex",
+        "precio": 200.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 20,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera simple",
+        "descripcion": "simple",
+        "marca": "Moda Aby",
+        "genero": "Unisex",
+        "precio": 110.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 22,
+        "id_empresa": 1,
+        "id_categoria": 4,
+        "nombre_producto": "chamarra gris",
+        "descripcion": "abrigador",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 310.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 5,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "hbhbkj",
+        "descripcion": "NKLNL",
+        "marca": "Moda Aby",
+        "genero": "Mujer",
+        "precio": 513.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 1,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "Polera negra oversize premiu",
+        "descripcion": "Polera oversize de algodón premium, color negro, ideal para uso casual.",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 135.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 33,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "ACTIVO"
+      },
+      {
+        "id_producto": 23,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 24,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 25,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      },
+      {
+        "id_producto": 26,
+        "id_empresa": 1,
+        "id_categoria": 1,
+        "nombre_producto": "polera celeste",
+        "descripcion": "polera casual",
+        "marca": "Moda Aby",
+        "genero": "Hombre",
+        "precio": 120.0,
+        "estado_producto": "INACTIVO"
+      }
+    ],
+    "producto_variantes": [
+      {
+        "id_variante": 1,
+        "id_producto": 1,
+        "color": "Negro",
+        "talla": "S",
+        "stock": 10,
+        "disponible": true
+      },
+      {
+        "id_variante": 2,
+        "id_producto": 1,
+        "color": "Negro",
+        "talla": "M",
+        "stock": 7,
+        "disponible": true
+      },
+      {
+        "id_variante": 3,
+        "id_producto": 1,
+        "color": "Negro",
+        "talla": "L",
+        "stock": 2,
+        "disponible": true
+      },
+      {
+        "id_variante": 8,
+        "id_producto": 5,
+        "color": "azul",
+        "talla": "Q",
+        "stock": 2,
+        "disponible": true
+      },
+      {
+        "id_variante": 10,
+        "id_producto": 5,
+        "color": "azul",
+        "talla": "L",
+        "stock": 8,
+        "disponible": true
+      },
+      {
+        "id_variante": 11,
+        "id_producto": 4,
+        "color": "azul",
+        "talla": "L",
+        "stock": 8,
+        "disponible": true
+      },
+      {
+        "id_variante": 4,
+        "id_producto": 1,
+        "color": "Negro",
+        "talla": "XL",
+        "stock": 1,
+        "disponible": true
+      },
+      {
+        "id_variante": 7,
+        "id_producto": 4,
+        "color": "rosa",
+        "talla": "S",
+        "stock": 0,
+        "disponible": false
+      },
+      {
+        "id_variante": 9,
+        "id_producto": 6,
+        "color": "marron",
+        "talla": "M",
+        "stock": 17,
+        "disponible": true
+      },
+      {
+        "id_variante": 5,
+        "id_producto": 2,
+        "color": "rojo",
+        "talla": "L",
+        "stock": 4,
+        "disponible": true
+      },
+      {
+        "id_variante": 14,
+        "id_producto": 9,
+        "color": "beige",
+        "talla": "M",
+        "stock": 10,
+        "disponible": true
+      },
+      {
+        "id_variante": 15,
+        "id_producto": 10,
+        "color": "negro",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 17,
+        "id_producto": 12,
+        "color": "Negro",
+        "talla": "M",
+        "stock": 15,
+        "disponible": true
+      },
+      {
+        "id_variante": 18,
+        "id_producto": 13,
+        "color": "Guindo",
+        "talla": "M",
+        "stock": 8,
+        "disponible": true
+      },
+      {
+        "id_variante": 19,
+        "id_producto": 14,
+        "color": "rojo",
+        "talla": "M",
+        "stock": 10,
+        "disponible": true
+      },
+      {
+        "id_variante": 21,
+        "id_producto": 16,
+        "color": "gris",
+        "talla": "M",
+        "stock": 10,
+        "disponible": true
+      },
+      {
+        "id_variante": 23,
+        "id_producto": 18,
+        "color": "beige",
+        "talla": "S",
+        "stock": 5,
+        "disponible": true
+      },
+      {
+        "id_variante": 27,
+        "id_producto": 22,
+        "color": "Gris",
+        "talla": "L",
+        "stock": 10,
+        "disponible": true
+      },
+      {
+        "id_variante": 16,
+        "id_producto": 11,
+        "color": "marron",
+        "talla": "M",
+        "stock": 19,
+        "disponible": true
+      },
+      {
+        "id_variante": 20,
+        "id_producto": 15,
+        "color": "azul",
+        "talla": "M",
+        "stock": 9,
+        "disponible": true
+      },
+      {
+        "id_variante": 25,
+        "id_producto": 20,
+        "color": "negro",
+        "talla": "M",
+        "stock": 9,
+        "disponible": true
+      },
+      {
+        "id_variante": 22,
+        "id_producto": 17,
+        "color": "marron",
+        "talla": "L",
+        "stock": 9,
+        "disponible": true
+      },
+      {
+        "id_variante": 24,
+        "id_producto": 19,
+        "color": "azul",
+        "talla": "M",
+        "stock": 19,
+        "disponible": true
+      },
+      {
+        "id_variante": 28,
+        "id_producto": 23,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 29,
+        "id_producto": 24,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 30,
+        "id_producto": 25,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 31,
+        "id_producto": 26,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 32,
+        "id_producto": 27,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 33,
+        "id_producto": 28,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 34,
+        "id_producto": 30,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 35,
+        "id_producto": 31,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 36,
+        "id_producto": 29,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 37,
+        "id_producto": 32,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      },
+      {
+        "id_variante": 38,
+        "id_producto": 33,
+        "color": "Celeste",
+        "talla": "L",
+        "stock": 20,
+        "disponible": true
+      }
+    ],
+    "producto_imagenes": [
+      {
+        "id_imagen": 2,
+        "id_producto": 2,
+        "url_imagen": "/uploads/productos/fe48057c-2b69-42b9-bc49-8fd914e05ce6.jpeg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 4,
+        "id_producto": 4,
+        "url_imagen": "/uploads/productos/d7cc1af6-abc3-4ace-a781-8f9efe062bc7.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 1,
+        "id_producto": 1,
+        "url_imagen": "/uploads/productos/36b561fa-f9ee-4641-82c0-b5a6759950a5.jpeg",
+        "es_principal": false
+      },
+      {
+        "id_imagen": 6,
+        "id_producto": 1,
+        "url_imagen": "/uploads/productos/3948e213-b8cf-4b36-89bd-2f3eac83598e.png",
+        "es_principal": false
+      },
+      {
+        "id_imagen": 7,
+        "id_producto": 1,
+        "url_imagen": "/uploads/productos/b07d96fa-0cdb-46fe-ac86-8cc5e1435d82.jpeg",
+        "es_principal": false
+      },
+      {
+        "id_imagen": 9,
+        "id_producto": 1,
+        "url_imagen": "/uploads/productos/3ffec875-0ce4-41c0-b9f7-2fa067362e8d.jpeg",
+        "es_principal": false
+      },
+      {
+        "id_imagen": 10,
+        "id_producto": 1,
+        "url_imagen": "/uploads/productos/50fbdd0b-c616-48d6-9107-4380b2dfc7cd.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 5,
+        "id_producto": 5,
+        "url_imagen": "/uploads/productos/b3c00397-b704-47f1-921d-bece88b7b9da.jpeg",
+        "es_principal": false
+      },
+      {
+        "id_imagen": 11,
+        "id_producto": 5,
+        "url_imagen": "/uploads/productos/3715ea5d-1a24-4437-b9e2-f8aba8c9782b.jpeg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 12,
+        "id_producto": 9,
+        "url_imagen": "/uploads/productos/072bb93d-c717-48a2-90e9-2478d6399a90.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 13,
+        "id_producto": 10,
+        "url_imagen": "/uploads/productos/8b04d095-ef0e-48bb-b01b-5fa330898fdf.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 14,
+        "id_producto": 11,
+        "url_imagen": "/uploads/productos/357c618d-870b-48f3-b52f-9bd43c9f6b05.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 15,
+        "id_producto": 12,
+        "url_imagen": "/uploads/productos/9032bc83-1321-430d-86b7-caaac6518eef.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 16,
+        "id_producto": 13,
+        "url_imagen": "/uploads/productos/71374548-8707-487a-927a-6007ee4d2035.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 17,
+        "id_producto": 14,
+        "url_imagen": "/uploads/productos/2181d986-44e2-48d8-826a-5a5047c770f6.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 18,
+        "id_producto": 15,
+        "url_imagen": "/uploads/productos/058edfa4-1699-4b61-8942-f1f7b9c44617.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 8,
+        "id_producto": 6,
+        "url_imagen": "/uploads/productos/c6e72141-6867-4cff-aa81-abd4e58af9c3.jpeg",
+        "es_principal": false
+      },
+      {
+        "id_imagen": 19,
+        "id_producto": 6,
+        "url_imagen": "/uploads/productos/b940d356-7810-487d-86ac-49be42dcc1f1.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 20,
+        "id_producto": 16,
+        "url_imagen": "/uploads/productos/21b92d77-3f00-4da9-94d4-a54763a4c6e1.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 21,
+        "id_producto": 17,
+        "url_imagen": "/uploads/productos/42d2fd93-e38e-4e6f-b82c-fa1a48bafbfa.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 22,
+        "id_producto": 18,
+        "url_imagen": "/uploads/productos/cf456721-6745-4594-b6bb-9e7b80d447d4.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 23,
+        "id_producto": 19,
+        "url_imagen": "/uploads/productos/cdb4738c-a0bf-4858-abab-0dcebe24a877.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 25,
+        "id_producto": 20,
+        "url_imagen": "/uploads/productos/6b626cfe-9e8e-470f-86a4-8b17ef512326.png",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 26,
+        "id_producto": 23,
+        "url_imagen": "/uploads/productos/a573dc93-d2f1-41ae-b18a-c96d36913963.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 27,
+        "id_producto": 24,
+        "url_imagen": "/uploads/productos/456eaec9-2fbe-40bd-9c26-94f519b82592.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 28,
+        "id_producto": 25,
+        "url_imagen": "/uploads/productos/1fba33b9-a95a-4f3a-ba76-d207ec384595.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 29,
+        "id_producto": 26,
+        "url_imagen": "/uploads/productos/2ffef2e4-07ad-4264-b43c-d30502c73a13.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 30,
+        "id_producto": 27,
+        "url_imagen": "/uploads/productos/e7017969-bb26-44a7-a4f8-2a0b78ac9609.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 31,
+        "id_producto": 28,
+        "url_imagen": "/uploads/productos/491756f9-e769-45c5-86c5-1bac92687f08.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 32,
+        "id_producto": 31,
+        "url_imagen": "/uploads/productos/20a5c1a3-77a0-4427-8869-eefc0c8e4ff0.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 33,
+        "id_producto": 29,
+        "url_imagen": "/uploads/productos/7228cd79-9d89-4521-b12d-94176ffeb36f.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 34,
+        "id_producto": 30,
+        "url_imagen": "/uploads/productos/52c8edf4-cb5d-4a19-be67-d7203c125e62.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 35,
+        "id_producto": 33,
+        "url_imagen": "/uploads/productos/44dbaa0c-cba7-4652-bff0-9e0b43c9fa9e.jpg",
+        "es_principal": true
+      },
+      {
+        "id_imagen": 36,
+        "id_producto": 32,
+        "url_imagen": "/uploads/productos/6891003d-5f60-4444-b418-1dfec24893c2.jpg",
+        "es_principal": true
+      }
+    ],
+    "carritos": [
+      {
+        "id_carrito": 1,
+        "id_usuario": 3,
+        "estado_carrito": "CERRADO"
+      },
+      {
+        "id_carrito": 2,
+        "id_usuario": 3,
+        "estado_carrito": "CERRADO"
+      },
+      {
+        "id_carrito": 3,
+        "id_usuario": 6,
+        "estado_carrito": "CERRADO"
+      },
+      {
+        "id_carrito": 4,
+        "id_usuario": 6,
+        "estado_carrito": "CERRADO"
+      },
+      {
+        "id_carrito": 5,
+        "id_usuario": 6,
+        "estado_carrito": "ACTIVO"
+      },
+      {
+        "id_carrito": 6,
+        "id_usuario": 11,
+        "estado_carrito": "CERRADO"
+      },
+      {
+        "id_carrito": 7,
+        "id_usuario": 11,
+        "estado_carrito": "CERRADO"
+      }
+    ],
+    "carrito_detalle": [
+      {
+        "id_carrito_detalle": 1,
+        "id_carrito": 1,
+        "id_variante": 2,
+        "cantidad": 1,
+        "precio_unitario": 135.0
+      },
+      {
+        "id_carrito_detalle": 2,
+        "id_carrito": 2,
+        "id_variante": 3,
+        "cantidad": 1,
+        "precio_unitario": 135.0
+      },
+      {
+        "id_carrito_detalle": 3,
+        "id_carrito": 3,
+        "id_variante": 7,
+        "cantidad": 2,
+        "precio_unitario": 111.0
+      },
+      {
+        "id_carrito_detalle": 8,
+        "id_carrito": 3,
+        "id_variante": 4,
+        "cantidad": 3,
+        "precio_unitario": 135.0
+      },
+      {
+        "id_carrito_detalle": 6,
+        "id_carrito": 3,
+        "id_variante": 9,
+        "cantidad": 3,
+        "precio_unitario": 170.0
+      },
+      {
+        "id_carrito_detalle": 9,
+        "id_carrito": 4,
+        "id_variante": 5,
+        "cantidad": 1,
+        "precio_unitario": 120.0
+      },
+      {
+        "id_carrito_detalle": 12,
+        "id_carrito": 6,
+        "id_variante": 25,
+        "cantidad": 1,
+        "precio_unitario": 110.0
+      },
+      {
+        "id_carrito_detalle": 13,
+        "id_carrito": 6,
+        "id_variante": 20,
+        "cantidad": 1,
+        "precio_unitario": 520.0
+      },
+      {
+        "id_carrito_detalle": 14,
+        "id_carrito": 6,
+        "id_variante": 16,
+        "cantidad": 1,
+        "precio_unitario": 160.0
+      },
+      {
+        "id_carrito_detalle": 15,
+        "id_carrito": 7,
+        "id_variante": 22,
+        "cantidad": 1,
+        "precio_unitario": 120.0
+      },
+      {
+        "id_carrito_detalle": 16,
+        "id_carrito": 7,
+        "id_variante": 24,
+        "cantidad": 1,
+        "precio_unitario": 200.0
+      }
+    ],
+    "pedidos": [
+      {
+        "id_pedido": 1,
+        "id_usuario": 3,
+        "total": 135.0,
+        "estado_pedido": "ENTREGADO"
+      },
+      {
+        "id_pedido": 2,
+        "id_usuario": 3,
+        "total": 135.0,
+        "estado_pedido": "CANCELADO"
+      },
+      {
+        "id_pedido": 3,
+        "id_usuario": 6,
+        "total": 1137.0,
+        "estado_pedido": "PAGADO"
+      },
+      {
+        "id_pedido": 4,
+        "id_usuario": 6,
+        "total": 120.0,
+        "estado_pedido": "CONFIRMADO"
+      },
+      {
+        "id_pedido": 5,
+        "id_usuario": 11,
+        "total": 790.0,
+        "estado_pedido": "CONFIRMADO"
+      },
+      {
+        "id_pedido": 6,
+        "id_usuario": 11,
+        "total": 320.0,
+        "estado_pedido": "PENDIENTE"
+      }
+    ],
+    "pedido_detalle": [
+      {
+        "id_pedido_detalle": 1,
+        "id_pedido": 1,
+        "id_variante": 2,
+        "cantidad": 1,
+        "precio_unitario": 135.0,
+        "subtotal": 135.0
+      },
+      {
+        "id_pedido_detalle": 2,
+        "id_pedido": 2,
+        "id_variante": 3,
+        "cantidad": 1,
+        "precio_unitario": 135.0,
+        "subtotal": 135.0
+      },
+      {
+        "id_pedido_detalle": 3,
+        "id_pedido": 3,
+        "id_variante": 7,
+        "cantidad": 2,
+        "precio_unitario": 111.0,
+        "subtotal": 222.0
+      },
+      {
+        "id_pedido_detalle": 4,
+        "id_pedido": 3,
+        "id_variante": 4,
+        "cantidad": 3,
+        "precio_unitario": 135.0,
+        "subtotal": 405.0
+      },
+      {
+        "id_pedido_detalle": 5,
+        "id_pedido": 3,
+        "id_variante": 9,
+        "cantidad": 3,
+        "precio_unitario": 170.0,
+        "subtotal": 510.0
+      },
+      {
+        "id_pedido_detalle": 6,
+        "id_pedido": 4,
+        "id_variante": 5,
+        "cantidad": 1,
+        "precio_unitario": 120.0,
+        "subtotal": 120.0
+      },
+      {
+        "id_pedido_detalle": 7,
+        "id_pedido": 5,
+        "id_variante": 25,
+        "cantidad": 1,
+        "precio_unitario": 110.0,
+        "subtotal": 110.0
+      },
+      {
+        "id_pedido_detalle": 8,
+        "id_pedido": 5,
+        "id_variante": 20,
+        "cantidad": 1,
+        "precio_unitario": 520.0,
+        "subtotal": 520.0
+      },
+      {
+        "id_pedido_detalle": 9,
+        "id_pedido": 5,
+        "id_variante": 16,
+        "cantidad": 1,
+        "precio_unitario": 160.0,
+        "subtotal": 160.0
+      },
+      {
+        "id_pedido_detalle": 10,
+        "id_pedido": 6,
+        "id_variante": 22,
+        "cantidad": 1,
+        "precio_unitario": 120.0,
+        "subtotal": 120.0
+      },
+      {
+        "id_pedido_detalle": 11,
+        "id_pedido": 6,
+        "id_variante": 24,
+        "cantidad": 1,
+        "precio_unitario": 200.0,
+        "subtotal": 200.0
+      }
+    ],
+    "pagos": [
+      {
+        "id_pago": 1,
+        "id_pedido": 1,
+        "metodo_pago": "QR",
+        "monto": 135.0,
+        "estado_pago": "PAGADO",
+        "comprobante_url": "comprobante-qr.jpg"
+      },
+      {
+        "id_pago": 2,
+        "id_pedido": 2,
+        "metodo_pago": "QR",
+        "monto": 135.0,
+        "estado_pago": "RECHAZADO",
+        "comprobante_url": "comprobante-qr.jpg"
+      },
+      {
+        "id_pago": 3,
+        "id_pedido": 3,
+        "metodo_pago": "QR",
+        "monto": 1137.0,
+        "estado_pago": "PAGADO",
+        "comprobante_url": "/uploads/comprobantes/c8ab61d7-7206-4428-a15f-c968146b063d.jpeg"
+      },
+      {
+        "id_pago": 4,
+        "id_pedido": 4,
+        "metodo_pago": "QR",
+        "monto": 120.0,
+        "estado_pago": "EN_REVISION",
+        "comprobante_url": "/uploads/comprobantes/cd605533-feba-4427-9692-48bbb9d3874b.png"
+      },
+      {
+        "id_pago": 5,
+        "id_pedido": 5,
+        "metodo_pago": "QR",
+        "monto": 790.0,
+        "estado_pago": "EN_REVISION",
+        "comprobante_url": "/uploads/comprobantes/299fedc3-b852-440c-a7b8-5551a20aec7a.png"
+      }
+    ],
+    "soporte_tickets": [
+      {
+        "id_ticket": 1,
+        "id_usuario": 3,
+        "asunto": "Problema con mi pedido",
+        "descripcion": "Realicé un pedido pero todavía no veo el estado actualizado.",
+        "estado_ticket": "ABIERTO"
+      },
+      {
+        "id_ticket": 2,
+        "id_usuario": 1,
+        "asunto": "[PÚBLICO] no puedo ingresar",
+        "descripcion": "Solicitud enviada desde el soporte público de Zyra.\nNombre: Abigail Loza\nCorreo: empresa1@zyra.com\nTipo de usuario: Empresa\n\nMensaje:\nno s eporque",
+        "estado_ticket": "CERRADO"
+      },
+      {
+        "id_ticket": 3,
+        "id_usuario": 2,
+        "asunto": "si tengo problema con pagos",
+        "descripcion": "grave es",
+        "estado_ticket": "EN_PROCESO"
+      },
+      {
+        "id_ticket": 4,
+        "id_usuario": 6,
+        "asunto": "yo tambien",
+        "descripcion": "tengo queja",
+        "estado_ticket": "EN_PROCESO"
+      }
+    ],
+    "soporte_mensajes": [
+      {
+        "id_mensaje": 1,
+        "id_ticket": 1,
+        "id_usuario": 3,
+        "mensaje": "Realicé un pedido pero todavía no veo el estado actualizado."
+      },
+      {
+        "id_mensaje": 2,
+        "id_ticket": 1,
+        "id_usuario": 1,
+        "mensaje": "Hola, revisaremos tu pedido y te avisaremos pronto."
+      },
+      {
+        "id_mensaje": 3,
+        "id_ticket": 2,
+        "id_usuario": 1,
+        "mensaje": "Solicitud enviada desde el soporte público de Zyra.\nNombre: Abigail Loza\nCorreo: empresa1@zyra.com\nTipo de usuario: Empresa\n\nMensaje:\nno s eporque"
+      },
+      {
+        "id_mensaje": 4,
+        "id_ticket": 3,
+        "id_usuario": 2,
+        "mensaje": "grave es"
+      },
+      {
+        "id_mensaje": 6,
+        "id_ticket": 3,
+        "id_usuario": 1,
+        "mensaje": "si si te creo"
+      },
+      {
+        "id_mensaje": 7,
+        "id_ticket": 3,
+        "id_usuario": 2,
+        "mensaje": "a si?"
+      },
+      {
+        "id_mensaje": 8,
+        "id_ticket": 4,
+        "id_usuario": 6,
+        "mensaje": "tengo queja"
+      },
+      {
+        "id_mensaje": 9,
+        "id_ticket": 4,
+        "id_usuario": 1,
+        "mensaje": "haber"
+      },
+      {
+        "id_mensaje": 10,
+        "id_ticket": 3,
+        "id_usuario": 1,
+        "mensaje": "niosdn"
+      },
+      {
+        "id_mensaje": 11,
+        "id_ticket": 4,
+        "id_usuario": 1,
+        "mensaje": "de que?"
+      },
+      {
+        "id_mensaje": 12,
+        "id_ticket": 3,
+        "id_usuario": 1,
+        "mensaje": "no se"
+      },
+      {
+        "id_mensaje": 13,
+        "id_ticket": 3,
+        "id_usuario": 2,
+        "mensaje": "jsjsjs"
+      },
+      {
+        "id_mensaje": 14,
+        "id_ticket": 4,
+        "id_usuario": 6,
+        "mensaje": "ksnaksnk"
+      },
+      {
+        "id_mensaje": 15,
+        "id_ticket": 4,
+        "id_usuario": 6,
+        "mensaje": "niono"
+      },
+      {
+        "id_mensaje": 16,
+        "id_ticket": 4,
+        "id_usuario": 1,
+        "mensaje": "knnpo"
+      },
+      {
+        "id_mensaje": 17,
+        "id_ticket": 3,
+        "id_usuario": 1,
+        "mensaje": "jonuo"
+      }
+    ],
+    "notificaciones": [
+      {
+        "id_notificacion": 1,
+        "id_usuario": 3,
+        "titulo": "Respuesta de soporte",
+        "mensaje": "El equipo de Zyra respondió tu ticket: Problema con mi pedido",
+        "leido": false
+      },
+      {
+        "id_notificacion": 7,
+        "id_usuario": 2,
+        "titulo": "Zyra respondió tu soporte",
+        "mensaje": "El equipo de Zyra respondió tu ticket: si tengo problema con pagos",
+        "leido": true
+      },
+      {
+        "id_notificacion": 3,
+        "id_usuario": 2,
+        "titulo": "Zyra respondió tu soporte",
+        "mensaje": "El equipo de Zyra respondió tu ticket: si tengo problema con pagos",
+        "leido": true
+      },
+      {
+        "id_notificacion": 5,
+        "id_usuario": 2,
+        "titulo": "Zyra respondió tu soporte",
+        "mensaje": "El equipo de Zyra respondió tu ticket: si tengo problema con pagos",
+        "leido": true
+      },
+      {
+        "id_notificacion": 4,
+        "id_usuario": 6,
+        "titulo": "Zyra respondió tu soporte",
+        "mensaje": "El equipo de Zyra respondió tu ticket: yo tambien",
+        "leido": true
+      },
+      {
+        "id_notificacion": 6,
+        "id_usuario": 6,
+        "titulo": "Zyra respondió tu soporte",
+        "mensaje": "El equipo de Zyra respondió tu ticket: yo tambien",
+        "leido": true
+      },
+      {
+        "id_notificacion": 8,
+        "id_usuario": 1,
+        "titulo": "Nueva respuesta de soporte",
+        "mensaje": "July respondió el ticket #4: yo tambien",
+        "leido": false
+      },
+      {
+        "id_notificacion": 9,
+        "id_usuario": 8,
+        "titulo": "Nueva respuesta de soporte",
+        "mensaje": "July respondió el ticket #4: yo tambien",
+        "leido": false
+      },
+      {
+        "id_notificacion": 11,
+        "id_usuario": 2,
+        "titulo": "Zyra respondió tu soporte",
+        "mensaje": "El equipo de Zyra respondió tu ticket: si tengo problema con pagos",
+        "leido": true
+      },
+      {
+        "id_notificacion": 10,
+        "id_usuario": 6,
+        "titulo": "Zyra respondió tu soporte",
+        "mensaje": "El equipo de Zyra respondió tu ticket: yo tambien",
+        "leido": true
+      }
+    ],
+    "producto_vistas": [
+      {
+        "id_vista": 1,
+        "id_producto": 20,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-29T18:34:27.492540"
+      },
+      {
+        "id_vista": 2,
+        "id_producto": 15,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-29T18:34:53.877715"
+      },
+      {
+        "id_vista": 3,
+        "id_producto": 11,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-29T18:34:57.438036"
+      },
+      {
+        "id_vista": 4,
+        "id_producto": 17,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-29T19:03:53.429977"
+      },
+      {
+        "id_vista": 5,
+        "id_producto": 19,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-29T19:03:57.952274"
+      },
+      {
+        "id_vista": 6,
+        "id_producto": 19,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-29T19:18:42.841839"
+      },
+      {
+        "id_vista": 7,
+        "id_producto": 15,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-29T19:18:47.384472"
+      },
+      {
+        "id_vista": 8,
+        "id_producto": 15,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-30T01:35:24.081411"
+      },
+      {
+        "id_vista": 9,
+        "id_producto": 15,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-30T01:36:37.088880"
+      },
+      {
+        "id_vista": 10,
+        "id_producto": 15,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-30T03:11:56.124250"
+      },
+      {
+        "id_vista": 11,
+        "id_producto": 15,
+        "id_usuario": 11,
+        "origen": "detalle_producto",
+        "fecha_vista": "2026-05-30T03:36:04.794311"
+      }
+    ],
+    "tienda_visitas": [
+      {
+        "id_visita": 1,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-29T18:34:29.605135"
+      },
+      {
+        "id_visita": 2,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-29T18:34:35.386335"
+      },
+      {
+        "id_visita": 3,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-29T18:34:46.718443"
+      },
+      {
+        "id_visita": 4,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-29T18:34:50.975469"
+      },
+      {
+        "id_visita": 5,
+        "id_empresa": 3,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-29T19:03:46.727042"
+      },
+      {
+        "id_visita": 6,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-29T19:18:49.423456"
+      },
+      {
+        "id_visita": 7,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-29T20:29:22.111300"
+      },
+      {
+        "id_visita": 8,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T01:35:26.622882"
+      },
+      {
+        "id_visita": 9,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T01:36:39.495503"
+      },
+      {
+        "id_visita": 10,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T01:37:22.590226"
+      },
+      {
+        "id_visita": 11,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T01:37:30.587507"
+      },
+      {
+        "id_visita": 12,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T01:37:51.795207"
+      },
+      {
+        "id_visita": 13,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T01:39:58.516491"
+      },
+      {
+        "id_visita": 14,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:11:58.244215"
+      },
+      {
+        "id_visita": 15,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:12:20.962270"
+      },
+      {
+        "id_visita": 16,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:33:46.442228"
+      },
+      {
+        "id_visita": 17,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:34:20.610746"
+      },
+      {
+        "id_visita": 18,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:34:41.164446"
+      },
+      {
+        "id_visita": 19,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:35:06.564969"
+      },
+      {
+        "id_visita": 20,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:35:14.905835"
+      },
+      {
+        "id_visita": 21,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:35:32.847748"
+      },
+      {
+        "id_visita": 22,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:36:06.395446"
+      },
+      {
+        "id_visita": 23,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:36:42.171977"
+      },
+      {
+        "id_visita": 24,
+        "id_empresa": 1,
+        "id_usuario": 11,
+        "origen": "modal_tienda",
+        "fecha_visita": "2026-05-30T03:41:18.644864"
+      }
+    ],
+    "busquedas_registro": [],
+    "producto_cotizaciones": [
+      {
+        "id_cotizacion": 1,
+        "id_producto": 15,
+        "id_variante": 20,
+        "id_usuario": 11,
+        "cantidad": 1,
+        "fecha_cotizacion": "2026-05-29T18:34:55.867428"
+      },
+      {
+        "id_cotizacion": 2,
+        "id_producto": 11,
+        "id_variante": 16,
+        "id_usuario": 11,
+        "cantidad": 1,
+        "fecha_cotizacion": "2026-05-29T18:34:58.765976"
+      },
+      {
+        "id_cotizacion": 3,
+        "id_producto": 17,
+        "id_variante": 22,
+        "id_usuario": 11,
+        "cantidad": 1,
+        "fecha_cotizacion": "2026-05-29T19:03:55.673999"
+      },
+      {
+        "id_cotizacion": 4,
+        "id_producto": 19,
+        "id_variante": 24,
+        "id_usuario": 11,
+        "cantidad": 1,
+        "fecha_cotizacion": "2026-05-29T19:03:59.506958"
+      }
+    ],
+    "ventas_registro": [
+      {
+        "id_venta": 1,
+        "id_pedido": 1,
+        "id_pedido_detalle": 1,
+        "id_usuario": 3,
+        "id_empresa": 1,
+        "id_producto": 1,
+        "id_variante": 2,
+        "cantidad": 1,
+        "precio_unitario": 135.0,
+        "subtotal": 135.0,
+        "estado_venta": "PAGADA",
+        "fecha_venta": "2026-05-29T18:32:37.340482"
+      },
+      {
+        "id_venta": 2,
+        "id_pedido": 3,
+        "id_pedido_detalle": 3,
+        "id_usuario": 6,
+        "id_empresa": 1,
+        "id_producto": 4,
+        "id_variante": 7,
+        "cantidad": 2,
+        "precio_unitario": 111.0,
+        "subtotal": 222.0,
+        "estado_venta": "PAGADA",
+        "fecha_venta": "2026-05-29T18:32:37.363318"
+      },
+      {
+        "id_venta": 3,
+        "id_pedido": 3,
+        "id_pedido_detalle": 4,
+        "id_usuario": 6,
+        "id_empresa": 1,
+        "id_producto": 1,
+        "id_variante": 4,
+        "cantidad": 3,
+        "precio_unitario": 135.0,
+        "subtotal": 405.0,
+        "estado_venta": "PAGADA",
+        "fecha_venta": "2026-05-29T18:32:37.388841"
+      },
+      {
+        "id_venta": 4,
+        "id_pedido": 3,
+        "id_pedido_detalle": 5,
+        "id_usuario": 6,
+        "id_empresa": 1,
+        "id_producto": 6,
+        "id_variante": 9,
+        "cantidad": 3,
+        "precio_unitario": 170.0,
+        "subtotal": 510.0,
+        "estado_venta": "PAGADA",
+        "fecha_venta": "2026-05-29T18:32:37.397892"
+      }
+    ]
+  }
+}

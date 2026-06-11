@@ -11,6 +11,7 @@ from app.database import get_db
 from app.models import Usuario, Rol, Empresa, Categoria, Producto, ProductoVariante, ProductoImagen, Carrito, CarritoDetalle, Pedido, PedidoDetalle, Pago, SoporteTicket, SoporteMensaje, Notificacion
 from app.schemas import RegistroCliente, RegistroEmpresa, LoginUsuario, CambioEstadoEmpresa, ProductoCrear, ProductoActualizar, CambioEstadoProducto, VarianteAgregar, VarianteActualizar, AgregarCarrito, ActualizarCantidadCarrito, CrearPedido, RegistrarPago, CambioEstadoPagoEmpresa, CambioEstadoPedidoEmpresa, CrearTicketSoporte, CrearMensajeSoporte, CambiarEstadoTicket, CategoriaCrear, VarianteEmpresaCrear, VarianteEmpresaEditar, VarianteEstadoCambiar
 from app.seguridad import crear_hash_password, verificar_password
+from app.routers.ia_busqueda import sincronizar_producto_ia_seguro, eliminar_producto_indexado_ia
 
 router = APIRouter()
 
@@ -196,6 +197,8 @@ def registrar_producto_empresa(datos: ProductoCrear, db: Session = Depends(get_d
     db.commit()
     db.refresh(nuevo_producto)
 
+    ia_indexacion = sincronizar_producto_ia_seguro(db, nuevo_producto.id_producto)
+
     return {
         "mensaje": "Producto registrado correctamente",
         "id_producto": nuevo_producto.id_producto,
@@ -203,7 +206,8 @@ def registrar_producto_empresa(datos: ProductoCrear, db: Session = Depends(get_d
         "nombre_producto": nuevo_producto.nombre_producto,
         "precio": float(nuevo_producto.precio),
         "estado_producto": nuevo_producto.estado_producto,
-        "total_variantes": len(variantes_limpias)
+        "total_variantes": len(variantes_limpias),
+        "ia_indexacion": ia_indexacion
     }
 
 
@@ -348,12 +352,15 @@ def actualizar_producto_empresa(
     db.commit()
     db.refresh(producto)
 
+    ia_indexacion = sincronizar_producto_ia_seguro(db, producto.id_producto)
+
     return {
         "mensaje": "Producto actualizado correctamente",
         "id_producto": producto.id_producto,
         "nombre_producto": producto.nombre_producto,
         "precio": float(producto.precio),
-        "estado_producto": producto.estado_producto
+        "estado_producto": producto.estado_producto,
+        "ia_indexacion": ia_indexacion
     }
 
 @router.delete("/empresa/productos/{id_producto}")
@@ -377,9 +384,12 @@ def eliminar_producto_empresa(
 
     db.commit()
 
+    ia_indexacion = sincronizar_producto_ia_seguro(db, id_producto)
+
     return {
         "mensaje": "Producto eliminado correctamente",
-        "id_producto": id_producto
+        "id_producto": id_producto,
+        "ia_indexacion": ia_indexacion
     }
 
 @router.delete("/empresa/productos/{id_producto}/definitivo")
@@ -411,9 +421,12 @@ def eliminar_producto_definitivo_empresa(
         db.delete(producto)
         db.commit()
 
+        ia_indexacion = eliminar_producto_indexado_ia(id_producto)
+
         return {
             "mensaje": "Producto borrado definitivamente",
-            "id_producto": id_producto
+            "id_producto": id_producto,
+            "ia_indexacion": ia_indexacion
         }
 
     except Exception:
@@ -458,11 +471,14 @@ def cambiar_estado_producto_empresa(
     db.commit()
     db.refresh(producto)
 
+    ia_indexacion = sincronizar_producto_ia_seguro(db, producto.id_producto)
+
     return {
         "mensaje": "Estado del producto actualizado correctamente",
         "id_producto": producto.id_producto,
         "nombre_producto": producto.nombre_producto,
-        "nuevo_estado": producto.estado_producto
+        "nuevo_estado": producto.estado_producto,
+        "ia_indexacion": ia_indexacion
     }
 
 
@@ -639,12 +655,15 @@ def subir_imagen_producto(
     db.commit()
     db.refresh(nueva_imagen)
 
+    ia_indexacion = sincronizar_producto_ia_seguro(db, id_producto)
+
     return {
         "mensaje": "Imagen subida correctamente",
         "id_producto": id_producto,
         "id_empresa": id_empresa,
         "url_imagen": url_imagen,
-        "url_completa": f"http://127.0.0.1:8000{url_imagen}"
+        "url_completa": f"http://127.0.0.1:8000{url_imagen}",
+        "ia_indexacion": ia_indexacion
     }
 
 def verificar_usuario_activo(db: Session, id_usuario: int):

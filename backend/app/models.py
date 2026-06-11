@@ -242,3 +242,24 @@ class BackupRegistro(Base):
     tamanio_bytes = Column(Integer, default=0)
     id_admin = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=True)
     fecha_backup = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+
+class LogSistema(Base):
+    __tablename__ = "logs_sistema"
+
+    id_log = Column(Integer, primary_key=True, index=True)
+    fecha = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    metodo = Column(String(10), nullable=False)
+    ruta = Column(String(255), nullable=False, index=True)
+    modulo = Column(String(80), nullable=False, index=True)
+    accion = Column(String(150), nullable=False, index=True)
+    descripcion = Column(Text)
+    resultado = Column(String(30), default="OK", index=True)
+    estado_http = Column(Integer, nullable=True)
+    id_usuario = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=True, index=True)
+    id_empresa = Column(Integer, ForeignKey("empresas.id_empresa"), nullable=True, index=True)
+    id_producto = Column(Integer, ForeignKey("productos.id_producto"), nullable=True, index=True)
+    id_pedido = Column(Integer, ForeignKey("pedidos.id_pedido"), nullable=True, index=True)
+    ip = Column(String(80), nullable=True)
+    origen = Column(String(120), nullable=True)
+    detalle = Column(Text)

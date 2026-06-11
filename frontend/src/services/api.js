@@ -498,6 +498,25 @@ export const obtenerReportesAdminApi = async (idAdmin, limite = 15) => {
   return procesarRespuesta(respuesta, "No se pudieron cargar los reportes administrativos.");
 };
 
+
+export const obtenerLogsAdminApi = async (idAdmin, limite = 120, filtros = {}) => {
+  const params = new URLSearchParams({
+    id_admin: idAdmin,
+    limite
+  });
+
+  if (filtros.modulo && filtros.modulo !== "TODOS") {
+    params.append("modulo", filtros.modulo);
+  }
+
+  if (filtros.resultado && filtros.resultado !== "TODOS") {
+    params.append("resultado", filtros.resultado);
+  }
+
+  const respuesta = await fetch(`${API_URL}/admin/logs?${params.toString()}`);
+  return procesarRespuesta(respuesta, "No se pudieron cargar los logs del sistema.");
+};
+
 export const obtenerBackupsAdminApi = async (idAdmin) => {
   const respuesta = await fetch(`${API_URL}/admin/backups?id_admin=${idAdmin}`);
   const datos = await procesarRespuesta(respuesta, "No se pudieron cargar las copias de seguridad.");

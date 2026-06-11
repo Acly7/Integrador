@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy import text, func
 from sqlalchemy.exc import SQLAlchemyError
 import os
 import shutil
@@ -30,6 +30,7 @@ from app.models import (
     ProductoCotizacion,
     VentaRegistro,
     BackupRegistro,
+    LogSistema,
 )
 from app.schemas import CambioEstadoEmpresa, CambiarEstadoTicket, CambioEstadoUsuarioAdmin, AdminCuentaActualizar, AdminPasswordCambiar, AdminCrear
 from app.seguridad import crear_hash_password, verificar_password
@@ -1029,6 +1030,90 @@ def _serializar_modelo(objeto, columnas):
         fila[columna] = valor
     return fila
 
+
+
+@router.get("/admin/logs")
+def listar_logs_admin(
+    id_admin: int,
+    limite: int = 120,
+    modulo: str | None = None,
+    resultado: str | None = None,
+    db: Session = Depends(get_db),
+):
+    verificar_admin(db, id_admin)
+
+    limite = max(1, min(int(limite or 120), 500))
+    consulta = db.query(LogSistema)
+
+    if modulo and modulo != "TODOS":
+        consulta = consulta.filter(LogSistema.modulo == modulo)
+
+    if resultado and resultado != "TODOS":
+        consulta = consulta.filter(LogSistema.resultado == resultado)
+
+    logs = consulta.order_by(LogSistema.fecha.desc()).limit(limite).all()
+
+    resumen_modulos = (
+        db.query(LogSistema.modulo, func.count(LogSistema.id_log))
+        .group_by(LogSistema.modulo)
+        .order_by(func.count(LogSistema.id_log).desc())
+        .limit(12)
+        .all()
+    )
+
+    resumen_resultados = (
+        db.query(LogSistema.resultado, func.count(LogSistema.id_log))
+        .group_by(LogSistema.resultado)
+        .all()
+    )
+
+    total_logs = db.query(LogSistema).count()
+    total_ok = db.query(LogSistema).filter(LogSistema.resultado == "OK").count()
+    total_error = db.query(LogSistema).filter(LogSistema.resultado == "ERROR").count()
+
+    def parsear_detalle(valor):
+        if not valor:
+            return {}
+        try:
+            import json
+            return json.loads(valor)
+        except Exception:
+            return {"raw": valor}
+
+    return {
+        "total": total_logs,
+        "total_ok": total_ok,
+        "total_error": total_error,
+        "modulos": [
+            {"modulo": modulo, "total": total}
+            for modulo, total in resumen_modulos
+        ],
+        "resultados": [
+            {"resultado": resultado or "SIN_RESULTADO", "total": total}
+            for resultado, total in resumen_resultados
+        ],
+        "logs": [
+            {
+                "id_log": log.id_log,
+                "fecha": log.fecha.isoformat() if log.fecha else None,
+                "metodo": log.metodo,
+                "ruta": log.ruta,
+                "modulo": log.modulo,
+                "accion": log.accion,
+                "descripcion": log.descripcion,
+                "resultado": log.resultado,
+                "estado_http": log.estado_http,
+                "id_usuario": log.id_usuario,
+                "id_empresa": log.id_empresa,
+                "id_producto": log.id_producto,
+                "id_pedido": log.id_pedido,
+                "ip": log.ip,
+                "origen": log.origen,
+                "detalle": parsear_detalle(log.detalle),
+            }
+            for log in logs
+        ],
+    }
 
 @router.get("/admin/backups")
 def listar_backups_admin(id_admin: int, db: Session = Depends(get_db)):

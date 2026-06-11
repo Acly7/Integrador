@@ -6,6 +6,7 @@ import os
 
 from app.database import Base, engine
 from app import models  # registra todos los modelos antes de crear tablas nuevas
+from app.logs import registrar_movimiento_http
 
 from app.routers import (
     inicio,
@@ -28,6 +29,11 @@ app = FastAPI(
 
 # Crea automáticamente las tablas nuevas de estadísticas/reportes si aún no existen.
 Base.metadata.create_all(bind=engine)
+
+
+@app.middleware("http")
+async def middleware_registro_movimientos(request, call_next):
+    return await registrar_movimiento_http(request, call_next)
 
 app.add_middleware(
     CORSMiddleware,

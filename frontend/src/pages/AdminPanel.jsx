@@ -19,6 +19,7 @@ import {
   obtenerReportesAdminApi,
   obtenerSoporteAdminApi,
   obtenerBackupsAdminApi,
+  obtenerLogsAdminApi,
   obtenerMensajesTicketApi,
   responderTicketSoporteApi,
   obtenerUsuariosAdminApi,
@@ -203,6 +204,10 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
   const [reportes, setReportes] = useState(null);
   const [backups, setBackups] = useState([]);
   const [creandoBackup, setCreandoBackup] = useState(false);
+  const [logsSistema, setLogsSistema] = useState([]);
+  const [resumenLogs, setResumenLogs] = useState({ total: 0, total_ok: 0, total_error: 0, modulos: [] });
+  const [filtroLogModulo, setFiltroLogModulo] = useState("TODOS");
+  const [filtroLogResultado, setFiltroLogResultado] = useState("TODOS");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
   const [filtroEmpresa, setFiltroEmpresa] = useState("TODAS");
@@ -261,6 +266,7 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
     { id: "pagos", nombre: "Pagos", icono: "pagos" },
     { id: "reportes", nombre: "Reportes", icono: "resumen" },
     { id: "backups", nombre: "Backups", icono: "catalogo" },
+    { id: "logs", nombre: "Logs", icono: "resumen" },
     { id: "soporte", nombre: "Soporte", icono: "imagen" },
     { id: "mi_cuenta", nombre: "Mi cuenta", icono: "usuario" }
   ];
@@ -308,6 +314,21 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
   const cargarBackups = async () => {
     const datos = await obtenerBackupsAdminApi(usuario.id_usuario);
     setBackups(datos);
+  };
+
+  const cargarLogsSistema = async () => {
+    const datos = await obtenerLogsAdminApi(usuario.id_usuario, 150, {
+      modulo: filtroLogModulo,
+      resultado: filtroLogResultado
+    });
+    setLogsSistema(datos.logs || []);
+    setResumenLogs({
+      total: datos.total || 0,
+      total_ok: datos.total_ok || 0,
+      total_error: datos.total_error || 0,
+      modulos: datos.modulos || [],
+      resultados: datos.resultados || []
+    });
   };
 
   const crearBackup = async () => {
@@ -366,6 +387,7 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       if (seccion === "pagos") await cargarPagos();
       if (seccion === "reportes") await cargarReportes();
       if (seccion === "backups") await cargarBackups();
+      if (seccion === "logs") await cargarLogsSistema();
       if (seccion === "soporte") await cargarSoporte();
       if (seccion === "mi_cuenta") await cargarCuentaAdmin();
     } catch (err) {
@@ -379,6 +401,12 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
     cargarDatos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seccion]);
+
+  useEffect(() => {
+    if (seccion === "logs") {
+      cargarLogsSistema().catch((err) => setError(err.message));
+    }
+  }, [filtroLogModulo, filtroLogResultado]);
 
   useEffect(() => {
     if (!usuario?.id_usuario) return;
@@ -1538,6 +1566,10 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
           <button type="button" onClick={cargarReportes}>Actualizar reportes</button>
         </div>
 
+        <div className="admin-reportes-torta-principal">
+          {renderGraficoTortaReporte(opcionesGrafico)}
+        </div>
+
         <div className="admin-reporte-kpis">
           <article><span>Vistas de productos</span><strong>{formatearEntero(resumenReporte.vistas_productos)}</strong></article>
           <article><span>Visitas a tiendas</span><strong>{formatearEntero(resumenReporte.visitas_tiendas)}</strong></article>
@@ -1621,9 +1653,123 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
               </div>
             )}
           </article>
-
-          {renderGraficoTortaReporte(opcionesGrafico)}
         </div>
+      </section>
+    );
+  };
+
+
+  const formatearFechaLog = (fecha) => {
+    if (!fecha) return "Sin fecha";
+    try {
+      return new Date(fecha).toLocaleString("es-BO", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    } catch {
+      return fecha;
+    }
+  };
+
+  const obtenerDetalleLog = (log) => {
+    const detalle = log.detalle || {};
+    const partes = [];
+
+    if (detalle.usuario?.nombre) partes.push(`Usuario: ${detalle.usuario.nombre}`);
+    if (detalle.usuario?.email) partes.push(detalle.usuario.email);
+    if (detalle.empresa?.nombre_empresa) partes.push(`Empresa: ${detalle.empresa.nombre_empresa}`);
+    if (detalle.producto?.nombre_producto) partes.push(`Producto: ${detalle.producto.nombre_producto}`);
+    if (detalle.pedido?.id_pedido) partes.push(`Pedido #${detalle.pedido.id_pedido}`);
+
+    if (partes.length > 0) return partes.join(" · ");
+    if (log.descripcion) return log.descripcion;
+    return log.ruta;
+  };
+
+  const renderLogsSistema = () => {
+    const modulosDisponibles = resumenLogs.modulos || [];
+
+    return (
+      <section className="admin-logs">
+        <div className="admin-section-header">
+          <div>
+            <span>LOGS DEL SISTEMA</span>
+            <h2>Movimientos registrados en Zyra</h2>
+            <p>Registro automático de acciones realizadas desde administración, empresa, cliente, soporte, pagos, carrito, pedidos e IA visual.</p>
+          </div>
+          <button type="button" onClick={cargarLogsSistema}>Actualizar logs</button>
+        </div>
+
+        <div className="admin-log-kpis">
+          <article><span>Total movimientos</span><strong>{formatearEntero(resumenLogs.total)}</strong></article>
+          <article><span>Correctos</span><strong>{formatearEntero(resumenLogs.total_ok)}</strong></article>
+          <article><span>Con error</span><strong>{formatearEntero(resumenLogs.total_error)}</strong></article>
+          <article><span>Módulos activos</span><strong>{formatearEntero(modulosDisponibles.length)}</strong></article>
+        </div>
+
+        <div className="admin-log-filtros">
+          <label>
+            Módulo
+            <select value={filtroLogModulo} onChange={(e) => setFiltroLogModulo(e.target.value)}>
+              <option value="TODOS">Todos los módulos</option>
+              {modulosDisponibles.map((item) => (
+                <option key={item.modulo} value={item.modulo}>{item.modulo}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Resultado
+            <select value={filtroLogResultado} onChange={(e) => setFiltroLogResultado(e.target.value)}>
+              <option value="TODOS">Todos</option>
+              <option value="OK">Correctos</option>
+              <option value="ERROR">Con error</option>
+            </select>
+          </label>
+        </div>
+
+        {(resumenLogs.modulos || []).length > 0 && (
+          <div className="admin-log-modulos">
+            {(resumenLogs.modulos || []).map((item) => (
+              <article key={item.modulo}>
+                <span>{item.modulo}</span>
+                <strong>{formatearEntero(item.total)}</strong>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {logsSistema.length === 0 ? (
+          <div className="admin-vacio">
+            <h3>Aún no hay movimientos registrados</h3>
+            <p>Los logs empezarán a llenarse desde las próximas acciones que se hagan en cliente, empresa o administración.</p>
+          </div>
+        ) : (
+          <div className="admin-log-lista">
+            {logsSistema.map((log) => (
+              <article className={`admin-log-item ${String(log.resultado || "").toLowerCase()}`} key={log.id_log}>
+                <div className="admin-log-fecha">
+                  <strong>{formatearFechaLog(log.fecha)}</strong>
+                  <span>{log.metodo} · HTTP {log.estado_http || "-"}</span>
+                </div>
+                <div className="admin-log-contenido">
+                  <div>
+                    <span>{log.modulo}</span>
+                    <h3>{log.accion}</h3>
+                    <p>{obtenerDetalleLog(log)}</p>
+                    <small>{log.ruta}</small>
+                  </div>
+                </div>
+                <div className="admin-log-estado">
+                  <span>{log.resultado || "OK"}</span>
+                  {log.ip && <small>{log.ip}</small>}
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     );
   };
@@ -2037,6 +2183,7 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
       {!cargando && seccion === "pagos" && renderPagos()}
       {!cargando && seccion === "reportes" && renderReportes()}
       {!cargando && seccion === "backups" && renderBackups()}
+      {!cargando && seccion === "logs" && renderLogsSistema()}
       {!cargando && seccion === "soporte" && renderSoporte()}
       {!cargando && seccion === "mi_cuenta" && renderMiCuenta()}
 
