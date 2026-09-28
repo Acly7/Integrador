@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageFilter, ImageOps
 from sentence_transformers import SentenceTransformer
 import chromadb
 import shutil
@@ -31,11 +31,25 @@ _modelo_clip = None
 _chroma_client = None
 _coleccion = None
 _textos_categoria_cache = None
+_textos_detalles_cache = None
 
 # Umbrales más estrictos para evitar resultados que no tienen relación.
 LIMITE_MAXIMO_RESULTADOS = 8
-MINIMO_COINCIDENCIA_GENERAL = 76
+
+# La búsqueda visual mantiene tolerancia al color, pero ahora es más exigente con
+# la forma: cuello, mangas/tirantes, moños, largo y silueta general.
+# Así evita marcar con 90%+ dos prendas que solo comparten color, pero tienen corte distinto.
+MINIMO_COINCIDENCIA_GENERAL = 74
 MINIMO_SIN_CATEGORIA_SEGURA = 82
+MINIMO_MISMA_FAMILIA_COLOR_DIFERENTE = 68
+PESO_FORMA_ESCALA_GRISES = 0.44
+PESO_COLOR_ORIGINAL = 0.20
+PESO_DETALLE_CONTORNO = 0.36
+BONO_MISMA_FAMILIA = 3.0
+BONO_DETALLE_VISUAL = 2.8
+PENALIZACION_DETALLE_CONFLICTO = 13.0
+PENALIZACION_SIN_DETALLE_COMPARTIDO = 5.0
+MAXIMO_SCORE_CON_CONFLICTO_DETALLE = 82.0
 
 # Prompts usados por CLIP para reconocer el tipo de prenda de la foto.
 # Se usan en inglés y español porque CLIP suele responder mejor con prompts en inglés,
@@ -98,6 +112,123 @@ PROMPTS_CATEGORIAS = {
         "a suit jacket",
         "saco"
     ]
+}
+
+
+# Prompts de detalles de forma. No se usan para cambiar la categoría principal,
+# sino para ajustar el score cuando dos prendas son de la misma familia,
+# pero tienen cortes muy diferentes.
+PROMPTS_DETALLES_VISUALES = {
+    "cuello_halter_alto": [
+        "a halter neck dress",
+        "a high neck sleeveless dress",
+        "a dress with a neck collar",
+        "vestido cuello halter",
+        "vestido cuello alto sin mangas"
+    ],
+    "tirantes_hombro": [
+        "a dress with thin shoulder straps",
+        "a top with shoulder straps",
+        "vestido con tirantes",
+        "prenda con tirantes en los hombros"
+    ],
+    "monos_hombros": [
+        "a dress with bows on the shoulders",
+        "a dress with bow straps",
+        "vestido con moños en los hombros",
+        "vestido con lazos en los hombros"
+    ],
+    "strapless": [
+        "a strapless dress",
+        "a strapless top",
+        "vestido sin tirantes",
+        "top sin tirantes"
+    ],
+    "hombros_descubiertos": [
+        "an off shoulder dress",
+        "an off shoulder blouse",
+        "vestido hombros descubiertos",
+        "blusa hombros descubiertos"
+    ],
+    "sin_mangas": [
+        "a sleeveless dress",
+        "a sleeveless shirt",
+        "vestido sin mangas",
+        "prenda sin mangas"
+    ],
+    "manga_corta": [
+        "a short sleeve shirt",
+        "a short sleeve dress",
+        "polera manga corta",
+        "prenda de manga corta"
+    ],
+    "manga_larga": [
+        "a long sleeve shirt",
+        "a long sleeve dress",
+        "chompa manga larga",
+        "prenda de manga larga"
+    ],
+    "cuello_v": [
+        "a v neck dress",
+        "a v neck shirt",
+        "vestido cuello v",
+        "polera cuello v"
+    ],
+    "cuello_redondo": [
+        "a round neck shirt",
+        "a crew neck t-shirt",
+        "polera cuello redondo",
+        "cuello redondo"
+    ],
+    "vestido_corto": [
+        "a short dress",
+        "a mini dress",
+        "vestido corto",
+        "falda corta de vestido"
+    ],
+    "vestido_largo": [
+        "a long dress",
+        "a maxi dress",
+        "vestido largo",
+        "falda larga de vestido"
+    ],
+    "falda_amplia": [
+        "a flared dress",
+        "a dress with a wide skirt",
+        "vestido con falda amplia",
+        "falda con vuelo"
+    ],
+    "corte_ajustado": [
+        "a tight fitted dress",
+        "a slim fit top",
+        "vestido ajustado",
+        "prenda ajustada al cuerpo"
+    ]
+}
+
+CONFLICTOS_DETALLES_VISUALES = {
+    "cuello_halter_alto": {"monos_hombros", "tirantes_hombro", "strapless", "hombros_descubiertos", "cuello_v", "cuello_redondo"},
+    "monos_hombros": {"cuello_halter_alto", "strapless", "cuello_v", "cuello_redondo"},
+    "tirantes_hombro": {"cuello_halter_alto", "strapless", "manga_corta", "manga_larga"},
+    "strapless": {"cuello_halter_alto", "tirantes_hombro", "monos_hombros", "manga_corta", "manga_larga"},
+    "sin_mangas": {"manga_corta", "manga_larga"},
+    "manga_corta": {"sin_mangas", "manga_larga", "tirantes_hombro", "strapless"},
+    "manga_larga": {"sin_mangas", "manga_corta", "tirantes_hombro", "strapless"},
+    "vestido_corto": {"vestido_largo"},
+    "vestido_largo": {"vestido_corto"},
+}
+
+DETALLES_CLAVE_FORMA = {
+    "cuello_halter_alto",
+    "tirantes_hombro",
+    "monos_hombros",
+    "strapless",
+    "hombros_descubiertos",
+    "sin_mangas",
+    "manga_corta",
+    "manga_larga",
+    "vestido_corto",
+    "vestido_largo"
 }
 
 
@@ -258,6 +389,70 @@ def generar_embedding_imagen(ruta_imagen: Path):
     return embedding.astype("float32")
 
 
+def normalizar_embedding(embedding_np):
+    norma = np.linalg.norm(embedding_np)
+
+    if norma == 0:
+        return embedding_np.astype("float32")
+
+    return (embedding_np / norma).astype("float32")
+
+
+def generar_embedding_imagen_sin_color(ruta_imagen: Path):
+    """Genera un embedding de la prenda sin depender tanto del color.
+    La imagen se pasa a escala de grises y luego vuelve a RGB porque CLIP espera 3 canales.
+    Esto ayuda a encontrar prendas con forma/diseño parecido aunque cambie el color.
+    """
+    modelo = obtener_modelo_clip()
+    imagen = Image.open(ruta_imagen).convert("RGB")
+    imagen_sin_color = imagen.convert("L").convert("RGB")
+
+    embedding = modelo.encode(
+        imagen_sin_color,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+
+    return embedding.astype("float32")
+
+
+def generar_embedding_imagen_contorno(ruta_imagen: Path):
+    """Genera una versión tipo contorno para que CLIP preste más atención
+    a cuello, mangas, tirantes, moños y silueta, no solamente al color.
+    """
+    modelo = obtener_modelo_clip()
+    imagen = Image.open(ruta_imagen).convert("RGB")
+    imagen_gris = imagen.convert("L")
+    imagen_contorno = imagen_gris.filter(ImageFilter.FIND_EDGES)
+    imagen_contorno = ImageOps.autocontrast(imagen_contorno).convert("RGB")
+
+    embedding = modelo.encode(
+        imagen_contorno,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+
+    return embedding.astype("float32")
+
+
+def generar_embedding_imagen_tolerante_color(ruta_imagen: Path):
+    """Combina color moderado + gris + contorno.
+    Mantiene la mejora de tolerancia al color, pero ahora es más detallista
+    con la forma de la prenda.
+    """
+    embedding_original = generar_embedding_imagen(ruta_imagen)
+    embedding_sin_color = generar_embedding_imagen_sin_color(ruta_imagen)
+    embedding_contorno = generar_embedding_imagen_contorno(ruta_imagen)
+
+    embedding_combinado = (
+        (embedding_original * PESO_COLOR_ORIGINAL)
+        + (embedding_sin_color * PESO_FORMA_ESCALA_GRISES)
+        + (embedding_contorno * PESO_DETALLE_CONTORNO)
+    )
+
+    return normalizar_embedding(embedding_combinado)
+
+
 def obtener_textos_categoria_embeddings():
     global _textos_categoria_cache
 
@@ -318,6 +513,133 @@ def detectar_familia_por_imagen(embedding_imagen):
     return familia_ganadora, score_ganador, ordenadas[:4]
 
 
+def obtener_textos_detalles_embeddings():
+    global _textos_detalles_cache
+
+    if _textos_detalles_cache is not None:
+        return _textos_detalles_cache
+
+    modelo = obtener_modelo_clip()
+    textos = []
+    detalles = []
+
+    for detalle, prompts in PROMPTS_DETALLES_VISUALES.items():
+        for prompt in prompts:
+            textos.append(prompt)
+            detalles.append(detalle)
+
+    embeddings = modelo.encode(
+        textos,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    ).astype("float32")
+
+    _textos_detalles_cache = {
+        "detalles": detalles,
+        "embeddings": embeddings
+    }
+
+    return _textos_detalles_cache
+
+
+def detectar_detalles_por_imagen(embedding_imagen):
+    """Detecta detalles de forma mediante prompts.
+    Es aproximado, pero ayuda a penalizar diferencias claras como
+    cuello halter vs moños en hombros, manga larga vs sin mangas, etc.
+    """
+    cache = obtener_textos_detalles_embeddings()
+    detalles = cache["detalles"]
+    embeddings_textos = cache["embeddings"]
+
+    similitudes = embeddings_textos @ embedding_imagen
+    puntajes = {}
+
+    for indice, detalle in enumerate(detalles):
+        puntajes[detalle] = max(puntajes.get(detalle, -1), float(similitudes[indice]))
+
+    ordenados = sorted(puntajes.items(), key=lambda item: item[1], reverse=True)
+
+    if not ordenados:
+        return [], None, []
+
+    top_score = ordenados[0][1]
+    seleccionados = []
+
+    for detalle, score in ordenados[:7]:
+        # Seleccionamos detalles cercanos al mejor score. Esto evita guardar
+        # demasiadas etiquetas inseguras, pero conserva cortes importantes.
+        if score >= top_score - 0.020:
+            seleccionados.append(detalle)
+
+    # Siempre dejamos al menos el detalle principal para poder comparar estructura.
+    if not seleccionados and ordenados:
+        seleccionados = [ordenados[0][0]]
+
+    return seleccionados[:5], ordenados[0][0], ordenados[:8]
+
+
+def serializar_detalles(detalles):
+    if not detalles:
+        return ""
+    return ",".join(detalles)
+
+
+def deserializar_detalles(valor):
+    if not valor:
+        return set()
+
+    if isinstance(valor, list):
+        return set(str(item).strip() for item in valor if str(item).strip())
+
+    return set(
+        item.strip()
+        for item in str(valor).split(",")
+        if item.strip()
+    )
+
+
+def comparar_detalles_visuales(detalles_consulta, detalles_producto):
+    consulta = set(detalles_consulta or [])
+    producto = set(detalles_producto or [])
+
+    coincidencias = sorted(consulta.intersection(producto))
+    conflictos = []
+
+    for detalle in consulta:
+        conflictos_detalle = CONFLICTOS_DETALLES_VISUALES.get(detalle, set())
+        for conflicto in conflictos_detalle.intersection(producto):
+            conflictos.append(f"{detalle} vs {conflicto}")
+
+    penalizacion = 0.0
+    bono = 0.0
+    limitar_score = None
+
+    if coincidencias:
+        bono += min(len(coincidencias), 3) * BONO_DETALLE_VISUAL
+
+    if conflictos:
+        penalizacion += PENALIZACION_DETALLE_CONFLICTO * min(len(conflictos), 2)
+        limitar_score = MAXIMO_SCORE_CON_CONFLICTO_DETALLE
+
+    consulta_clave = consulta.intersection(DETALLES_CLAVE_FORMA)
+    producto_clave = producto.intersection(DETALLES_CLAVE_FORMA)
+
+    # Si ambas prendas tienen detalles clave, pero no comparten ninguno, bajamos un poco
+    # el score para que no parezca una coincidencia muy alta solo por el color.
+    if consulta_clave and producto_clave and not consulta_clave.intersection(producto_clave):
+        penalizacion += PENALIZACION_SIN_DETALLE_COMPARTIDO
+        if limitar_score is None:
+            limitar_score = 88.0
+
+    return {
+        "coincidencias": coincidencias,
+        "conflictos": sorted(set(conflictos)),
+        "bono": bono,
+        "penalizacion": penalizacion,
+        "limitar_score": limitar_score
+    }
+
+
 def generar_embedding_lista(embedding_np):
     return embedding_np.tolist()
 
@@ -357,8 +679,10 @@ def obtener_producto_detalle(db: Session, id_producto: int, score: float | None 
         nivel = "Coincidencia muy alta"
     elif score >= 80:
         nivel = "Coincidencia alta"
-    elif score >= 74:
+    elif score >= 72:
         nivel = "Coincidencia media"
+    elif score >= MINIMO_MISMA_FAMILIA_COLOR_DIFERENTE:
+        nivel = "Similar por forma o diseño, aunque puede variar el color"
     else:
         nivel = "Coincidencia baja"
 
@@ -491,7 +815,9 @@ def indexar_producto_individual_ia(db: Session, id_producto: int):
         }
 
     coleccion = obtener_coleccion()
-    embedding = generar_embedding_lista(generar_embedding_imagen(ruta_imagen))
+    embedding_np = generar_embedding_imagen_tolerante_color(ruta_imagen)
+    detalles_visuales, detalle_principal, ranking_detalles = detectar_detalles_por_imagen(embedding_np)
+    embedding = generar_embedding_lista(embedding_np)
     id_vector = f"producto_{producto.id_producto}"
     familia = familia_categoria(categoria.nombre_categoria if categoria else "")
 
@@ -505,7 +831,10 @@ def indexar_producto_individual_ia(db: Session, id_producto: int):
         "precio": convertir_float(producto.precio),
         "imagen_principal": imagen.url_imagen,
         "estado_producto": producto.estado_producto,
-        "estado_empresa": empresa.estado_empresa
+        "estado_empresa": empresa.estado_empresa,
+        "modo_embedding": "forma_color_detalle_v3",
+        "detalles_visuales": serializar_detalles(detalles_visuales),
+        "detalle_principal": detalle_principal or ""
     })
 
     documento = (
@@ -642,7 +971,9 @@ def indexar_productos_ia(
             continue
 
         try:
-            embedding = generar_embedding_lista(generar_embedding_imagen(ruta_imagen))
+            embedding_np = generar_embedding_imagen_tolerante_color(ruta_imagen)
+            detalles_visuales, detalle_principal, ranking_detalles = detectar_detalles_por_imagen(embedding_np)
+            embedding = generar_embedding_lista(embedding_np)
             id_vector = f"producto_{producto.id_producto}"
             familia = familia_categoria(categoria.nombre_categoria if categoria else "")
 
@@ -656,7 +987,10 @@ def indexar_productos_ia(
                 "precio": convertir_float(producto.precio),
                 "imagen_principal": imagen.url_imagen,
                 "estado_producto": producto.estado_producto,
-                "estado_empresa": empresa.estado_empresa
+                "estado_empresa": empresa.estado_empresa,
+                "modo_embedding": "forma_color_detalle_v3",
+                "detalles_visuales": serializar_detalles(detalles_visuales),
+                "detalle_principal": detalle_principal or ""
             })
 
             documento = (
@@ -731,41 +1065,59 @@ def buscar_productos_por_imagen(
             shutil.copyfileobj(archivo.file, temporal)
             ruta_temporal = temporal.name
 
-        embedding_np = generar_embedding_imagen(Path(ruta_temporal))
-        embedding_consulta = generar_embedding_lista(embedding_np)
+        embedding_original_np = generar_embedding_imagen(Path(ruta_temporal))
+        embedding_forma_np = generar_embedding_imagen_tolerante_color(Path(ruta_temporal))
+        detalles_consulta, detalle_principal_consulta, ranking_detalles = detectar_detalles_por_imagen(embedding_forma_np)
 
-        # Buscamos más candidatos internamente, pero luego filtramos fuerte.
-        n_candidatos = min(max(limite * 5, 30), 60)
+        # Buscamos más candidatos internamente. Se hacen dos consultas:
+        # 1) una tolerante a color y más detallista con forma/corte;
+        # 2) una original, para mantener buenas coincidencias cuando el color sí coincide.
+        n_candidatos = min(max(limite * 7, 42), 90)
+        candidatos_por_producto = {}
 
-        consulta = coleccion.query(
-            query_embeddings=[embedding_consulta],
-            n_results=n_candidatos,
-            include=["metadatas", "distances", "documents"]
-        )
+        consultas_visuales = [
+            ("forma_color_tolerante", embedding_forma_np, 1.0),
+            ("color_original", embedding_original_np, 0.98),
+        ]
 
-        ids = consulta.get("ids", [[]])[0]
-        distancias = consulta.get("distances", [[]])[0]
-        metadatas = consulta.get("metadatas", [[]])[0]
+        for modo_busqueda, embedding_consulta_np, factor_score in consultas_visuales:
+            consulta = coleccion.query(
+                query_embeddings=[generar_embedding_lista(embedding_consulta_np)],
+                n_results=n_candidatos,
+                include=["metadatas", "distances", "documents"]
+            )
 
-        candidatos = []
+            ids = consulta.get("ids", [[]])[0]
+            distancias = consulta.get("distances", [[]])[0]
+            metadatas = consulta.get("metadatas", [[]])[0]
 
-        for indice, id_vector in enumerate(ids):
-            metadata = metadatas[indice] if indice < len(metadatas) else {}
-            distancia = distancias[indice] if indice < len(distancias) else 1
-            id_producto = metadata.get("id_producto")
+            for indice, id_vector in enumerate(ids):
+                metadata = metadatas[indice] if indice < len(metadatas) else {}
+                distancia = distancias[indice] if indice < len(distancias) else 1
+                id_producto = metadata.get("id_producto")
 
-            if not id_producto:
-                continue
+                if not id_producto:
+                    continue
 
-            score = max(0, min(100, (1 - distancia) * 100))
+                id_producto = int(id_producto)
+                score = max(0, min(100, (1 - distancia) * 100))
+                score_ajustado = max(0, min(100, score * factor_score))
 
-            candidatos.append({
-                "id_producto": int(id_producto),
-                "score": score,
-                "categoria": metadata.get("categoria", ""),
-                "familia": metadata.get("familia_categoria") or familia_categoria(metadata.get("categoria", ""))
-            })
+                candidato_existente = candidatos_por_producto.get(id_producto)
 
+                if (not candidato_existente) or score_ajustado > candidato_existente["score"]:
+                    candidatos_por_producto[id_producto] = {
+                        "id_producto": id_producto,
+                        "score": score_ajustado,
+                        "score_original": score,
+                        "categoria": metadata.get("categoria", ""),
+                        "familia": metadata.get("familia_categoria") or familia_categoria(metadata.get("categoria", "")),
+                        "modo_busqueda": modo_busqueda,
+                        "detalles_visuales": deserializar_detalles(metadata.get("detalles_visuales", "")),
+                        "detalle_principal": metadata.get("detalle_principal", "")
+                    }
+
+        candidatos = list(candidatos_por_producto.values())
         candidatos.sort(key=lambda item: item["score"], reverse=True)
 
         if not candidatos:
@@ -777,16 +1129,41 @@ def buscar_productos_por_imagen(
             }
 
         top_score = candidatos[0]["score"]
-        familia_top_producto = candidatos[0]["familia"] if top_score >= 94 else None
-        familia_ia, confianza_categoria, ranking_categoria = detectar_familia_por_imagen(embedding_np)
+        familia_top_producto = candidatos[0]["familia"] if top_score >= 78 else None
+        familia_ia, confianza_categoria, ranking_categoria = detectar_familia_por_imagen(embedding_forma_np)
         familia_final = familia_top_producto or familia_ia
 
-        # Umbral dinámico. Si existe una coincidencia exacta, permitimos similares de la misma categoría,
-        # pero nunca mostramos categorías distintas salvo que sean coincidencias casi exactas.
+        # Umbral dinámico. Ahora, si la familia de prenda coincide, se permite un score menor
+        # para no descartar vestidos, poleras o chamarras similares solo porque cambiaron de color.
         if familia_final:
-            umbral_minimo = max(MINIMO_COINCIDENCIA_GENERAL, top_score - 24)
+            umbral_minimo = max(MINIMO_COINCIDENCIA_GENERAL, top_score - 30)
+            umbral_misma_familia = max(MINIMO_MISMA_FAMILIA_COLOR_DIFERENTE, top_score - 36)
         else:
-            umbral_minimo = max(MINIMO_SIN_CATEGORIA_SEGURA, top_score - 16)
+            umbral_minimo = max(MINIMO_SIN_CATEGORIA_SEGURA, top_score - 18)
+            umbral_misma_familia = umbral_minimo
+
+        for candidato in candidatos:
+            ajuste_detalle = comparar_detalles_visuales(
+                detalles_consulta,
+                candidato.get("detalles_visuales", set())
+            )
+
+            score_ajustado = candidato["score"] + ajuste_detalle["bono"] - ajuste_detalle["penalizacion"]
+
+            if ajuste_detalle["limitar_score"] is not None:
+                score_ajustado = min(score_ajustado, ajuste_detalle["limitar_score"])
+
+            score_ajustado = max(0, min(100, score_ajustado))
+
+            candidato["score_base"] = candidato["score"]
+            candidato["score"] = score_ajustado
+            candidato["ajuste_detalle"] = ajuste_detalle
+            candidato["score_orden"] = candidato["score"]
+
+            if familia_final and candidato["familia"] == familia_final:
+                candidato["score_orden"] += BONO_MISMA_FAMILIA
+
+        candidatos.sort(key=lambda item: (item["score_orden"], item["score"]), reverse=True)
 
         resultados = []
 
@@ -794,11 +1171,14 @@ def buscar_productos_por_imagen(
             if len(resultados) >= min(limite, LIMITE_MAXIMO_RESULTADOS):
                 break
 
-            if candidato["score"] < umbral_minimo:
+            es_misma_familia = bool(familia_final and candidato["familia"] == familia_final)
+            umbral_candidato = umbral_misma_familia if es_misma_familia else umbral_minimo
+
+            if candidato["score"] < umbral_candidato:
                 continue
 
-            # Filtro principal: solo la misma familia de prenda.
-            # Ejemplo: si detecta POLERAS, no muestra vestidos ni pantalones.
+            # Filtro principal: misma familia de prenda. Ejemplo: si detecta VESTIDOS,
+            # puede mostrar vestidos de otro color, pero evita pantalones o poleras sin relación.
             if familia_final and candidato["familia"] != familia_final:
                 # Solo se permite otra categoría si es casi idéntica, para no ocultar un producto mal categorizado.
                 if candidato["score"] < 96:
@@ -841,6 +1221,14 @@ def buscar_productos_por_imagen(
                 for categoria, score in ranking_categoria
             ],
             "umbral_usado": round(float(umbral_minimo), 2),
+            "umbral_misma_familia_color_diferente": round(float(umbral_misma_familia), 2),
+            "modo_busqueda": "tolerante_a_color_y_detallista_con_forma_v3",
+            "detalle_principal_detectado": detalle_principal_consulta,
+            "detalles_detectados": detalles_consulta,
+            "ranking_detalles": [
+                {"detalle": detalle, "score": round(float(score), 4)}
+                for detalle, score in ranking_detalles
+            ],
             "mejor_score": round(float(top_score), 2),
             "resultados": resultados
         }
