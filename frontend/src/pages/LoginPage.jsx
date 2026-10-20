@@ -78,9 +78,24 @@ export default function LoginPage({
   };
 
   const esCorreoPermitido = (email) => {
-    const dominio = String(email || "").trim().toLowerCase().split("@").pop();
-    return dominio === "gmail.com";
-  };
+  const correo = String(email || "").trim().toLowerCase();
+
+  if (!esEmailValido(correo)) return false;
+
+  const dominio = correo.split("@")[1];
+
+  const dominiosPermitidos = [
+    "gmail.com",
+    "hotmail.com",
+    "outlook.com",
+    "live.com",
+    "yahoo.com",
+    "zyra.com",
+    "sira.com"
+  ];
+
+  return dominiosPermitidos.includes(dominio);
+}; 
 
   const validarTelefonoOpcional = (telefono) => {
     if (!telefono) return true;
@@ -236,7 +251,7 @@ export default function LoginPage({
   const validarLogin = () => {
     if (!limpiarTexto(login.email)) return "Debes ingresar tu correo electrónico.";
     if (!esEmailValido(login.email)) return "El correo electrónico no tiene un formato válido.";
-    if (!esCorreoPermitido(login.email)) return "Para ingresar debes usar un correo Gmail válido, por ejemplo usuario@gmail.com.";
+    if (!esCorreoPermitido(login.email)) return "Ingresa un correo válido.";
     if (!login.password) return "Debes ingresar tu contraseña.";
     if (login.password.length < 6) return "La contraseña debe tener al menos 6 caracteres.";
     return "";
@@ -246,7 +261,7 @@ export default function LoginPage({
     if (!limpiarTexto(cliente.nombre)) return "Debes ingresar tu nombre.";
     if (!limpiarTexto(cliente.email)) return "Debes ingresar tu correo electrónico.";
     if (!esEmailValido(cliente.email)) return "El correo electrónico no tiene un formato válido.";
-    if (!esCorreoPermitido(cliente.email)) return "Usa un correo Gmail válido, por ejemplo usuario@gmail.com.";
+    if (!esCorreoPermitido(cliente.email)) return "Ingresa un correo válido.";
     if (!cliente.password) return "Debes crear una contraseña.";
     if (cliente.password.length < 6) return "La contraseña debe tener al menos 6 caracteres.";
     if (cliente.password !== cliente.confirmarPassword) return "Las contraseñas no coinciden.";
@@ -260,7 +275,7 @@ export default function LoginPage({
     if (!limpiarTexto(empresa.nombre_empresa)) return "Debes ingresar el nombre de la empresa.";
     if (!limpiarTexto(empresa.email)) return "Debes ingresar el correo electrónico de la empresa.";
     if (!esEmailValido(empresa.email)) return "El correo electrónico no tiene un formato válido.";
-    if (!esCorreoPermitido(empresa.email)) return "Usa un correo Gmail válido, por ejemplo usuario@gmail.com.";
+    if (!esCorreoPermitido(empresa.email)) return "Ingresa un correo válido.";
     if (!empresa.password) return "Debes crear una contraseña para la cuenta empresarial.";
     if (empresa.password.length < 6) return "La contraseña debe tener al menos 6 caracteres.";
     if (!validarTelefonoOpcional(empresa.telefono)) return "El teléfono debe tener entre 7 y 8 números o puedes dejarlo vacío.";

@@ -15,7 +15,15 @@ from app.seguridad import crear_hash_password, verificar_password
 router = APIRouter()
 
 
-DOMINIOS_CORREO_PERMITIDOS = {"gmail.com"}
+DOMINIOS_CORREO_PERMITIDOS = {
+    "gmail.com",
+    "hotmail.com",
+    "outlook.com",
+    "live.com",
+    "yahoo.com",
+    "zyra.com",
+    "sira.com"
+}
 
 def limpiar_texto(valor):
     return str(valor or "").strip()
