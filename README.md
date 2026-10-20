@@ -1,4 +1,4 @@
-# ✨ ZYRA
+# ZYRA
 ### Moda, tecnología e inteligencia artificial en un solo lugar
 
 **Plataforma web multiempresa para la búsqueda visual y gestión comercial de prendas de moda en Bolivia.**
@@ -11,9 +11,9 @@ El proyecto reúne a emprendimientos y tiendas de moda en una misma plataforma. 
 
 ---
 
-## 🛍️ ¿Qué se puede hacer en Zyra?
+## ¿Qué se puede hacer en Zyra?
 
-### 👤 Para clientes
+### Para clientes
 - Crear una cuenta e iniciar sesión.
 - Explorar prendas de distintas tiendas registradas.
 - Buscar productos y filtrarlos por características como categoría, precio, talla y color.
@@ -22,14 +22,14 @@ El proyecto reúne a emprendimientos y tiendas de moda en una misma plataforma. 
 - Agregar productos al carrito, generar pedidos y adjuntar comprobantes de pago por QR.
 - Consultar notificaciones y comunicarse mediante el módulo de soporte.
 
-### 🏬 Para empresas
+### Para empresas
 - Registrar y administrar un perfil comercial.
 - Publicar prendas con imágenes, descripciones y precios.
 - Gestionar tallas, colores, variantes y stock.
 - Revisar pedidos y comprobantes asociados a la tienda.
 - Consultar información comercial sobre la actividad de sus productos.
 
-### 🛠️ Para administración
+### Para administración
 - Gestionar usuarios, roles y permisos.
 - Revisar y supervisar las empresas registradas.
 - Administrar categorías y supervisar el catálogo.
@@ -40,7 +40,7 @@ El proyecto reúne a emprendimientos y tiendas de moda en una misma plataforma. 
 
 ---
 
-## 📸 Búsqueda visual con inteligencia artificial
+## Búsqueda visual con inteligencia artificial
 
 Esta es una de las características principales de Zyra. En lugar de depender solamente de palabras, el usuario puede cargar una fotografía de la prenda que desea encontrar.
 
@@ -56,7 +56,7 @@ Se utiliza un modelo preentrenado a través de **Sentence Transformers**; no se 
 
 ---
 
-## 💻 Tecnologías utilizadas
+## Tecnologías utilizadas
 
 | Área | Tecnologías | ¿Para qué se utilizan? |
 | --- | --- | --- |
@@ -71,7 +71,7 @@ Se utiliza un modelo preentrenado a través de **Sentence Transformers**; no se 
 
 ---
 
-## 📁 Organización del repositorio
+## Organización del repositorio
 
 ```text
 Integrador/
@@ -88,7 +88,7 @@ La plataforma sigue una arquitectura **cliente-servidor desacoplada**: React y V
 
 ---
 
-## 🚀 Ejecución del proyecto
+## Ejecución del proyecto
 
 Zyra está organizada en frontend, backend y servicios de almacenamiento. Para ejecutarla localmente se necesita preparar el entorno de Python, las dependencias del frontend y una base de datos PostgreSQL, además de la configuración correspondiente al módulo de búsqueda visual.
 
@@ -96,7 +96,7 @@ Los comandos exactos de instalación y arranque deben consultarse en la configur
 
 ---
 
-## 🧩 Desarrollo y organización
+## Desarrollo y organización
 
 El proyecto se desarrolla de manera incremental, siguiendo una adaptación de **Scrum**: análisis de requerimientos, planificación, implementación por módulos, pruebas y documentación.
 
@@ -106,7 +106,7 @@ Este repositorio reúne el código fuente y sus actualizaciones mediante **Git y
 
 ---
 
-## 🎓 Información académica
+## Información académica
 
 - **Proyecto:** Zyra: Plataforma Web Multiempresa con Inteligencia Artificial para la Búsqueda Visual, Gestión Comercial y Digitalización de Prendas de Moda en Bolivia.
 - **Estudiante:** Abigail Celeste Loza Alberto.
