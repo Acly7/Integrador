@@ -117,4 +117,4 @@ Este repositorio reúne el código fuente y sus actualizaciones mediante **Git y
 
 ---
 
-**Hecho como parte de un proyecto académico que busca acercar nuevas herramientas digitales a la moda y a los emprendimientos bolivianos.** 💜
+**Hecho como parte de un proyecto académico que busca acercar nuevas herramientas digitales a la moda y a las empresas bolivianas.** 
