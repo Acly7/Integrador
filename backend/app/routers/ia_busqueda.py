@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from pathlib import Path
+from threading import RLock
+from urllib.parse import unquote, urlsplit
 from PIL import Image, ImageFilter, ImageOps
 from sentence_transformers import SentenceTransformer
 import chromadb
+import logging
 import shutil
 import tempfile
 import os
@@ -22,6 +25,7 @@ from app.models import (
 )
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 CHROMA_DIR = BASE_DIR / "chroma_db"
@@ -32,6 +36,7 @@ _chroma_client = None
 _coleccion = None
 _textos_categoria_cache = None
 _textos_detalles_cache = None
+_bloqueo_ia = RLock()
 
 # Umbrales más estrictos para evitar resultados que no tienen relación.
 LIMITE_MAXIMO_RESULTADOS = 8
@@ -235,8 +240,9 @@ DETALLES_CLAVE_FORMA = {
 def obtener_modelo_clip():
     global _modelo_clip
 
-    if _modelo_clip is None:
-        _modelo_clip = SentenceTransformer("clip-ViT-B-32")
+    with _bloqueo_ia:
+        if _modelo_clip is None:
+            _modelo_clip = SentenceTransformer("clip-ViT-B-32")
 
     return _modelo_clip
 
@@ -253,13 +259,12 @@ def obtener_cliente_chroma():
 def obtener_coleccion():
     global _coleccion
 
-    cliente = obtener_cliente_chroma()
-
-    if _coleccion is None:
-        _coleccion = cliente.get_or_create_collection(
-            name=NOMBRE_COLECCION,
-            metadata={"hnsw:space": "cosine"}
-        )
+    with _bloqueo_ia:
+        if _coleccion is None:
+            _coleccion = obtener_cliente_chroma().get_or_create_collection(
+                name=NOMBRE_COLECCION,
+                metadata={"hnsw:space": "cosine"}
+            )
 
     return _coleccion
 
@@ -367,10 +372,13 @@ def resolver_ruta_imagen(url_imagen: str):
     if not url_imagen:
         return None
 
-    ruta_relativa = url_imagen.lstrip("/")
-    ruta_archivo = BASE_DIR / ruta_relativa
+    ruta_relativa = unquote(urlsplit(url_imagen).path).lstrip("/")
+    if "/" not in ruta_relativa:
+        ruta_relativa = f"uploads/productos/{ruta_relativa}"
+    carpeta_uploads = (BASE_DIR / "uploads").resolve()
+    ruta_archivo = (BASE_DIR / ruta_relativa).resolve()
 
-    if ruta_archivo.exists():
+    if ruta_archivo.is_relative_to(carpeta_uploads) and ruta_archivo.is_file():
         return ruta_archivo
 
     return None
@@ -741,9 +749,10 @@ def eliminar_producto_indexado_ia(id_producto: int):
             "id_vector": id_vector
         }
     except Exception as error:
-        # Chroma puede lanzar error si el vector no existía. No debe bloquear el sistema.
+        logger.exception("No se pudo eliminar el vector del producto %s", id_producto)
         return {
-            "accion": "sin_vector_o_no_eliminado",
+            "accion": "no_eliminado",
+            "error": True,
             "id_producto": id_producto,
             "id_vector": id_vector,
             "detalle": str(error)
@@ -755,7 +764,7 @@ def indexar_producto_individual_ia(db: Session, id_producto: int):
     Esta función es la base de la indexación automática. Si el producto no cumple
     condiciones para aparecer en la búsqueda visual, su vector se elimina.
     """
-    producto = db.query(Producto).filter(
+    producto = db.query(Producto).populate_existing().filter(
         Producto.id_producto == id_producto
     ).first()
 
@@ -767,15 +776,15 @@ def indexar_producto_individual_ia(db: Session, id_producto: int):
             "sincronizacion": eliminacion
         }
 
-    empresa = db.query(Empresa).filter(
+    empresa = db.query(Empresa).populate_existing().filter(
         Empresa.id_empresa == producto.id_empresa
     ).first()
 
-    categoria = db.query(Categoria).filter(
+    categoria = db.query(Categoria).populate_existing().filter(
         Categoria.id_categoria == producto.id_categoria
     ).first()
 
-    imagen = db.query(ProductoImagen).filter(
+    imagen = db.query(ProductoImagen).populate_existing().filter(
         ProductoImagen.id_producto == producto.id_producto,
         ProductoImagen.es_principal == True
     ).first()
@@ -807,10 +816,12 @@ def indexar_producto_individual_ia(db: Session, id_producto: int):
     ruta_imagen = resolver_ruta_imagen(imagen.url_imagen)
 
     if not ruta_imagen:
+        logger.warning("No se encontró la imagen principal del producto %s", id_producto)
         eliminacion = eliminar_producto_indexado_ia(producto.id_producto)
         return {
             "indexado": False,
             "motivo": "No se encontró el archivo físico de la imagen principal",
+            "error": True,
             "sincronizacion": eliminacion
         }
 
@@ -868,9 +879,13 @@ def sincronizar_producto_ia_seguro(db: Session, id_producto: int):
     el problema para que pueda revisarse luego.
     """
     try:
-        return indexar_producto_individual_ia(db, id_producto)
+        with _bloqueo_ia:
+            resultado = indexar_producto_individual_ia(db, id_producto)
+        if resultado.get("sincronizacion", {}).get("error"):
+            resultado["error"] = True
+        return resultado
     except Exception as error:
-        print(f"[IA Zyra] No se pudo sincronizar el producto {id_producto}: {error}")
+        logger.exception("No se pudo sincronizar el producto %s", id_producto)
         return {
             "indexado": False,
             "id_producto": id_producto,
@@ -1113,6 +1128,7 @@ def buscar_productos_por_imagen(
                         "categoria": metadata.get("categoria", ""),
                         "familia": metadata.get("familia_categoria") or familia_categoria(metadata.get("categoria", "")),
                         "modo_busqueda": modo_busqueda,
+                        "imagen_indexada": metadata.get("imagen_principal"),
                         "detalles_visuales": deserializar_detalles(metadata.get("detalles_visuales", "")),
                         "detalle_principal": metadata.get("detalle_principal", "")
                     }
@@ -1143,6 +1159,11 @@ def buscar_productos_por_imagen(
             umbral_misma_familia = umbral_minimo
 
         for candidato in candidatos:
+            # En una coincidencia exacta, el vector es más fiable que las etiquetas de CLIP.
+            if candidato["modo_busqueda"] == "forma_color_tolerante" and candidato["score"] >= 99.99:
+                candidato["score_orden"] = candidato["score"] + BONO_MISMA_FAMILIA
+                continue
+
             ajuste_detalle = comparar_detalles_visuales(
                 detalles_consulta,
                 candidato.get("detalles_visuales", set())
@@ -1166,6 +1187,7 @@ def buscar_productos_por_imagen(
         candidatos.sort(key=lambda item: (item["score_orden"], item["score"]), reverse=True)
 
         resultados = []
+        respaldo = None
 
         for candidato in candidatos:
             if len(resultados) >= min(limite, LIMITE_MAXIMO_RESULTADOS):
@@ -1174,15 +1196,12 @@ def buscar_productos_por_imagen(
             es_misma_familia = bool(familia_final and candidato["familia"] == familia_final)
             umbral_candidato = umbral_misma_familia if es_misma_familia else umbral_minimo
 
-            if candidato["score"] < umbral_candidato:
+            cumple_umbral = candidato["score"] >= umbral_candidato
+            cumple_familia = not familia_final or es_misma_familia or candidato["score"] >= 96
+            pasa_filtros_visuales = cumple_umbral and cumple_familia
+            puede_ser_respaldo = respaldo is None and candidato["score"] >= 88
+            if not pasa_filtros_visuales and not puede_ser_respaldo:
                 continue
-
-            # Filtro principal: misma familia de prenda. Ejemplo: si detecta VESTIDOS,
-            # puede mostrar vestidos de otro color, pero evita pantalones o poleras sin relación.
-            if familia_final and candidato["familia"] != familia_final:
-                # Solo se permite otra categoría si es casi idéntica, para no ocultar un producto mal categorizado.
-                if candidato["score"] < 96:
-                    continue
 
             producto_detalle = obtener_producto_detalle(
                 db=db,
@@ -1199,17 +1218,17 @@ def buscar_productos_por_imagen(
             if producto_detalle["empresa"]["estado_empresa"] != "APROBADA":
                 continue
 
-            resultados.append(producto_detalle)
+            imagen_actual = resolver_ruta_imagen(producto_detalle["imagen_principal"])
+            if not imagen_actual or imagen_actual != resolver_ruta_imagen(candidato["imagen_indexada"]):
+                continue
 
-        # Si el filtro quedó muy estricto pero hay una coincidencia excelente, mostramos al menos esa.
-        if not resultados and candidatos[0]["score"] >= 88:
-            producto_detalle = obtener_producto_detalle(
-                db=db,
-                id_producto=candidatos[0]["id_producto"],
-                score=candidatos[0]["score"]
-            )
-            if producto_detalle:
+            if pasa_filtros_visuales:
                 resultados.append(producto_detalle)
+            elif puede_ser_respaldo:
+                respaldo = producto_detalle
+
+        if not resultados and respaldo:
+            resultados.append(respaldo)
 
         return {
             "mensaje": "Búsqueda visual realizada correctamente",

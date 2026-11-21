@@ -15468,3 +15468,30 @@ select {
 .admin-reportes-torta-principal .admin-reporte-torta-card {
   margin: 0;
 }
+
+.admin-reporte-cliente {
+  display: grid;
+  gap: 8px;
+  max-width: 28rem;
+  margin: 12px 0;
+}
+
+.admin-reporte-cliente select {
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  color-scheme: light dark;
+  font: inherit;
+}
+
+.admin-reporte-recomendaciones {
+  display: grid;
+  gap: 10px;
+  padding-inline-start: 1.5rem;
+}
+
+.admin-reporte-recomendaciones small {
+  display: inline-block;
+  margin-inline-start: 10px;
+}

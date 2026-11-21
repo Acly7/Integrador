@@ -21,6 +21,9 @@ frontend/.env
 Thumbs.db
 
 # Backups
+*.backup
+backend/backups/
+*.antes_ml
 *.zip
 backend_actual.zip
 backend copy/
@@ -32,3 +35,9 @@ src copy/
 
 # IA / vectores generados
 backend/chroma_db/
+
+# Imágenes locales. Solo se versiona el catálogo de demostración.
+backend/uploads/*
+!backend/uploads/productos/
+backend/uploads/productos/*
+!backend/uploads/productos/zyra-catalogo-*.png

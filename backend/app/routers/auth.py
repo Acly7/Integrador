@@ -10,7 +10,7 @@ from uuid import uuid4
 from app.database import get_db
 from app.models import Usuario, Rol, Empresa, Categoria, Producto, ProductoVariante, ProductoImagen, Carrito, CarritoDetalle, Pedido, PedidoDetalle, Pago, SoporteTicket, SoporteMensaje, Notificacion
 from app.schemas import RegistroCliente, RegistroEmpresa, LoginUsuario, CambioEstadoEmpresa, ProductoCrear, ProductoActualizar, CambioEstadoProducto, VarianteAgregar, VarianteActualizar, AgregarCarrito, ActualizarCantidadCarrito, CrearPedido, RegistrarPago, CambioEstadoPagoEmpresa, CambioEstadoPedidoEmpresa, CrearTicketSoporte, CrearMensajeSoporte, CambiarEstadoTicket, CategoriaCrear
-from app.seguridad import crear_hash_password, verificar_password
+from app.seguridad import crear_hash_password, emitir_token_reportes, verificar_password
 
 router = APIRouter()
 
@@ -246,6 +246,9 @@ def login_usuario(
         "estado": usuario.estado,
         "rol": nombre_rol
     }
+
+    if nombre_rol == "ADMIN":
+        datos_usuario["token_reportes"] = emitir_token_reportes(usuario.id_usuario, usuario.password_hash)
 
     if nombre_rol == "EMPRESA":
         empresa = db.query(Empresa).filter(

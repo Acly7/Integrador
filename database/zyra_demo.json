@@ -1,0 +1,3796 @@
+{
+  "roles": [
+    {
+      "id_rol": 1,
+      "nombre_rol": "ADMIN"
+    },
+    {
+      "id_rol": 2,
+      "nombre_rol": "EMPRESA"
+    },
+    {
+      "id_rol": 3,
+      "nombre_rol": "CLIENTE"
+    }
+  ],
+  "usuarios": [
+    {
+      "id_usuario": 1,
+      "id_rol": 1,
+      "nombre": "Administrador",
+      "apellido": "1",
+      "email": "administrador1@gmail.com",
+      "telefono": "00000001",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 10,
+      "id_rol": 1,
+      "nombre": "Administrador",
+      "apellido": "2",
+      "email": "administrador2@gmail.com",
+      "telefono": "00000002",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 11,
+      "id_rol": 1,
+      "nombre": "Administrador",
+      "apellido": "3",
+      "email": "administrador3@gmail.com",
+      "telefono": "00000003",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 12,
+      "id_rol": 3,
+      "nombre": "Valeria",
+      "apellido": "Quispe Rojas",
+      "email": "valeria.qr.01@gmail.com",
+      "telefono": "00000004",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 13,
+      "id_rol": 3,
+      "nombre": "Lucia",
+      "apellido": "Mamani Choque",
+      "email": "lucia.mc.02@gmail.com",
+      "telefono": "00000005",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 14,
+      "id_rol": 3,
+      "nombre": "Camila",
+      "apellido": "Flores Ledezma",
+      "email": "camila.fl.03@gmail.com",
+      "telefono": "00000006",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 15,
+      "id_rol": 3,
+      "nombre": "Andrea",
+      "apellido": "Aramayo Rivero",
+      "email": "andrea.ar.04@gmail.com",
+      "telefono": "00000007",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 16,
+      "id_rol": 3,
+      "nombre": "Daniela",
+      "apellido": "Vargas Apaza",
+      "email": "daniela.va.05@gmail.com",
+      "telefono": "00000008",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 17,
+      "id_rol": 3,
+      "nombre": "Gabriela",
+      "apellido": "Condori Velasco",
+      "email": "gabriela.cv.06@gmail.com",
+      "telefono": "00000009",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 18,
+      "id_rol": 3,
+      "nombre": "Natalia",
+      "apellido": "Salazar Villca",
+      "email": "natalia.sv.07@gmail.com",
+      "telefono": "00000010",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 19,
+      "id_rol": 3,
+      "nombre": "Sofia",
+      "apellido": "Rojas Medina",
+      "email": "sofia.rm.08@gmail.com",
+      "telefono": "00000011",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 20,
+      "id_rol": 3,
+      "nombre": "Paola",
+      "apellido": "Choque Paredes",
+      "email": "paola.cp.09@gmail.com",
+      "telefono": "00000012",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 21,
+      "id_rol": 3,
+      "nombre": "Mariana",
+      "apellido": "Ledezma Mendoza",
+      "email": "mariana.lm.10@gmail.com",
+      "telefono": "00000013",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 22,
+      "id_rol": 3,
+      "nombre": "Isabel",
+      "apellido": "Rivero Aguilar",
+      "email": "isabel.ra.11@gmail.com",
+      "telefono": "00000014",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 23,
+      "id_rol": 3,
+      "nombre": "Elena",
+      "apellido": "Apaza Chavez",
+      "email": "elena.ac.12@gmail.com",
+      "telefono": "00000015",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 24,
+      "id_rol": 3,
+      "nombre": "Carolina",
+      "apellido": "Velasco Pinto",
+      "email": "carolina.vp.13@gmail.com",
+      "telefono": "00000016",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 25,
+      "id_rol": 3,
+      "nombre": "Renata",
+      "apellido": "Villca Cespedes",
+      "email": "renata.vc.14@gmail.com",
+      "telefono": "00000017",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 26,
+      "id_rol": 3,
+      "nombre": "Alison",
+      "apellido": "Medina Soria",
+      "email": "alison.ms.15@gmail.com",
+      "telefono": "00000018",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 27,
+      "id_rol": 3,
+      "nombre": "Ariana",
+      "apellido": "Paredes Heredia",
+      "email": "ariana.ph.16@gmail.com",
+      "telefono": "00000019",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 28,
+      "id_rol": 3,
+      "nombre": "Violeta",
+      "apellido": "Mendoza Calle",
+      "email": "violeta.mc.17@gmail.com",
+      "telefono": "00000020",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 29,
+      "id_rol": 3,
+      "nombre": "Ximena",
+      "apellido": "Aguilar Cabrera",
+      "email": "ximena.ac.18@gmail.com",
+      "telefono": "00000021",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 30,
+      "id_rol": 3,
+      "nombre": "Alejandra",
+      "apellido": "Chavez Quispe",
+      "email": "alejandra.cq.19@gmail.com",
+      "telefono": "00000022",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 31,
+      "id_rol": 3,
+      "nombre": "Adriana",
+      "apellido": "Pinto Mamani",
+      "email": "adriana.pm.20@gmail.com",
+      "telefono": "00000023",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 32,
+      "id_rol": 3,
+      "nombre": "Micaela",
+      "apellido": "Cespedes Flores",
+      "email": "micaela.cf.21@gmail.com",
+      "telefono": "00000024",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 33,
+      "id_rol": 3,
+      "nombre": "Sara",
+      "apellido": "Soria Aramayo",
+      "email": "sara.sa.22@gmail.com",
+      "telefono": "00000025",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 34,
+      "id_rol": 3,
+      "nombre": "Jimena",
+      "apellido": "Heredia Vargas",
+      "email": "jimena.hv.23@gmail.com",
+      "telefono": "00000026",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 35,
+      "id_rol": 3,
+      "nombre": "Nicole",
+      "apellido": "Calle Condori",
+      "email": "nicole.cc.24@gmail.com",
+      "telefono": "00000027",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 36,
+      "id_rol": 3,
+      "nombre": "Tatiana",
+      "apellido": "Cabrera Ledezma",
+      "email": "tatiana.cl.25@gmail.com",
+      "telefono": "00000028",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 37,
+      "id_rol": 3,
+      "nombre": "Mateo",
+      "apellido": "Quispe Rivero",
+      "email": "mateo.qr.26@gmail.com",
+      "telefono": "00000029",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 38,
+      "id_rol": 3,
+      "nombre": "Diego",
+      "apellido": "Mamani Apaza",
+      "email": "diego.ma.27@gmail.com",
+      "telefono": "00000030",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 39,
+      "id_rol": 3,
+      "nombre": "Andres",
+      "apellido": "Flores Velasco",
+      "email": "andres.fv.28@gmail.com",
+      "telefono": "00000031",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 40,
+      "id_rol": 3,
+      "nombre": "Luis",
+      "apellido": "Aramayo Villca",
+      "email": "luis.av.29@gmail.com",
+      "telefono": "00000032",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 41,
+      "id_rol": 3,
+      "nombre": "Javier",
+      "apellido": "Vargas Medina",
+      "email": "javier.vm.30@gmail.com",
+      "telefono": "00000033",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 42,
+      "id_rol": 3,
+      "nombre": "Marco",
+      "apellido": "Condori Paredes",
+      "email": "marco.cp.31@gmail.com",
+      "telefono": "00000034",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 43,
+      "id_rol": 3,
+      "nombre": "Fernando",
+      "apellido": "Salazar Mendoza",
+      "email": "fernando.sm.32@gmail.com",
+      "telefono": "00000035",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 44,
+      "id_rol": 3,
+      "nombre": "Bruno",
+      "apellido": "Rojas Aguilar",
+      "email": "bruno.ra.33@gmail.com",
+      "telefono": "00000036",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 45,
+      "id_rol": 3,
+      "nombre": "Pablo",
+      "apellido": "Choque Chavez",
+      "email": "pablo.cc.34@gmail.com",
+      "telefono": "00000037",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 46,
+      "id_rol": 3,
+      "nombre": "Santiago",
+      "apellido": "Ledezma Pinto",
+      "email": "santiago.lp.35@gmail.com",
+      "telefono": "00000038",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 47,
+      "id_rol": 3,
+      "nombre": "Joaquin",
+      "apellido": "Rivero Cespedes",
+      "email": "joaquin.rc.36@gmail.com",
+      "telefono": "00000039",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 48,
+      "id_rol": 3,
+      "nombre": "Hugo",
+      "apellido": "Apaza Soria",
+      "email": "hugo.as.37@gmail.com",
+      "telefono": "00000040",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 49,
+      "id_rol": 3,
+      "nombre": "Nicolas",
+      "apellido": "Velasco Heredia",
+      "email": "nicolas.vh.38@gmail.com",
+      "telefono": "00000041",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 50,
+      "id_rol": 3,
+      "nombre": "Esteban",
+      "apellido": "Villca Calle",
+      "email": "esteban.vc.39@gmail.com",
+      "telefono": "00000042",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 51,
+      "id_rol": 3,
+      "nombre": "Ivan",
+      "apellido": "Medina Cabrera",
+      "email": "ivan.mc.40@gmail.com",
+      "telefono": "00000043",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 52,
+      "id_rol": 3,
+      "nombre": "Sebastian",
+      "apellido": "Paredes Quispe",
+      "email": "sebastian.pq.41@gmail.com",
+      "telefono": "00000044",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 53,
+      "id_rol": 3,
+      "nombre": "Rafael",
+      "apellido": "Mendoza Mamani",
+      "email": "rafael.mm.42@gmail.com",
+      "telefono": "00000045",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 54,
+      "id_rol": 3,
+      "nombre": "Emilio",
+      "apellido": "Aguilar Flores",
+      "email": "emilio.af.43@gmail.com",
+      "telefono": "00000046",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 55,
+      "id_rol": 3,
+      "nombre": "Adrian",
+      "apellido": "Chavez Aramayo",
+      "email": "adrian.ca.44@gmail.com",
+      "telefono": "00000047",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 56,
+      "id_rol": 3,
+      "nombre": "Leonardo",
+      "apellido": "Pinto Vargas",
+      "email": "leonardo.pv.45@gmail.com",
+      "telefono": "00000048",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 57,
+      "id_rol": 3,
+      "nombre": "Martin",
+      "apellido": "Cespedes Condori",
+      "email": "martin.cc.46@gmail.com",
+      "telefono": "00000049",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 58,
+      "id_rol": 3,
+      "nombre": "Miguel",
+      "apellido": "Soria Salazar",
+      "email": "miguel.ss.47@gmail.com",
+      "telefono": "00000050",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 59,
+      "id_rol": 3,
+      "nombre": "Franco",
+      "apellido": "Heredia Rojas",
+      "email": "franco.hr.48@gmail.com",
+      "telefono": "00000051",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 60,
+      "id_rol": 3,
+      "nombre": "Gabriel",
+      "apellido": "Calle Choque",
+      "email": "gabriel.cc.49@gmail.com",
+      "telefono": "00000052",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 61,
+      "id_rol": 3,
+      "nombre": "Samuel",
+      "apellido": "Cabrera Velasco",
+      "email": "samuel.cv.50@gmail.com",
+      "telefono": "00000053",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 62,
+      "id_rol": 2,
+      "nombre": "Andrea",
+      "apellido": "Rojas",
+      "email": "muntu@gmail.com",
+      "telefono": "00000054",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 63,
+      "id_rol": 2,
+      "nombre": "Natalia",
+      "apellido": "Medina",
+      "email": "nimbotextil@gmail.com",
+      "telefono": "00000055",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 64,
+      "id_rol": 2,
+      "nombre": "Mariana",
+      "apellido": "Soria",
+      "email": "lumbreestudio@gmail.com",
+      "telefono": "00000056",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 65,
+      "id_rol": 2,
+      "nombre": "Carolina",
+      "apellido": "Aramayo",
+      "email": "brumaandina@gmail.com",
+      "telefono": "00000057",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 66,
+      "id_rol": 2,
+      "nombre": "Ariana",
+      "apellido": "Rivero",
+      "email": "jardindelino@gmail.com",
+      "telefono": "00000058",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 67,
+      "id_rol": 2,
+      "nombre": "Alejandra",
+      "apellido": "Aguilar",
+      "email": "tramasur@gmail.com",
+      "telefono": "00000059",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 68,
+      "id_rol": 2,
+      "nombre": "Sara",
+      "apellido": "Cabrera",
+      "email": "alerourbano@gmail.com",
+      "telefono": "00000060",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 69,
+      "id_rol": 2,
+      "nombre": "Tatiana",
+      "apellido": "Salazar",
+      "email": "cerezosilvestre@gmail.com",
+      "telefono": "00000061",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 70,
+      "id_rol": 2,
+      "nombre": "Andres",
+      "apellido": "Villca",
+      "email": "puntokilla@gmail.com",
+      "telefono": "00000062",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 71,
+      "id_rol": 2,
+      "nombre": "Marco",
+      "apellido": "Cespedes",
+      "email": "sendadealgodon@gmail.com",
+      "telefono": "00000063",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 72,
+      "id_rol": 2,
+      "nombre": "Pablo",
+      "apellido": "Flores",
+      "email": "miradordenim@gmail.com",
+      "telefono": "00000064",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 73,
+      "id_rol": 2,
+      "nombre": "Hugo",
+      "apellido": "Ledezma",
+      "email": "daliadepatio@gmail.com",
+      "telefono": "00000065",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 74,
+      "id_rol": 2,
+      "nombre": "Ivan",
+      "apellido": "Mendoza",
+      "email": "cedrotaller@gmail.com",
+      "telefono": "00000066",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 75,
+      "id_rol": 2,
+      "nombre": "Emilio",
+      "apellido": "Calle",
+      "email": "rondadehilo@gmail.com",
+      "telefono": "00000067",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    },
+    {
+      "id_usuario": 76,
+      "id_rol": 2,
+      "nombre": "Martin",
+      "apellido": "Condori",
+      "email": "nortecobalto@gmail.com",
+      "telefono": "00000068",
+      "acepto_terminos": true,
+      "fecha_aceptacion_terminos": "2026-11-21 06:08:07.721783",
+      "estado": "ACTIVO"
+    }
+  ],
+  "empresas": [
+    {
+      "id_empresa": 4,
+      "id_usuario": 62,
+      "nombre_empresa": "Muntu",
+      "descripcion": "Moda urbana y prendas de uso diario. Tienda de demostracion de ZYRA.",
+      "nit": "0000001021",
+      "direccion": "Local de demostracion 01 - El Alto",
+      "ciudad": "El Alto",
+      "whatsapp": "00000054",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 5,
+      "id_usuario": 63,
+      "nombre_empresa": "Nimbo Textil",
+      "descripcion": "Abrigos, capas y tejidos ligeros. Tienda de demostracion de ZYRA.",
+      "nit": "0000002022",
+      "direccion": "Local de demostracion 02 - La Paz",
+      "ciudad": "La Paz",
+      "whatsapp": "00000055",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 6,
+      "id_usuario": 64,
+      "nombre_empresa": "Lumbre Estudio",
+      "descripcion": "Prendas casuales de tonos calidos. Tienda de demostracion de ZYRA.",
+      "nit": "0000003023",
+      "direccion": "Local de demostracion 03 - Cochabamba",
+      "ciudad": "Cochabamba",
+      "whatsapp": "00000056",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 7,
+      "id_usuario": 65,
+      "nombre_empresa": "Bruma Andina",
+      "descripcion": "Ropa de entretiempo y accesorios textiles. Tienda de demostracion de ZYRA.",
+      "nit": "0000004024",
+      "direccion": "Local de demostracion 04 - La Paz",
+      "ciudad": "La Paz",
+      "whatsapp": "00000057",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 8,
+      "id_usuario": 66,
+      "nombre_empresa": "Jardin de Lino",
+      "descripcion": "Blusas y prendas frescas. Tienda de demostracion de ZYRA.",
+      "nit": "0000005025",
+      "direccion": "Local de demostracion 05 - Santa Cruz",
+      "ciudad": "Santa Cruz",
+      "whatsapp": "00000058",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 9,
+      "id_usuario": 67,
+      "nombre_empresa": "Trama Sur",
+      "descripcion": "Tejidos y prendas de punto. Tienda de demostracion de ZYRA.",
+      "nit": "0000006026",
+      "direccion": "Local de demostracion 06 - Tarija",
+      "ciudad": "Tarija",
+      "whatsapp": "00000059",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 10,
+      "id_usuario": 68,
+      "nombre_empresa": "Alero Urbano",
+      "descripcion": "Pantalones cargo y chaquetas. Tienda de demostracion de ZYRA.",
+      "nit": "0000007027",
+      "direccion": "Local de demostracion 07 - El Alto",
+      "ciudad": "El Alto",
+      "whatsapp": "00000060",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 11,
+      "id_usuario": 69,
+      "nombre_empresa": "Cerezo Silvestre",
+      "descripcion": "Vestidos y faldas de estilo casual. Tienda de demostracion de ZYRA.",
+      "nit": "0000008028",
+      "direccion": "Local de demostracion 08 - Sucre",
+      "ciudad": "Sucre",
+      "whatsapp": "00000061",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 12,
+      "id_usuario": 70,
+      "nombre_empresa": "Punto Killa",
+      "descripcion": "Sueteres y prendas para el frio. Tienda de demostracion de ZYRA.",
+      "nit": "0000009029",
+      "direccion": "Local de demostracion 09 - Oruro",
+      "ciudad": "Oruro",
+      "whatsapp": "00000062",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 13,
+      "id_usuario": 71,
+      "nombre_empresa": "Senda de Algodon",
+      "descripcion": "Basicos de algodon para el dia a dia. Tienda de demostracion de ZYRA.",
+      "nit": "0000010021",
+      "direccion": "Local de demostracion 10 - Cochabamba",
+      "ciudad": "Cochabamba",
+      "whatsapp": "00000063",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 14,
+      "id_usuario": 72,
+      "nombre_empresa": "Mirador Denim",
+      "descripcion": "Mezclilla y prendas de corte recto. Tienda de demostracion de ZYRA.",
+      "nit": "0000011022",
+      "direccion": "Local de demostracion 11 - La Paz",
+      "ciudad": "La Paz",
+      "whatsapp": "00000064",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 15,
+      "id_usuario": 73,
+      "nombre_empresa": "Dalia de Patio",
+      "descripcion": "Conjuntos informales y blusas. Tienda de demostracion de ZYRA.",
+      "nit": "0000012023",
+      "direccion": "Local de demostracion 12 - Tarija",
+      "ciudad": "Tarija",
+      "whatsapp": "00000065",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 16,
+      "id_usuario": 74,
+      "nombre_empresa": "Cedro Taller",
+      "descripcion": "Camisas y ropa urbana liviana. Tienda de demostracion de ZYRA.",
+      "nit": "0000013024",
+      "direccion": "Local de demostracion 13 - Santa Cruz",
+      "ciudad": "Santa Cruz",
+      "whatsapp": "00000066",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 17,
+      "id_usuario": 75,
+      "nombre_empresa": "Ronda de Hilo",
+      "descripcion": "Prendas de punto y tejidos suaves. Tienda de demostracion de ZYRA.",
+      "nit": "0000014025",
+      "direccion": "Local de demostracion 14 - Sucre",
+      "ciudad": "Sucre",
+      "whatsapp": "00000067",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    },
+    {
+      "id_empresa": 18,
+      "id_usuario": 76,
+      "nombre_empresa": "Norte Cobalto",
+      "descripcion": "Capas abrigadas y ropa casual. Tienda de demostracion de ZYRA.",
+      "nit": "0000015026",
+      "direccion": "Local de demostracion 15 - Potosi",
+      "ciudad": "Potosi",
+      "whatsapp": "00000068",
+      "color_principal": "#8f174d",
+      "color_secundario": "#e879b4",
+      "color_acento": "#c02672",
+      "color_fondo": "#fff1f7",
+      "tema_tienda": "elegante",
+      "estado_empresa": "APROBADA"
+    }
+  ],
+  "categorias": [
+    {
+      "id_categoria": 1,
+      "nombre_categoria": "Poleras",
+      "descripcion": "Prendas superiores como camisetas y poleras",
+      "estado": true
+    },
+    {
+      "id_categoria": 2,
+      "nombre_categoria": "Pantalones",
+      "descripcion": "Jeans, pantalones formales y casuales",
+      "estado": true
+    },
+    {
+      "id_categoria": 3,
+      "nombre_categoria": "Vestidos",
+      "descripcion": "Vestidos casuales, formales y de fiesta",
+      "estado": true
+    },
+    {
+      "id_categoria": 4,
+      "nombre_categoria": "Chamarras",
+      "descripcion": "Chamarras, chaquetas y abrigos",
+      "estado": true
+    },
+    {
+      "id_categoria": 5,
+      "nombre_categoria": "Zapatos",
+      "descripcion": "Calzado de diferentes estilos",
+      "estado": true
+    },
+    {
+      "id_categoria": 6,
+      "nombre_categoria": "Accesorios",
+      "descripcion": "Bolsos, gorras, cinturones y otros accesorios",
+      "estado": true
+    },
+    {
+      "id_categoria": 7,
+      "nombre_categoria": "sacos",
+      "descripcion": "Categoría creada por Moda Aby",
+      "estado": true
+    },
+    {
+      "id_categoria": 8,
+      "nombre_categoria": "Chompas",
+      "descripcion": "Categoría creada por Moda Aby",
+      "estado": true
+    },
+    {
+      "id_categoria": 9,
+      "nombre_categoria": "Canguros",
+      "descripcion": "Categoría creada por Moda Aby",
+      "estado": true
+    },
+    {
+      "id_categoria": 10,
+      "nombre_categoria": "Busos",
+      "descripcion": "Categoría creada por cel",
+      "estado": true
+    },
+    {
+      "id_categoria": 11,
+      "nombre_categoria": "Chalecos",
+      "descripcion": "Categoría creada por Moda Aby",
+      "estado": true
+    },
+    {
+      "id_categoria": 12,
+      "nombre_categoria": "Faldas",
+      "descripcion": null,
+      "estado": true
+    },
+    {
+      "id_categoria": 13,
+      "nombre_categoria": "Blusas",
+      "descripcion": null,
+      "estado": true
+    },
+    {
+      "id_categoria": 14,
+      "nombre_categoria": "Camisas",
+      "descripcion": null,
+      "estado": true
+    }
+  ],
+  "productos": [
+    {
+      "id_producto": 23,
+      "id_empresa": 4,
+      "id_categoria": 4,
+      "nombre_producto": "Chamarra bicolor con capucha",
+      "descripcion": "Chamarra técnica con capucha, cierre frontal y paneles marfil en las mangas.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "225.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:28:53.838489",
+      "fecha_actualizacion": "2026-11-21 02:28:53.838489"
+    },
+    {
+      "id_producto": 24,
+      "id_empresa": 4,
+      "id_categoria": 11,
+      "nombre_producto": "Chaleco sastre carbón",
+      "descripcion": "Chaleco entallado de escote en V, con botonadura al frente.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "174.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:29:06.802205",
+      "fecha_actualizacion": "2026-11-21 02:29:06.802205"
+    },
+    {
+      "id_producto": 25,
+      "id_empresa": 4,
+      "id_categoria": 3,
+      "nombre_producto": "Vestido satinado dorado",
+      "descripcion": "Vestido corto de satén dorado con tirantes anudados y falda con vuelo.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "219.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:29:07.513937",
+      "fecha_actualizacion": "2026-11-21 02:29:07.513937"
+    },
+    {
+      "id_producto": 26,
+      "id_empresa": 4,
+      "id_categoria": 12,
+      "nombre_producto": "Falda midi plisada grafito",
+      "descripcion": "Falda por debajo de la rodilla con cintura alta y pliegues regulares.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "144.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:29:08.352936",
+      "fecha_actualizacion": "2026-11-21 02:29:08.352936"
+    },
+    {
+      "id_producto": 27,
+      "id_empresa": 5,
+      "id_categoria": 4,
+      "nombre_producto": "Chamarra acolchada arena",
+      "descripcion": "Chamarra acolchada en tono arena con cuello alto y cierre frontal.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "245.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:47.110743",
+      "fecha_actualizacion": "2026-11-21 02:31:47.110743"
+    },
+    {
+      "id_producto": 28,
+      "id_empresa": 5,
+      "id_categoria": 8,
+      "nombre_producto": "Chompa de punto crudo",
+      "descripcion": "Chompa de punto grueso con trenzas, cuello redondo y puños elásticos.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "160.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:47.775729",
+      "fecha_actualizacion": "2026-11-21 02:31:47.775729"
+    },
+    {
+      "id_producto": 29,
+      "id_empresa": 5,
+      "id_categoria": 2,
+      "nombre_producto": "Pantalón recto humo",
+      "descripcion": "Pantalón sastre de pierna recta con raya frontal y cintura estructurada.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "159.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:48.419948",
+      "fecha_actualizacion": "2026-11-21 02:31:48.419948"
+    },
+    {
+      "id_producto": 30,
+      "id_empresa": 5,
+      "id_categoria": 11,
+      "nombre_producto": "Chaleco térmico musgo",
+      "descripcion": "Chaleco acolchado verde musgo con cierre a contraste.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "144.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:49.096070",
+      "fecha_actualizacion": "2026-11-21 02:31:49.096070"
+    },
+    {
+      "id_producto": 31,
+      "id_empresa": 6,
+      "id_categoria": 3,
+      "nombre_producto": "Vestido camisero terracota",
+      "descripcion": "Vestido camisero terracota con manga larga y cinturón a tono.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "189.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:49.787560",
+      "fecha_actualizacion": "2026-11-21 02:31:49.787560"
+    },
+    {
+      "id_producto": 32,
+      "id_empresa": 6,
+      "id_categoria": 13,
+      "nombre_producto": "Blusa de lino marfil",
+      "descripcion": "Blusa marfil de lino con mangas ligeramente abullonadas.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "144.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:50.444125",
+      "fecha_actualizacion": "2026-11-21 02:31:50.444125"
+    },
+    {
+      "id_producto": 33,
+      "id_empresa": 6,
+      "id_categoria": 2,
+      "nombre_producto": "Pantalón amplio caramelo",
+      "descripcion": "Pantalón de tiro alto con pierna amplia y caída fluida.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "179.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:51.088915",
+      "fecha_actualizacion": "2026-11-21 02:31:51.088915"
+    },
+    {
+      "id_producto": 34,
+      "id_empresa": 6,
+      "id_categoria": 12,
+      "nombre_producto": "Falda corta ladrillo",
+      "descripcion": "Minifalda de pana color ladrillo con bolsillos delanteros.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "144.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:51.766251",
+      "fecha_actualizacion": "2026-11-21 02:31:51.766251"
+    },
+    {
+      "id_producto": 35,
+      "id_empresa": 7,
+      "id_categoria": 7,
+      "nombre_producto": "Saco cruzado azul noche",
+      "descripcion": "Saco azul noche con solapas amplias y doble botonadura.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "255.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:52.423567",
+      "fecha_actualizacion": "2026-11-21 02:31:52.423567"
+    },
+    {
+      "id_producto": 36,
+      "id_empresa": 7,
+      "id_categoria": 4,
+      "nombre_producto": "Chamarra ultraligera lavanda",
+      "descripcion": "Chamarra ligera con capucha y puños elásticos en tono lavanda.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "240.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:53.121314",
+      "fecha_actualizacion": "2026-11-21 02:31:53.121314"
+    },
+    {
+      "id_producto": 37,
+      "id_empresa": 7,
+      "id_categoria": 8,
+      "nombre_producto": "Chompa cuello alto oliva",
+      "descripcion": "Chompa verde oliva de tejido acanalado y cuello alto.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "155.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:53.819629",
+      "fecha_actualizacion": "2026-11-21 02:31:53.819629"
+    },
+    {
+      "id_producto": 38,
+      "id_empresa": 7,
+      "id_categoria": 14,
+      "nombre_producto": "Camisa de cuadros niebla",
+      "descripcion": "Camisa de franela ligera con cuadros grises y botones frontales.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "130.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:54.535040",
+      "fecha_actualizacion": "2026-11-21 02:31:54.535040"
+    },
+    {
+      "id_producto": 39,
+      "id_empresa": 8,
+      "id_categoria": 14,
+      "nombre_producto": "Camisa de lino cielo",
+      "descripcion": "Camisa de lino celeste con cuello abierto y manga corta.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "125.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:55.269685",
+      "fecha_actualizacion": "2026-11-21 02:31:55.269685"
+    },
+    {
+      "id_producto": 40,
+      "id_empresa": 8,
+      "id_categoria": 12,
+      "nombre_producto": "Falda midi de lino piedra",
+      "descripcion": "Falda midi de lino con botonadura y cintura marcada.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "154.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:55.947623",
+      "fecha_actualizacion": "2026-11-21 02:31:55.947623"
+    },
+    {
+      "id_producto": 41,
+      "id_empresa": 8,
+      "id_categoria": 13,
+      "nombre_producto": "Blusa corta salvia",
+      "descripcion": "Blusa corta de lino verde salvia con escote cuadrado.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "139.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:56.642462",
+      "fecha_actualizacion": "2026-11-21 02:31:56.642462"
+    },
+    {
+      "id_producto": 42,
+      "id_empresa": 8,
+      "id_categoria": 3,
+      "nombre_producto": "Vestido de lino blanco",
+      "descripcion": "Vestido midi de lino blanco, sin mangas y con costuras verticales.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "214.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:57.318407",
+      "fecha_actualizacion": "2026-11-21 02:31:57.318407"
+    },
+    {
+      "id_producto": 43,
+      "id_empresa": 9,
+      "id_categoria": 8,
+      "nombre_producto": "Chompa granate trenzada",
+      "descripcion": "Chompa granate de punto con trenzas marcadas y puños ajustados.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "165.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:58.033119",
+      "fecha_actualizacion": "2026-11-21 02:31:58.033119"
+    },
+    {
+      "id_producto": 44,
+      "id_empresa": 9,
+      "id_categoria": 11,
+      "nombre_producto": "Chaleco de punto mostaza",
+      "descripcion": "Chaleco mostaza de punto con escote en V acanalado.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "154.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:58.706033",
+      "fecha_actualizacion": "2026-11-21 02:31:58.706033"
+    },
+    {
+      "id_producto": 45,
+      "id_empresa": 9,
+      "id_categoria": 8,
+      "nombre_producto": "Cárdigan jaspeado gris",
+      "descripcion": "Cárdigan de punto gris jaspeado con corte relajado y botones frontales.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "155.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:31:59.497820",
+      "fecha_actualizacion": "2026-11-21 02:31:59.497820"
+    },
+    {
+      "id_producto": 46,
+      "id_empresa": 9,
+      "id_categoria": 12,
+      "nombre_producto": "Falda tejida chocolate",
+      "descripcion": "Falda midi de punto acanalado con silueta recta y tono chocolate.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "124.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:00.247733",
+      "fecha_actualizacion": "2026-11-21 02:32:00.247733"
+    },
+    {
+      "id_producto": 47,
+      "id_empresa": 10,
+      "id_categoria": 2,
+      "nombre_producto": "Pantalón cargo verde oliva",
+      "descripcion": "Pantalón cargo verde oliva con bolsillos laterales amplios.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "149.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:00.988449",
+      "fecha_actualizacion": "2026-11-21 02:32:00.988449"
+    },
+    {
+      "id_producto": 48,
+      "id_empresa": 10,
+      "id_categoria": 4,
+      "nombre_producto": "Chamarra bomber negra",
+      "descripcion": "Chamarra bomber negra con puños acanalados y cierre metálico.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "260.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:01.659330",
+      "fecha_actualizacion": "2026-11-21 02:32:01.659330"
+    },
+    {
+      "id_producto": 49,
+      "id_empresa": 10,
+      "id_categoria": 10,
+      "nombre_producto": "Buzo deportivo azul tinta",
+      "descripcion": "Buzo azul tinta de cuello redondo con mangas raglán.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "165.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:02.390209",
+      "fecha_actualizacion": "2026-11-21 02:32:02.390209"
+    },
+    {
+      "id_producto": 50,
+      "id_empresa": 10,
+      "id_categoria": 1,
+      "nombre_producto": "Polera urbana blanca",
+      "descripcion": "Polera blanca de algodón con cuello redondo y corte holgado.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "102.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:03.060436",
+      "fecha_actualizacion": "2026-11-21 02:32:03.060436"
+    },
+    {
+      "id_producto": 51,
+      "id_empresa": 11,
+      "id_categoria": 3,
+      "nombre_producto": "Vestido floral cereza",
+      "descripcion": "Vestido rosado con estampado floral pequeño y falda de niveles.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "209.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:03.747937",
+      "fecha_actualizacion": "2026-11-21 02:32:03.747937"
+    },
+    {
+      "id_producto": 52,
+      "id_empresa": 11,
+      "id_categoria": 12,
+      "nombre_producto": "Falda evasé azul tinta",
+      "descripcion": "Falda azul tinta de corte evasé con pliegues anchos.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "134.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:04.476790",
+      "fecha_actualizacion": "2026-11-21 02:32:04.476790"
+    },
+    {
+      "id_producto": 53,
+      "id_empresa": 11,
+      "id_categoria": 13,
+      "nombre_producto": "Blusa lazo rosa empolvado",
+      "descripcion": "Blusa rosa empolvado con lazo al cuello y manga larga.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "119.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:05.126113",
+      "fecha_actualizacion": "2026-11-21 02:32:05.126113"
+    },
+    {
+      "id_producto": 54,
+      "id_empresa": 11,
+      "id_categoria": 3,
+      "nombre_producto": "Vestido cruzado granate",
+      "descripcion": "Vestido midi cruzado con lazo a la cintura y mangas cortas.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "194.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:05.797649",
+      "fecha_actualizacion": "2026-11-21 02:32:05.797649"
+    },
+    {
+      "id_producto": 55,
+      "id_empresa": 12,
+      "id_categoria": 8,
+      "nombre_producto": "Chompa jacquard geométrica",
+      "descripcion": "Chompa con motivos geométricos beige y azul y puños de punto.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "145.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:06.458935",
+      "fecha_actualizacion": "2026-11-21 02:32:06.458935"
+    },
+    {
+      "id_producto": 56,
+      "id_empresa": 12,
+      "id_categoria": 8,
+      "nombre_producto": "Cárdigan corto crema",
+      "descripcion": "Cárdigan crema de corte corto con botones de apariencia madera.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "180.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:07.154566",
+      "fecha_actualizacion": "2026-11-21 02:32:07.154566"
+    },
+    {
+      "id_producto": 57,
+      "id_empresa": 12,
+      "id_categoria": 11,
+      "nombre_producto": "Chaleco tejido azul petróleo",
+      "descripcion": "Chaleco azul petróleo de punto con textura y borde acanalado.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "169.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:07.893251",
+      "fecha_actualizacion": "2026-11-21 02:32:07.893251"
+    },
+    {
+      "id_producto": 58,
+      "id_empresa": 12,
+      "id_categoria": 9,
+      "nombre_producto": "Canguro afelpado ciruela",
+      "descripcion": "Canguro color ciruela con bolsillo frontal y tejido afelpado.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "170.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:08.607076",
+      "fecha_actualizacion": "2026-11-21 02:32:08.607076"
+    },
+    {
+      "id_producto": 59,
+      "id_empresa": 13,
+      "id_categoria": 1,
+      "nombre_producto": "Polera de algodón verde bosque",
+      "descripcion": "Polera verde bosque de manga corta con bolsillo en el pecho.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "97.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:09.253941",
+      "fecha_actualizacion": "2026-11-21 02:32:09.253941"
+    },
+    {
+      "id_producto": 60,
+      "id_empresa": 13,
+      "id_categoria": 1,
+      "nombre_producto": "Polera acanalada marfil",
+      "descripcion": "Polera marfil de tejido acanalado, manga corta y corte entallado.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "92.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:09.966922",
+      "fecha_actualizacion": "2026-11-21 02:32:09.966922"
+    },
+    {
+      "id_producto": 61,
+      "id_empresa": 13,
+      "id_categoria": 2,
+      "nombre_producto": "Pantalón jogger gris claro",
+      "descripcion": "Pantalón gris claro con cordón de ajuste y puños en los tobillos.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "159.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:10.603995",
+      "fecha_actualizacion": "2026-11-21 02:32:10.603995"
+    },
+    {
+      "id_producto": 62,
+      "id_empresa": 13,
+      "id_categoria": 10,
+      "nombre_producto": "Buzo cuello redondo coral",
+      "descripcion": "Buzo de cuello redondo color coral con hombros caídos.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "140.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:11.317197",
+      "fecha_actualizacion": "2026-11-21 02:32:11.317197"
+    },
+    {
+      "id_producto": 63,
+      "id_empresa": 14,
+      "id_categoria": 2,
+      "nombre_producto": "Jeans rectos azul índigo",
+      "descripcion": "Jeans rectos color índigo con costuras a contraste.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "149.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:12.002964",
+      "fecha_actualizacion": "2026-11-21 02:32:12.002964"
+    },
+    {
+      "id_producto": 64,
+      "id_empresa": 14,
+      "id_categoria": 4,
+      "nombre_producto": "Chamarra denim azul lavado",
+      "descripcion": "Chamarra de mezclilla lavada con botones y costuras visibles.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "260.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:12.757750",
+      "fecha_actualizacion": "2026-11-21 02:32:12.757750"
+    },
+    {
+      "id_producto": 65,
+      "id_empresa": 14,
+      "id_categoria": 12,
+      "nombre_producto": "Falda denim negra",
+      "descripcion": "Falda de mezclilla negra con abertura frontal y bolsillos.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "149.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:13.433973",
+      "fecha_actualizacion": "2026-11-21 02:32:13.433973"
+    },
+    {
+      "id_producto": 66,
+      "id_empresa": 14,
+      "id_categoria": 14,
+      "nombre_producto": "Camisa denim azul medio",
+      "descripcion": "Camisa de mezclilla azul con diseño vaquero y broches frontales.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "150.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:14.071027",
+      "fecha_actualizacion": "2026-11-21 02:32:14.071027"
+    },
+    {
+      "id_producto": 67,
+      "id_empresa": 15,
+      "id_categoria": 3,
+      "nombre_producto": "Vestido satinado esmeralda",
+      "descripcion": "Vestido midi de satén esmeralda con tirantes finos y escote drapeado.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "209.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:14.771040",
+      "fecha_actualizacion": "2026-11-21 02:32:14.771040"
+    },
+    {
+      "id_producto": 68,
+      "id_empresa": 15,
+      "id_categoria": 12,
+      "nombre_producto": "Falda fluida malva",
+      "descripcion": "Falda midi de satén malva con corte al bies y caída suave.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "134.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:15.475623",
+      "fecha_actualizacion": "2026-11-21 02:32:15.475623"
+    },
+    {
+      "id_producto": 69,
+      "id_empresa": 15,
+      "id_categoria": 13,
+      "nombre_producto": "Blusa arena con cuello mao",
+      "descripcion": "Blusa arena con cuello mao y botones forrados en tela.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "119.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:16.144019",
+      "fecha_actualizacion": "2026-11-21 02:32:16.144019"
+    },
+    {
+      "id_producto": 70,
+      "id_empresa": 15,
+      "id_categoria": 3,
+      "nombre_producto": "Vestido camisero azul cielo",
+      "descripcion": "Vestido camisero celeste con lazo en la cintura y mangas dobladas.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "194.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:16.889965",
+      "fecha_actualizacion": "2026-11-21 02:32:16.889965"
+    },
+    {
+      "id_producto": 71,
+      "id_empresa": 16,
+      "id_categoria": 14,
+      "nombre_producto": "Camisa rayada azul y blanca",
+      "descripcion": "Camisa tipo Oxford con rayas finas azules y blancas.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "125.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:17.605872",
+      "fecha_actualizacion": "2026-11-21 02:32:17.605872"
+    },
+    {
+      "id_producto": 72,
+      "id_empresa": 16,
+      "id_categoria": 2,
+      "nombre_producto": "Pantalón chino beige",
+      "descripcion": "Pantalón chino beige de corte afilado y bolsillos discretos.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "184.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:18.331801",
+      "fecha_actualizacion": "2026-11-21 02:32:18.331801"
+    },
+    {
+      "id_producto": 73,
+      "id_empresa": 16,
+      "id_categoria": 1,
+      "nombre_producto": "Polera cuello polo teja",
+      "descripcion": "Polera tipo polo de piqué en tono teja con mangas cortas.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "107.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:19.051716",
+      "fecha_actualizacion": "2026-11-21 02:32:19.051716"
+    },
+    {
+      "id_producto": 74,
+      "id_empresa": 16,
+      "id_categoria": 14,
+      "nombre_producto": "Camisa de manga corta gris",
+      "descripcion": "Camisa gris de manga corta con cuello abierto y bolsillo.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "150.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:19.751126",
+      "fecha_actualizacion": "2026-11-21 02:32:19.751126"
+    },
+    {
+      "id_producto": 75,
+      "id_empresa": 17,
+      "id_categoria": 8,
+      "nombre_producto": "Chompa verde menta",
+      "descripcion": "Chompa ligera verde menta de punto con cuello semialto.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "165.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:20.500571",
+      "fecha_actualizacion": "2026-11-21 02:32:20.500571"
+    },
+    {
+      "id_producto": 76,
+      "id_empresa": 17,
+      "id_categoria": 11,
+      "nombre_producto": "Chaleco de punto rosa",
+      "descripcion": "Chaleco de punto rosa empolvado con borde crema.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "154.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:21.210102",
+      "fecha_actualizacion": "2026-11-21 02:32:21.210102"
+    },
+    {
+      "id_producto": 77,
+      "id_empresa": 17,
+      "id_categoria": 12,
+      "nombre_producto": "Falda larga de punto negro",
+      "descripcion": "Falda larga negra de punto acanalado con corte evasé.",
+      "marca": null,
+      "genero": "Mujer",
+      "precio": "129.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:21.957172",
+      "fecha_actualizacion": "2026-11-21 02:32:21.957172"
+    },
+    {
+      "id_producto": 78,
+      "id_empresa": 17,
+      "id_categoria": 10,
+      "nombre_producto": "Buzo deportivo de bloque crema",
+      "descripcion": "Buzo crema con bloques azul marino y cuello redondo.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "140.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:22.673048",
+      "fecha_actualizacion": "2026-11-21 02:32:22.673048"
+    },
+    {
+      "id_producto": 79,
+      "id_empresa": 18,
+      "id_categoria": 4,
+      "nombre_producto": "Chamarra parka azul cobalto",
+      "descripcion": "Parka larga en azul cobalto con bolsillos de solapa.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "225.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:23.379820",
+      "fecha_actualizacion": "2026-11-21 02:32:23.379820"
+    },
+    {
+      "id_producto": 80,
+      "id_empresa": 18,
+      "id_categoria": 9,
+      "nombre_producto": "Canguro gris antracita",
+      "descripcion": "Canguro gris antracita con cierre frontal y bolsillos inclinados.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "180.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:24.118458",
+      "fecha_actualizacion": "2026-11-21 02:32:24.118458"
+    },
+    {
+      "id_producto": 81,
+      "id_empresa": 18,
+      "id_categoria": 7,
+      "nombre_producto": "Saco recto gris piedra",
+      "descripcion": "Saco gris piedra con solapas, botones frontales y bolsillos de ojal.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "265.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:24.840435",
+      "fecha_actualizacion": "2026-11-21 02:32:24.840435"
+    },
+    {
+      "id_producto": 82,
+      "id_empresa": 18,
+      "id_categoria": 2,
+      "nombre_producto": "Pantalón de lana azul marino",
+      "descripcion": "Pantalón azul marino de pierna recta con raya marcada.",
+      "marca": null,
+      "genero": "Unisex",
+      "precio": "174.00",
+      "estado_producto": "ACTIVO",
+      "fecha_creacion": "2026-11-21 02:32:25.564372",
+      "fecha_actualizacion": "2026-11-21 02:32:25.564372"
+    }
+  ],
+  "producto_imagenes": [
+    {
+      "id_imagen": 27,
+      "id_producto": 23,
+      "url_imagen": "/uploads/productos/zyra-catalogo-01-8252234bf13b.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:28:53.838489"
+    },
+    {
+      "id_imagen": 28,
+      "id_producto": 24,
+      "url_imagen": "/uploads/productos/zyra-catalogo-02-8872cf13c7ab.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:29:06.802205"
+    },
+    {
+      "id_imagen": 29,
+      "id_producto": 25,
+      "url_imagen": "/uploads/productos/zyra-catalogo-03-ec564e833dc3.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:29:07.513937"
+    },
+    {
+      "id_imagen": 30,
+      "id_producto": 26,
+      "url_imagen": "/uploads/productos/zyra-catalogo-04-54ab658bec86.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:29:08.352936"
+    },
+    {
+      "id_imagen": 31,
+      "id_producto": 27,
+      "url_imagen": "/uploads/productos/zyra-catalogo-05-3bd5bcf8d07c.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:47.110743"
+    },
+    {
+      "id_imagen": 32,
+      "id_producto": 28,
+      "url_imagen": "/uploads/productos/zyra-catalogo-06-ca838abce919.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:47.775729"
+    },
+    {
+      "id_imagen": 33,
+      "id_producto": 29,
+      "url_imagen": "/uploads/productos/zyra-catalogo-07-3907882ca7d1.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:48.419948"
+    },
+    {
+      "id_imagen": 34,
+      "id_producto": 30,
+      "url_imagen": "/uploads/productos/zyra-catalogo-08-eb88a4d1356f.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:49.096070"
+    },
+    {
+      "id_imagen": 35,
+      "id_producto": 31,
+      "url_imagen": "/uploads/productos/zyra-catalogo-09-1aa05825309e.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:49.787560"
+    },
+    {
+      "id_imagen": 36,
+      "id_producto": 32,
+      "url_imagen": "/uploads/productos/zyra-catalogo-10-cf321f28b809.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:50.444125"
+    },
+    {
+      "id_imagen": 37,
+      "id_producto": 33,
+      "url_imagen": "/uploads/productos/zyra-catalogo-11-9e9ab3a42489.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:51.088915"
+    },
+    {
+      "id_imagen": 38,
+      "id_producto": 34,
+      "url_imagen": "/uploads/productos/zyra-catalogo-12-975c706066df.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:51.766251"
+    },
+    {
+      "id_imagen": 39,
+      "id_producto": 35,
+      "url_imagen": "/uploads/productos/zyra-catalogo-13-2c7113b60d45.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:52.423567"
+    },
+    {
+      "id_imagen": 40,
+      "id_producto": 36,
+      "url_imagen": "/uploads/productos/zyra-catalogo-14-d58c422bcf14.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:53.121314"
+    },
+    {
+      "id_imagen": 41,
+      "id_producto": 37,
+      "url_imagen": "/uploads/productos/zyra-catalogo-15-5d5567acd9f4.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:53.819629"
+    },
+    {
+      "id_imagen": 42,
+      "id_producto": 38,
+      "url_imagen": "/uploads/productos/zyra-catalogo-16-6961cb9b0bd7.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:54.535040"
+    },
+    {
+      "id_imagen": 43,
+      "id_producto": 39,
+      "url_imagen": "/uploads/productos/zyra-catalogo-17-8a89f543eac7.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:55.269685"
+    },
+    {
+      "id_imagen": 44,
+      "id_producto": 40,
+      "url_imagen": "/uploads/productos/zyra-catalogo-18-f824a5c01dda.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:55.947623"
+    },
+    {
+      "id_imagen": 45,
+      "id_producto": 41,
+      "url_imagen": "/uploads/productos/zyra-catalogo-19-dc29ed91701c.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:56.642462"
+    },
+    {
+      "id_imagen": 46,
+      "id_producto": 42,
+      "url_imagen": "/uploads/productos/zyra-catalogo-20-b18f81926b3d.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:57.318407"
+    },
+    {
+      "id_imagen": 47,
+      "id_producto": 43,
+      "url_imagen": "/uploads/productos/zyra-catalogo-21-11dabde42bc1.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:58.033119"
+    },
+    {
+      "id_imagen": 48,
+      "id_producto": 44,
+      "url_imagen": "/uploads/productos/zyra-catalogo-22-82eb97d1f848.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:58.706033"
+    },
+    {
+      "id_imagen": 49,
+      "id_producto": 45,
+      "url_imagen": "/uploads/productos/zyra-catalogo-23-9142525cf709.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:31:59.497820"
+    },
+    {
+      "id_imagen": 50,
+      "id_producto": 46,
+      "url_imagen": "/uploads/productos/zyra-catalogo-24-32bc3bbc5434.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:00.247733"
+    },
+    {
+      "id_imagen": 51,
+      "id_producto": 47,
+      "url_imagen": "/uploads/productos/zyra-catalogo-25-51fa93e67996.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:00.988449"
+    },
+    {
+      "id_imagen": 52,
+      "id_producto": 48,
+      "url_imagen": "/uploads/productos/zyra-catalogo-26-6792812cf727.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:01.659330"
+    },
+    {
+      "id_imagen": 53,
+      "id_producto": 49,
+      "url_imagen": "/uploads/productos/zyra-catalogo-27-d2709d9c17c2.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:02.390209"
+    },
+    {
+      "id_imagen": 54,
+      "id_producto": 50,
+      "url_imagen": "/uploads/productos/zyra-catalogo-28-814273147745.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:03.060436"
+    },
+    {
+      "id_imagen": 55,
+      "id_producto": 51,
+      "url_imagen": "/uploads/productos/zyra-catalogo-29-acd43bf83796.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:03.747937"
+    },
+    {
+      "id_imagen": 56,
+      "id_producto": 52,
+      "url_imagen": "/uploads/productos/zyra-catalogo-30-5731a1e881c9.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:04.476790"
+    },
+    {
+      "id_imagen": 57,
+      "id_producto": 53,
+      "url_imagen": "/uploads/productos/zyra-catalogo-31-5fcfe180283c.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:05.126113"
+    },
+    {
+      "id_imagen": 58,
+      "id_producto": 54,
+      "url_imagen": "/uploads/productos/zyra-catalogo-32-65bcbec1ffbe.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:05.797649"
+    },
+    {
+      "id_imagen": 59,
+      "id_producto": 55,
+      "url_imagen": "/uploads/productos/zyra-catalogo-33-509fea3aed2b.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:06.458935"
+    },
+    {
+      "id_imagen": 60,
+      "id_producto": 56,
+      "url_imagen": "/uploads/productos/zyra-catalogo-34-4e390c325bf9.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:07.154566"
+    },
+    {
+      "id_imagen": 61,
+      "id_producto": 57,
+      "url_imagen": "/uploads/productos/zyra-catalogo-35-3cbcc063f761.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:07.893251"
+    },
+    {
+      "id_imagen": 62,
+      "id_producto": 58,
+      "url_imagen": "/uploads/productos/zyra-catalogo-36-aa9d97b923ee.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:08.607076"
+    },
+    {
+      "id_imagen": 63,
+      "id_producto": 59,
+      "url_imagen": "/uploads/productos/zyra-catalogo-37-854875f5c4de.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:09.253941"
+    },
+    {
+      "id_imagen": 64,
+      "id_producto": 60,
+      "url_imagen": "/uploads/productos/zyra-catalogo-38-fe7328d7e41e.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:09.966922"
+    },
+    {
+      "id_imagen": 65,
+      "id_producto": 61,
+      "url_imagen": "/uploads/productos/zyra-catalogo-39-1c465c48ddfb.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:10.603995"
+    },
+    {
+      "id_imagen": 66,
+      "id_producto": 62,
+      "url_imagen": "/uploads/productos/zyra-catalogo-40-c01990b6a49f.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:11.317197"
+    },
+    {
+      "id_imagen": 67,
+      "id_producto": 63,
+      "url_imagen": "/uploads/productos/zyra-catalogo-41-ab12755ef89d.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:12.002964"
+    },
+    {
+      "id_imagen": 68,
+      "id_producto": 64,
+      "url_imagen": "/uploads/productos/zyra-catalogo-42-a3d36db25c8c.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:12.757750"
+    },
+    {
+      "id_imagen": 69,
+      "id_producto": 65,
+      "url_imagen": "/uploads/productos/zyra-catalogo-43-548701149395.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:13.433973"
+    },
+    {
+      "id_imagen": 70,
+      "id_producto": 66,
+      "url_imagen": "/uploads/productos/zyra-catalogo-44-0bed1349c9a3.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:14.071027"
+    },
+    {
+      "id_imagen": 71,
+      "id_producto": 67,
+      "url_imagen": "/uploads/productos/zyra-catalogo-45-cfe478839a07.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:14.771040"
+    },
+    {
+      "id_imagen": 72,
+      "id_producto": 68,
+      "url_imagen": "/uploads/productos/zyra-catalogo-46-16698ead8eaa.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:15.475623"
+    },
+    {
+      "id_imagen": 73,
+      "id_producto": 69,
+      "url_imagen": "/uploads/productos/zyra-catalogo-47-d00df0f4567d.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:16.144019"
+    },
+    {
+      "id_imagen": 74,
+      "id_producto": 70,
+      "url_imagen": "/uploads/productos/zyra-catalogo-48-b617124d0f7b.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:16.889965"
+    },
+    {
+      "id_imagen": 75,
+      "id_producto": 71,
+      "url_imagen": "/uploads/productos/zyra-catalogo-49-885b348997fb.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:17.605872"
+    },
+    {
+      "id_imagen": 76,
+      "id_producto": 72,
+      "url_imagen": "/uploads/productos/zyra-catalogo-50-86952da90ee3.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:18.331801"
+    },
+    {
+      "id_imagen": 77,
+      "id_producto": 73,
+      "url_imagen": "/uploads/productos/zyra-catalogo-51-5ef30213d8ba.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:19.051716"
+    },
+    {
+      "id_imagen": 78,
+      "id_producto": 74,
+      "url_imagen": "/uploads/productos/zyra-catalogo-52-d049ae1e1d41.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:19.751126"
+    },
+    {
+      "id_imagen": 79,
+      "id_producto": 75,
+      "url_imagen": "/uploads/productos/zyra-catalogo-53-81335314e6a8.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:20.500571"
+    },
+    {
+      "id_imagen": 80,
+      "id_producto": 76,
+      "url_imagen": "/uploads/productos/zyra-catalogo-54-751443facffc.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:21.210102"
+    },
+    {
+      "id_imagen": 81,
+      "id_producto": 77,
+      "url_imagen": "/uploads/productos/zyra-catalogo-55-d5f36f94fa6f.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:21.957172"
+    },
+    {
+      "id_imagen": 82,
+      "id_producto": 78,
+      "url_imagen": "/uploads/productos/zyra-catalogo-56-adf36e12cb78.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:22.673048"
+    },
+    {
+      "id_imagen": 83,
+      "id_producto": 79,
+      "url_imagen": "/uploads/productos/zyra-catalogo-57-e90b5300d673.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:23.379820"
+    },
+    {
+      "id_imagen": 84,
+      "id_producto": 80,
+      "url_imagen": "/uploads/productos/zyra-catalogo-58-1de1416b08bb.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:24.118458"
+    },
+    {
+      "id_imagen": 85,
+      "id_producto": 81,
+      "url_imagen": "/uploads/productos/zyra-catalogo-59-b86678cdcbda.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:24.840435"
+    },
+    {
+      "id_imagen": 86,
+      "id_producto": 82,
+      "url_imagen": "/uploads/productos/zyra-catalogo-60-4a0c4dbecc6e.png",
+      "es_principal": true,
+      "fecha_subida": "2026-11-21 02:32:25.564372"
+    }
+  ],
+  "producto_variantes": [
+    {
+      "id_variante": 28,
+      "id_producto": 23,
+      "color": "Negro",
+      "talla": "S",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 29,
+      "id_producto": 23,
+      "color": "Negro",
+      "talla": "M",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 30,
+      "id_producto": 23,
+      "color": "Negro",
+      "talla": "L",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 31,
+      "id_producto": 24,
+      "color": "Gris",
+      "talla": "S",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 32,
+      "id_producto": 24,
+      "color": "Gris",
+      "talla": "M",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 33,
+      "id_producto": 24,
+      "color": "Gris",
+      "talla": "L",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 34,
+      "id_producto": 25,
+      "color": "Dorado",
+      "talla": "S",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 35,
+      "id_producto": 25,
+      "color": "Dorado",
+      "talla": "M",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 36,
+      "id_producto": 25,
+      "color": "Dorado",
+      "talla": "L",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 37,
+      "id_producto": 26,
+      "color": "Gris",
+      "talla": "S",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 38,
+      "id_producto": 26,
+      "color": "Gris",
+      "talla": "M",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 39,
+      "id_producto": 26,
+      "color": "Gris",
+      "talla": "L",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 40,
+      "id_producto": 27,
+      "color": "Beige",
+      "talla": "S",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 41,
+      "id_producto": 27,
+      "color": "Beige",
+      "talla": "M",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 42,
+      "id_producto": 27,
+      "color": "Beige",
+      "talla": "L",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 43,
+      "id_producto": 28,
+      "color": "Crudo",
+      "talla": "S",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 44,
+      "id_producto": 28,
+      "color": "Crudo",
+      "talla": "M",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 45,
+      "id_producto": 28,
+      "color": "Crudo",
+      "talla": "L",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 46,
+      "id_producto": 29,
+      "color": "Gris",
+      "talla": "36",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 47,
+      "id_producto": 29,
+      "color": "Gris",
+      "talla": "38",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 48,
+      "id_producto": 29,
+      "color": "Gris",
+      "talla": "40",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 49,
+      "id_producto": 29,
+      "color": "Gris",
+      "talla": "42",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 50,
+      "id_producto": 30,
+      "color": "Verde",
+      "talla": "S",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 51,
+      "id_producto": 30,
+      "color": "Verde",
+      "talla": "M",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 52,
+      "id_producto": 30,
+      "color": "Verde",
+      "talla": "L",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 53,
+      "id_producto": 31,
+      "color": "Terracota",
+      "talla": "S",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 54,
+      "id_producto": 31,
+      "color": "Terracota",
+      "talla": "M",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 55,
+      "id_producto": 31,
+      "color": "Terracota",
+      "talla": "L",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 56,
+      "id_producto": 32,
+      "color": "Marfil",
+      "talla": "S",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 57,
+      "id_producto": 32,
+      "color": "Marfil",
+      "talla": "M",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 58,
+      "id_producto": 32,
+      "color": "Marfil",
+      "talla": "L",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 59,
+      "id_producto": 33,
+      "color": "Marrón",
+      "talla": "36",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 60,
+      "id_producto": 33,
+      "color": "Marrón",
+      "talla": "38",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 61,
+      "id_producto": 33,
+      "color": "Marrón",
+      "talla": "40",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 62,
+      "id_producto": 33,
+      "color": "Marrón",
+      "talla": "42",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 63,
+      "id_producto": 34,
+      "color": "Terracota",
+      "talla": "S",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 64,
+      "id_producto": 34,
+      "color": "Terracota",
+      "talla": "M",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 65,
+      "id_producto": 34,
+      "color": "Terracota",
+      "talla": "L",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 66,
+      "id_producto": 35,
+      "color": "Azul",
+      "talla": "S",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 67,
+      "id_producto": 35,
+      "color": "Azul",
+      "talla": "M",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 68,
+      "id_producto": 35,
+      "color": "Azul",
+      "talla": "L",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 69,
+      "id_producto": 36,
+      "color": "Lavanda",
+      "talla": "S",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 70,
+      "id_producto": 36,
+      "color": "Lavanda",
+      "talla": "M",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 71,
+      "id_producto": 36,
+      "color": "Lavanda",
+      "talla": "L",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 72,
+      "id_producto": 37,
+      "color": "Verde",
+      "talla": "S",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 73,
+      "id_producto": 37,
+      "color": "Verde",
+      "talla": "M",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 74,
+      "id_producto": 37,
+      "color": "Verde",
+      "talla": "L",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 75,
+      "id_producto": 38,
+      "color": "Gris",
+      "talla": "S",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 76,
+      "id_producto": 38,
+      "color": "Gris",
+      "talla": "M",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 77,
+      "id_producto": 38,
+      "color": "Gris",
+      "talla": "L",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 78,
+      "id_producto": 39,
+      "color": "Celeste",
+      "talla": "S",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 79,
+      "id_producto": 39,
+      "color": "Celeste",
+      "talla": "M",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 80,
+      "id_producto": 39,
+      "color": "Celeste",
+      "talla": "L",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 81,
+      "id_producto": 40,
+      "color": "Beige",
+      "talla": "S",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 82,
+      "id_producto": 40,
+      "color": "Beige",
+      "talla": "M",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 83,
+      "id_producto": 40,
+      "color": "Beige",
+      "talla": "L",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 84,
+      "id_producto": 41,
+      "color": "Verde",
+      "talla": "S",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 85,
+      "id_producto": 41,
+      "color": "Verde",
+      "talla": "M",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 86,
+      "id_producto": 41,
+      "color": "Verde",
+      "talla": "L",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 87,
+      "id_producto": 42,
+      "color": "Blanco",
+      "talla": "S",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 88,
+      "id_producto": 42,
+      "color": "Blanco",
+      "talla": "M",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 89,
+      "id_producto": 42,
+      "color": "Blanco",
+      "talla": "L",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 90,
+      "id_producto": 43,
+      "color": "Granate",
+      "talla": "S",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 91,
+      "id_producto": 43,
+      "color": "Granate",
+      "talla": "M",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 92,
+      "id_producto": 43,
+      "color": "Granate",
+      "talla": "L",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 93,
+      "id_producto": 44,
+      "color": "Mostaza",
+      "talla": "S",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 94,
+      "id_producto": 44,
+      "color": "Mostaza",
+      "talla": "M",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 95,
+      "id_producto": 44,
+      "color": "Mostaza",
+      "talla": "L",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 96,
+      "id_producto": 45,
+      "color": "Gris",
+      "talla": "S",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 97,
+      "id_producto": 45,
+      "color": "Gris",
+      "talla": "M",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 98,
+      "id_producto": 45,
+      "color": "Gris",
+      "talla": "L",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 99,
+      "id_producto": 46,
+      "color": "Marrón",
+      "talla": "S",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 100,
+      "id_producto": 46,
+      "color": "Marrón",
+      "talla": "M",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 101,
+      "id_producto": 46,
+      "color": "Marrón",
+      "talla": "L",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 102,
+      "id_producto": 47,
+      "color": "Verde",
+      "talla": "36",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 103,
+      "id_producto": 47,
+      "color": "Verde",
+      "talla": "38",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 104,
+      "id_producto": 47,
+      "color": "Verde",
+      "talla": "40",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 105,
+      "id_producto": 47,
+      "color": "Verde",
+      "talla": "42",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 106,
+      "id_producto": 48,
+      "color": "Negro",
+      "talla": "S",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 107,
+      "id_producto": 48,
+      "color": "Negro",
+      "talla": "M",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 108,
+      "id_producto": 48,
+      "color": "Negro",
+      "talla": "L",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 109,
+      "id_producto": 49,
+      "color": "Azul",
+      "talla": "S",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 110,
+      "id_producto": 49,
+      "color": "Azul",
+      "talla": "M",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 111,
+      "id_producto": 49,
+      "color": "Azul",
+      "talla": "L",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 112,
+      "id_producto": 50,
+      "color": "Blanco",
+      "talla": "S",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 113,
+      "id_producto": 50,
+      "color": "Blanco",
+      "talla": "M",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 114,
+      "id_producto": 50,
+      "color": "Blanco",
+      "talla": "L",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 115,
+      "id_producto": 51,
+      "color": "Rosado",
+      "talla": "S",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 116,
+      "id_producto": 51,
+      "color": "Rosado",
+      "talla": "M",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 117,
+      "id_producto": 51,
+      "color": "Rosado",
+      "talla": "L",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 118,
+      "id_producto": 52,
+      "color": "Azul",
+      "talla": "S",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 119,
+      "id_producto": 52,
+      "color": "Azul",
+      "talla": "M",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 120,
+      "id_producto": 52,
+      "color": "Azul",
+      "talla": "L",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 121,
+      "id_producto": 53,
+      "color": "Rosado",
+      "talla": "S",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 122,
+      "id_producto": 53,
+      "color": "Rosado",
+      "talla": "M",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 123,
+      "id_producto": 53,
+      "color": "Rosado",
+      "talla": "L",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 124,
+      "id_producto": 54,
+      "color": "Granate",
+      "talla": "S",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 125,
+      "id_producto": 54,
+      "color": "Granate",
+      "talla": "M",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 126,
+      "id_producto": 54,
+      "color": "Granate",
+      "talla": "L",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 127,
+      "id_producto": 55,
+      "color": "Beige",
+      "talla": "S",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 128,
+      "id_producto": 55,
+      "color": "Beige",
+      "talla": "M",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 129,
+      "id_producto": 55,
+      "color": "Beige",
+      "talla": "L",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 130,
+      "id_producto": 56,
+      "color": "Crema",
+      "talla": "S",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 131,
+      "id_producto": 56,
+      "color": "Crema",
+      "talla": "M",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 132,
+      "id_producto": 56,
+      "color": "Crema",
+      "talla": "L",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 133,
+      "id_producto": 57,
+      "color": "Azul",
+      "talla": "S",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 134,
+      "id_producto": 57,
+      "color": "Azul",
+      "talla": "M",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 135,
+      "id_producto": 57,
+      "color": "Azul",
+      "talla": "L",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 136,
+      "id_producto": 58,
+      "color": "Morado",
+      "talla": "S",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 137,
+      "id_producto": 58,
+      "color": "Morado",
+      "talla": "M",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 138,
+      "id_producto": 58,
+      "color": "Morado",
+      "talla": "L",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 139,
+      "id_producto": 59,
+      "color": "Verde",
+      "talla": "S",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 140,
+      "id_producto": 59,
+      "color": "Verde",
+      "talla": "M",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 141,
+      "id_producto": 59,
+      "color": "Verde",
+      "talla": "L",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 142,
+      "id_producto": 60,
+      "color": "Marfil",
+      "talla": "S",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 143,
+      "id_producto": 60,
+      "color": "Marfil",
+      "talla": "M",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 144,
+      "id_producto": 60,
+      "color": "Marfil",
+      "talla": "L",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 145,
+      "id_producto": 61,
+      "color": "Gris",
+      "talla": "36",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 146,
+      "id_producto": 61,
+      "color": "Gris",
+      "talla": "38",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 147,
+      "id_producto": 61,
+      "color": "Gris",
+      "talla": "40",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 148,
+      "id_producto": 61,
+      "color": "Gris",
+      "talla": "42",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 149,
+      "id_producto": 62,
+      "color": "Coral",
+      "talla": "S",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 150,
+      "id_producto": 62,
+      "color": "Coral",
+      "talla": "M",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 151,
+      "id_producto": 62,
+      "color": "Coral",
+      "talla": "L",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 152,
+      "id_producto": 63,
+      "color": "Azul",
+      "talla": "36",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 153,
+      "id_producto": 63,
+      "color": "Azul",
+      "talla": "38",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 154,
+      "id_producto": 63,
+      "color": "Azul",
+      "talla": "40",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 155,
+      "id_producto": 63,
+      "color": "Azul",
+      "talla": "42",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 156,
+      "id_producto": 64,
+      "color": "Azul",
+      "talla": "S",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 157,
+      "id_producto": 64,
+      "color": "Azul",
+      "talla": "M",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 158,
+      "id_producto": 64,
+      "color": "Azul",
+      "talla": "L",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 159,
+      "id_producto": 65,
+      "color": "Negro",
+      "talla": "S",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 160,
+      "id_producto": 65,
+      "color": "Negro",
+      "talla": "M",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 161,
+      "id_producto": 65,
+      "color": "Negro",
+      "talla": "L",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 162,
+      "id_producto": 66,
+      "color": "Azul",
+      "talla": "S",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 163,
+      "id_producto": 66,
+      "color": "Azul",
+      "talla": "M",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 164,
+      "id_producto": 66,
+      "color": "Azul",
+      "talla": "L",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 165,
+      "id_producto": 67,
+      "color": "Verde",
+      "talla": "S",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 166,
+      "id_producto": 67,
+      "color": "Verde",
+      "talla": "M",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 167,
+      "id_producto": 67,
+      "color": "Verde",
+      "talla": "L",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 168,
+      "id_producto": 68,
+      "color": "Malva",
+      "talla": "S",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 169,
+      "id_producto": 68,
+      "color": "Malva",
+      "talla": "M",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 170,
+      "id_producto": 68,
+      "color": "Malva",
+      "talla": "L",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 171,
+      "id_producto": 69,
+      "color": "Beige",
+      "talla": "S",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 172,
+      "id_producto": 69,
+      "color": "Beige",
+      "talla": "M",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 173,
+      "id_producto": 69,
+      "color": "Beige",
+      "talla": "L",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 174,
+      "id_producto": 70,
+      "color": "Celeste",
+      "talla": "S",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 175,
+      "id_producto": 70,
+      "color": "Celeste",
+      "talla": "M",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 176,
+      "id_producto": 70,
+      "color": "Celeste",
+      "talla": "L",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 177,
+      "id_producto": 71,
+      "color": "Azul",
+      "talla": "S",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 178,
+      "id_producto": 71,
+      "color": "Azul",
+      "talla": "M",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 179,
+      "id_producto": 71,
+      "color": "Azul",
+      "talla": "L",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 180,
+      "id_producto": 72,
+      "color": "Beige",
+      "talla": "36",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 181,
+      "id_producto": 72,
+      "color": "Beige",
+      "talla": "38",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 182,
+      "id_producto": 72,
+      "color": "Beige",
+      "talla": "40",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 183,
+      "id_producto": 72,
+      "color": "Beige",
+      "talla": "42",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 184,
+      "id_producto": 73,
+      "color": "Terracota",
+      "talla": "S",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 185,
+      "id_producto": 73,
+      "color": "Terracota",
+      "talla": "M",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 186,
+      "id_producto": 73,
+      "color": "Terracota",
+      "talla": "L",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 187,
+      "id_producto": 74,
+      "color": "Gris",
+      "talla": "S",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 188,
+      "id_producto": 74,
+      "color": "Gris",
+      "talla": "M",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 189,
+      "id_producto": 74,
+      "color": "Gris",
+      "talla": "L",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 190,
+      "id_producto": 75,
+      "color": "Verde",
+      "talla": "S",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 191,
+      "id_producto": 75,
+      "color": "Verde",
+      "talla": "M",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 192,
+      "id_producto": 75,
+      "color": "Verde",
+      "talla": "L",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 193,
+      "id_producto": 76,
+      "color": "Rosado",
+      "talla": "S",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 194,
+      "id_producto": 76,
+      "color": "Rosado",
+      "talla": "M",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 195,
+      "id_producto": 76,
+      "color": "Rosado",
+      "talla": "L",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 196,
+      "id_producto": 77,
+      "color": "Negro",
+      "talla": "S",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 197,
+      "id_producto": 77,
+      "color": "Negro",
+      "talla": "M",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 198,
+      "id_producto": 77,
+      "color": "Negro",
+      "talla": "L",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 199,
+      "id_producto": 78,
+      "color": "Crema",
+      "talla": "S",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 200,
+      "id_producto": 78,
+      "color": "Crema",
+      "talla": "M",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 201,
+      "id_producto": 78,
+      "color": "Crema",
+      "talla": "L",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 202,
+      "id_producto": 79,
+      "color": "Azul",
+      "talla": "S",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 203,
+      "id_producto": 79,
+      "color": "Azul",
+      "talla": "M",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 204,
+      "id_producto": 79,
+      "color": "Azul",
+      "talla": "L",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 205,
+      "id_producto": 80,
+      "color": "Gris",
+      "talla": "S",
+      "stock": 5,
+      "disponible": true
+    },
+    {
+      "id_variante": 206,
+      "id_producto": 80,
+      "color": "Gris",
+      "talla": "M",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 207,
+      "id_producto": 80,
+      "color": "Gris",
+      "talla": "L",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 208,
+      "id_producto": 81,
+      "color": "Gris",
+      "talla": "S",
+      "stock": 6,
+      "disponible": true
+    },
+    {
+      "id_variante": 209,
+      "id_producto": 81,
+      "color": "Gris",
+      "talla": "M",
+      "stock": 8,
+      "disponible": true
+    },
+    {
+      "id_variante": 210,
+      "id_producto": 81,
+      "color": "Gris",
+      "talla": "L",
+      "stock": 3,
+      "disponible": true
+    },
+    {
+      "id_variante": 211,
+      "id_producto": 82,
+      "color": "Azul",
+      "talla": "36",
+      "stock": 7,
+      "disponible": true
+    },
+    {
+      "id_variante": 212,
+      "id_producto": 82,
+      "color": "Azul",
+      "talla": "38",
+      "stock": 9,
+      "disponible": true
+    },
+    {
+      "id_variante": 213,
+      "id_producto": 82,
+      "color": "Azul",
+      "talla": "40",
+      "stock": 4,
+      "disponible": true
+    },
+    {
+      "id_variante": 214,
+      "id_producto": 82,
+      "color": "Azul",
+      "talla": "42",
+      "stock": 6,
+      "disponible": true
+    }
+  ]
+}

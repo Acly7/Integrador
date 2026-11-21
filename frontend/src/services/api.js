@@ -1,4 +1,4 @@
-export const API_URL = "http://127.0.0.1:8000";
+export const API_URL = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
 
 const procesarRespuesta = async (respuesta, mensajeError) => {
   const datos = await respuesta.json().catch(() => ({}));
@@ -12,6 +12,9 @@ const procesarRespuesta = async (respuesta, mensajeError) => {
 
 export const obtenerUrlImagen = (url) => {
   if (!url) return null;
+
+  const subidaLocal = url.match(/^https?:\/\/(?:127\.0\.0\.1|localhost):8000(\/uploads\/.*)$/i);
+  if (subidaLocal) return `${API_URL}${subidaLocal[1]}`;
 
   if (url.startsWith("http")) {
     return url;
@@ -496,6 +499,21 @@ export const obtenerSoporteAdminApi = async (idAdmin) => {
 export const obtenerReportesAdminApi = async (idAdmin, limite = 15) => {
   const respuesta = await fetch(`${API_URL}/admin/reportes?id_admin=${idAdmin}&limite=${limite}`);
   return procesarRespuesta(respuesta, "No se pudieron cargar los reportes administrativos.");
+};
+
+export const obtenerVistasClienteAdminApi = async (usuario, idCliente, signal) => {
+  if (!usuario.token_reportes) {
+    throw new Error("Vuelve a iniciar sesión como administrador para consultar este reporte.");
+  }
+  const ruta = idCliente ? `/clientes/${idCliente}/vistas` : "/clientes";
+  const respuesta = await fetch(
+    `${API_URL}/admin/reportes${ruta}?id_admin=${usuario.id_usuario}`,
+    { headers: { Authorization: `Bearer ${usuario.token_reportes}` }, signal }
+  );
+  if (respuesta.status === 404 && !idCliente) {
+    throw new Error("El backend conectado todavía no tiene el reporte por cliente.");
+  }
+  return procesarRespuesta(respuesta, "No se pudo cargar el reporte por cliente.");
 };
 
 

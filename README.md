@@ -92,6 +92,18 @@ La plataforma sigue una arquitectura **cliente-servidor desacoplada**: React y V
 
 Zyra está organizada en frontend, backend y servicios de almacenamiento. Para ejecutarla localmente se necesita preparar el entorno de Python, las dependencias del frontend y una base de datos PostgreSQL, además de la configuración correspondiente al módulo de búsqueda visual.
 
+### Cargar los datos de demostración
+
+`database/zyra_demo.json` contiene 50 clientes ficticios, 15 tiendas aprobadas, 3 administradores y 60 prendas con sus variantes e imágenes. Usa PostgreSQL y configura `DATABASE_URL` en `backend/.env` para apuntar a una base vacía. Desde `backend`, con el entorno virtual activo, ejecuta:
+
+```powershell
+python -m app.cargar_demo --indexar
+```
+
+El comando solicita una contraseña local para todas las cuentas. Los correos de acceso están en el JSON. `--indexar` genera los vectores con CLIP y ChromaDB y puede necesitar descargar el modelo en el primer uso.
+
+Inicia FastAPI con `python -m uvicorn main:app --host 127.0.0.1 --port 8000`. Si usas otro puerto, configura `VITE_API_URL` en `frontend/.env.local` con la URL del backend antes de iniciar Vite.
+
 Los comandos exactos de instalación y arranque deben consultarse en la configuración de cada carpeta del proyecto. **No deben subirse credenciales, contraseñas, archivos `.env` con datos reales ni respaldos privados de la base de datos al repositorio público.**
 
 ---

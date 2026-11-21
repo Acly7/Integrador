@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from fastapi import APIRouter, Depends, Header, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from sqlalchemy import text, func
 from sqlalchemy.exc import SQLAlchemyError
@@ -33,8 +33,9 @@ from app.models import (
     LogSistema,
 )
 from app.schemas import CambioEstadoEmpresa, CambiarEstadoTicket, CambioEstadoUsuarioAdmin, AdminCuentaActualizar, AdminPasswordCambiar, AdminCrear
-from app.seguridad import crear_hash_password, verificar_password
+from app.seguridad import crear_hash_password, validar_token_reportes, verificar_password
 from app.estadisticas import sincronizar_ventas_pagadas
+from app.routers.ml_recomendaciones import calcular_recomendaciones_cliente
 
 router = APIRouter()
 
@@ -753,6 +754,71 @@ def cambiar_password_admin(
 
 BACKUPS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "backups"))
 os.makedirs(BACKUPS_DIR, exist_ok=True)
+
+
+def verificar_sesion_reportes(
+    id_admin: int,
+    authorization: str = Header(default=""),
+    db: Session = Depends(get_db),
+):
+    admin = verificar_admin(db, id_admin)
+    esquema, _, token = authorization.partition(" ")
+    if admin.estado != "ACTIVO" or esquema.lower() != "bearer" or not validar_token_reportes(
+        token, id_admin, admin.password_hash
+    ):
+        raise HTTPException(status_code=401, detail="Vuelve a iniciar sesión como administrador para consultar este reporte.")
+
+
+@router.get("/admin/reportes/clientes", dependencies=[Depends(verificar_sesion_reportes)])
+def listar_clientes_reportes(db: Session = Depends(get_db)):
+    clientes = (
+        db.query(Usuario.id_usuario, Usuario.nombre, Usuario.apellido)
+        .join(Rol, Usuario.id_rol == Rol.id_rol)
+        .filter(func.upper(Rol.nombre_rol) == "CLIENTE")
+        .order_by(Usuario.nombre, Usuario.apellido, Usuario.id_usuario)
+        .all()
+    )
+    return {"clientes": [dict(cliente._mapping) for cliente in clientes]}
+
+
+@router.get("/admin/reportes/clientes/{id_cliente}/vistas", dependencies=[Depends(verificar_sesion_reportes)])
+def obtener_vistas_cliente_reporte(id_cliente: int, db: Session = Depends(get_db)):
+    cliente = (
+        db.query(Usuario)
+        .join(Rol, Usuario.id_rol == Rol.id_rol)
+        .filter(Usuario.id_usuario == id_cliente, func.upper(Rol.nombre_rol) == "CLIENTE")
+        .first()
+    )
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+
+    vistas_cliente = db.query(ProductoVista).filter(ProductoVista.id_usuario == id_cliente)
+    cantidad = func.count(ProductoVista.id_producto).label("vistas")
+    prendas = (
+        vistas_cliente.with_entities(
+            Producto.id_producto, Producto.nombre_producto, cantidad,
+            func.sum(cantidad).over().label("total_vistas"),
+        )
+        .join(Producto, ProductoVista.id_producto == Producto.id_producto)
+        .group_by(Producto.id_producto, Producto.nombre_producto)
+        .order_by(cantidad.desc(), Producto.id_producto)
+        .limit(6)
+        .all()
+    )
+    total_vistas = int(prendas[0].total_vistas) if prendas else 0
+    distribucion = [
+        {"id_producto": prenda.id_producto, "nombre_producto": prenda.nombre_producto, "vistas": prenda.vistas}
+        for prenda in prendas
+    ]
+    otras_vistas = total_vistas - sum(prenda["vistas"] for prenda in distribucion)
+    if otras_vistas > 0:
+        distribucion.append({"nombre_producto": "Otras prendas", "vistas": otras_vistas})
+
+    recomendaciones = (
+        calcular_recomendaciones_cliente(db, id_cliente)
+        if cliente.estado == "ACTIVO" else {"metodo": "cliente_inactivo", "productos": []}
+    )
+    return {"total_vistas": total_vistas, "distribucion": distribucion, "recomendaciones": recomendaciones}
 
 
 def _fecha_iso(valor):

@@ -2,21 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import PortalLayout from "../components/layout/PortalLayout";
 import { useZyraDialog, ZyraDialogHost } from "../components/ui/ZyraDialog";
 
-const API_URL = "http://127.0.0.1:8000";
-
-const obtenerUrlImagen = (url) => {
-  if (!url) return null;
-
-  if (url.startsWith("http")) {
-    return url;
-  }
-
-  if (url.startsWith("/")) {
-    return `${API_URL}${url}`;
-  }
-
-  return `${API_URL}/uploads/productos/${url}`;
-};
+import { API_URL, obtenerUrlImagen } from "../services/api";
 
 const obtenerColorHex = (color) => {
   if (!color) return "#cbd5e1";
@@ -695,7 +681,10 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
         limite: "15"
       });
 
-      const respuesta = await fetch(`${API_URL}/cliente/productos-destacados?${params.toString()}`);
+      const endpoint = criterioDestacados === "ml"
+        ? `${API_URL}/ml/recomendaciones?id_usuario=${usuario.id_usuario}&limite=15`
+        : `${API_URL}/cliente/productos-destacados?${params.toString()}`;
+      const respuesta = await fetch(endpoint);
       const datos = await respuesta.json().catch(() => ({}));
 
       if (!respuesta.ok) {
@@ -1134,7 +1123,7 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
   useEffect(() => {
     cargarProductosDestacados();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [criterioDestacados]);
+  }, [criterioDestacados, seccionCliente, usuario?.id_usuario]);
 
   useEffect(() => {
     if (seccionCliente === "pedidos") {
@@ -1816,7 +1805,7 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
           <div>
             <span>Selección inteligente</span>
             <h3>15 prendas destacadas</h3>
-            <p>Elige si quieres ver lo más vendido, lo más visto o lo más cotizado.</p>
+            <p>Elige lo más vendido, visto, cotizado o recomendaciones según tus búsquedas.</p>
           </div>
 
           <button type="button" onClick={() => setSeccionCliente("catalogo")}>
@@ -1825,6 +1814,13 @@ export default function ClientePanel({ usuario, onVolver, onCerrarSesion }) {
         </div>
 
         <div className="cliente-destacados-filtros">
+          <button
+            type="button"
+            className={criterioDestacados === "ml" ? "activo" : ""}
+            onClick={() => setCriterioDestacados("ml")}
+          >
+            Para ti (ML)
+          </button>
           <button
             type="button"
             className={criterioDestacados === "ventas" ? "activo" : ""}

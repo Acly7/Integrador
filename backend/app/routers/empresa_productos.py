@@ -11,7 +11,7 @@ from app.database import get_db
 from app.models import Usuario, Rol, Empresa, Categoria, Producto, ProductoVariante, ProductoImagen, Carrito, CarritoDetalle, Pedido, PedidoDetalle, Pago, SoporteTicket, SoporteMensaje, Notificacion
 from app.schemas import RegistroCliente, RegistroEmpresa, LoginUsuario, CambioEstadoEmpresa, ProductoCrear, ProductoActualizar, CambioEstadoProducto, VarianteAgregar, VarianteActualizar, AgregarCarrito, ActualizarCantidadCarrito, CrearPedido, RegistrarPago, CambioEstadoPagoEmpresa, CambioEstadoPedidoEmpresa, CrearTicketSoporte, CrearMensajeSoporte, CambiarEstadoTicket, CategoriaCrear, VarianteEmpresaCrear, VarianteEmpresaEditar, VarianteEstadoCambiar
 from app.seguridad import crear_hash_password, verificar_password
-from app.routers.ia_busqueda import sincronizar_producto_ia_seguro, eliminar_producto_indexado_ia
+from app.routers.ia_busqueda import sincronizar_producto_ia_seguro
 
 router = APIRouter()
 
@@ -281,7 +281,7 @@ def actualizar_producto_empresa(
 ):
     producto = db.query(Producto).filter(
         Producto.id_producto == id_producto
-    ).first()
+    ).with_for_update().first()
 
     if not producto:
         raise HTTPException(
@@ -421,7 +421,8 @@ def eliminar_producto_definitivo_empresa(
         db.delete(producto)
         db.commit()
 
-        ia_indexacion = eliminar_producto_indexado_ia(id_producto)
+        resultado_ia = sincronizar_producto_ia_seguro(db, id_producto)
+        ia_indexacion = resultado_ia.get("sincronizacion", resultado_ia)
 
         return {
             "mensaje": "Producto borrado definitivamente",
@@ -602,7 +603,7 @@ def subir_imagen_producto(
 
     producto = db.query(Producto).filter(
         Producto.id_producto == id_producto
-    ).first()
+    ).with_for_update().first()
 
     if not producto:
         raise HTTPException(

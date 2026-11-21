@@ -1,3 +1,4 @@
+from app.routers import ml_recomendaciones
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -70,3 +71,4 @@ app.include_router(cliente.router)
 app.include_router(soporte.router)
 app.include_router(empresa_cuenta.router)
 app.include_router(ia_busqueda.router)
+app.include_router(ml_recomendaciones.router)

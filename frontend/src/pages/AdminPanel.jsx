@@ -17,6 +17,7 @@ import {
   obtenerProductosAdminApi,
   obtenerResumenAdminApi,
   obtenerReportesAdminApi,
+  obtenerVistasClienteAdminApi,
   obtenerSoporteAdminApi,
   obtenerBackupsAdminApi,
   obtenerLogsAdminApi,
@@ -225,6 +226,37 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
   const [cargandoMensajesTicket, setCargandoMensajesTicket] = useState(false);
   const [enviandoRespuestaTicket, setEnviandoRespuestaTicket] = useState(false);
   const [graficoReporte, setGraficoReporte] = useState("vendidos");
+  const [clienteVistas, setClienteVistas] = useState("");
+  const [clientesReporte, setClientesReporte] = useState(null);
+  const [vistasClienteReporte, setVistasClienteReporte] = useState(null);
+  const [revisionReporteClientes, setRevisionReporteClientes] = useState(0);
+
+  const mostrarReportePorCliente = seccion === "reportes" && graficoReporte === "vistos";
+
+  useEffect(() => {
+    if (!mostrarReportePorCliente) return;
+    const peticion = new AbortController();
+    obtenerVistasClienteAdminApi(usuario, "", peticion.signal)
+      .then(datos => {
+        if (!peticion.signal.aborted) setClientesReporte(datos);
+      })
+      .catch(error => {
+        if (!peticion.signal.aborted) setClientesReporte({ error: error.message });
+      });
+    return () => peticion.abort();
+  }, [mostrarReportePorCliente, revisionReporteClientes, usuario]);
+
+  useEffect(() => {
+    if (!mostrarReportePorCliente || !clienteVistas) return;
+    const peticion = new AbortController();
+    const guardar = datos => {
+      if (!peticion.signal.aborted) setVistasClienteReporte({ id: clienteVistas, ...datos });
+    };
+    obtenerVistasClienteAdminApi(usuario, clienteVistas, peticion.signal)
+      .then(guardar)
+      .catch(error => guardar({ error: error.message }));
+    return () => peticion.abort();
+  }, [mostrarReportePorCliente, clienteVistas, revisionReporteClientes, usuario]);
   const { dialogoZyra, alertaZyra, confirmarZyra, cerrarDialogoZyra } = useZyraDialog();
 
 
@@ -1461,8 +1493,8 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
     }
   ];
 
-  const renderGraficoTortaReporte = (opciones = []) => {
-    const opcionActual = opciones.find((opcion) => opcion.id === graficoReporte) || opciones[0];
+  const renderGraficoTortaReporte = (opciones = [], opcionCliente = null) => {
+    const opcionActual = opcionCliente || opciones.find((opcion) => opcion.id === graficoReporte) || opciones[0];
     const datos = (opcionActual?.lista || [])
       .slice(0, 7)
       .map((item, index) => ({
@@ -1500,7 +1532,7 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
             <p>{opcionActual?.subtitulo || "Comparación porcentual de los registros principales."}</p>
           </div>
 
-          <div className="admin-grafico-selector">
+          {opciones.length > 0 && <div className="admin-grafico-selector">
             {opciones.map((opcion) => (
               <button
                 key={opcion.id}
@@ -1511,7 +1543,7 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
                 {opcion.nombre}
               </button>
             ))}
-          </div>
+          </div>}
         </div>
 
         {segmentos.length === 0 ? (
@@ -1521,7 +1553,7 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
             <div className="admin-torta" style={{ background: `conic-gradient(${fondoTorta})` }}>
               <div>
                 <strong>{formatearEntero(total)}</strong>
-                <span>Total</span>
+                <span>{opcionCliente ? "Vistas" : "Total"}</span>
               </div>
             </div>
 
@@ -1540,6 +1572,75 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
           </div>
         )}
       </article>
+    );
+  };
+
+  const renderReportePorCliente = () => {
+    const reporte = vistasClienteReporte?.id === clienteVistas ? vistasClienteReporte : null;
+    const recomendaciones = reporte?.recomendaciones;
+    const explicaciones = {
+      tfidf_personalizado: "Ordenadas por afinidad con las vistas y búsquedas recientes del cliente, con un peso menor de popularidad.",
+      popularidad_sin_historial: "Se muestran prendas populares mientras el cliente reúne historial útil para personalizar el ranking.",
+      cliente_inactivo: "El cliente está inactivo y actualmente no recibe recomendaciones.",
+      sin_productos: "El catálogo no tiene prendas disponibles para recomendar."
+    };
+
+    return (
+      <>
+        <article className="admin-reporte-card grande">
+          <h3 id="admin-vistas-cliente-titulo">Más vistos por cliente</h3>
+          {clientesReporte?.error ? (
+            <p role="alert">{clientesReporte.error}</p>
+          ) : !clientesReporte ? (
+            <p role="status">Cargando clientes…</p>
+          ) : clientesReporte.clientes.length === 0 ? (
+            <p>No hay clientes registrados.</p>
+          ) : (
+            <label className="admin-reporte-cliente">
+              Selecciona un cliente
+              <select value={clienteVistas} onChange={(event) => {
+                setClienteVistas(event.target.value);
+                setVistasClienteReporte(null);
+              }}>
+                <option value="">Elige un cliente</option>
+                {clientesReporte.clientes.map(cliente => (
+                  <option key={cliente.id_usuario} value={cliente.id_usuario}>
+                    {cliente.nombre} {cliente.apellido || ""} (#{cliente.id_usuario})
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {clienteVistas && !clientesReporte?.error && (
+            reporte?.error ? <p role="alert">{reporte.error}</p> :
+              !reporte ? <p role="status">Cargando vistas y recomendaciones…</p> :
+                reporte.total_vistas === 0 ? <p>Este cliente aún no tiene vistas registradas.</p> : null
+          )}
+        </article>
+        {!clientesReporte?.error && reporte?.total_vistas > 0 && renderGraficoTortaReporte([], {
+          nombre: "Prendas más vistas por este cliente",
+          subtitulo: "Cada apertura del detalle cuenta como una vista.",
+          lista: reporte.distribucion,
+          campo: "vistas"
+        })}
+        {!clientesReporte?.error && recomendaciones && (
+          <article className="admin-reporte-card grande">
+            <h3>Mis recomendaciones de este cliente</h3>
+            <p>{explicaciones[recomendaciones.metodo]}</p>
+            {recomendaciones.productos.length > 0 && (
+              <ol className="admin-reporte-recomendaciones">
+                {recomendaciones.productos.map(producto => (
+                  <li key={producto.id_producto}>
+                    <b>{producto.nombre_producto}</b>
+                    {producto.categoria && <small>{producto.categoria}</small>}
+                    {producto.afinidad_ml != null && <small>{producto.afinidad_ml}% de afinidad</small>}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </article>
+        )}
+      </>
     );
   };
 
@@ -1563,11 +1664,17 @@ export default function AdminPanel({ usuario, onVolver, onCerrarSesion }) {
             <h2>Estadísticas generales de Zyra</h2>
             <p>Registro de vistas, visitas a tiendas, búsquedas, cotizaciones y ventas.</p>
           </div>
-          <button type="button" onClick={cargarReportes}>Actualizar reportes</button>
+          <button type="button" onClick={() => {
+            cargarReportes();
+            setClientesReporte(null);
+            setVistasClienteReporte(null);
+            setRevisionReporteClientes(revision => revision + 1);
+          }}>Actualizar reportes</button>
         </div>
 
         <div className="admin-reportes-torta-principal">
           {renderGraficoTortaReporte(opcionesGrafico)}
+          {mostrarReportePorCliente && renderReportePorCliente()}
         </div>
 
         <div className="admin-reporte-kpis">
